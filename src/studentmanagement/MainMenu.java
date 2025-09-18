@@ -20,18 +20,45 @@ public class MainMenu {
      */
     public static void main(String[] args) {
         AuthService authService = new AuthService();
-
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-
-        if (!authService.login(username, password)) {
-            System.out.println("Invalid credentials.");
-            return;
+        boolean loggedIn = false;
+        
+        System.out.println("===== Welcome =====");
+        
+        while (!loggedIn) {
+            System.out.println("1. Login");
+            System.out.println("2. Sign Up (Admin)");
+            System.out.print("Enter choice: ");
+            int authChoice = scanner.nextInt();
+            scanner.nextLine();
+            
+            if (authChoice == 1 || authChoice == 2) {
+                
+                if (authChoice == 2){ // Sign up
+                    System.out.print("Enter new username: ");
+                    String newUsername = scanner.nextLine();
+                    System.out.print("Enter new password: ");
+                    String newPassword = scanner.nextLine();
+                    authService.signUp(newUsername, newPassword);
+                    System.out.println("Please log in.");
+                  }
+                
+                while (!loggedIn) { // Log in, choice 1 or after sign up
+                    System.out.print("Enter username: ");
+                    String username = scanner.nextLine();
+                    System.out.print("Enter password: ");
+                    String password = scanner.nextLine();
+                    loggedIn = authService.login(username, password);
+                
+                if (!loggedIn) {
+                    System.out.println("Invalid credentials. Try again.");
+                   }
+                }
+            } else {
+                    System.out.println("Invalid Choice. Try again.");
+                }
         }
-
-        int choice;
+        
+        int choice; // Main Menu
         do {
             System.out.println("\n===== Main Menu =====");
             System.out.printf("%-3s %s%n", "1.", "Add Student");
@@ -51,7 +78,7 @@ public class MainMenu {
                 case 4 -> deleteStudent();
                 case 5 -> searchStudents();
                 case 6 -> System.out.println("Goodbye!");
-                default -> System.out.println("❌ Invalid choice.");
+                default -> System.out.println("nvalid choice.");
             }
         } while (choice != 6);
     }
@@ -131,13 +158,13 @@ public class MainMenu {
         }
 
         // Table header
-        System.out.printf("%-5s %-25s %-5s %-30s %-10s %-30s%n",
+        System.out.printf("%-5s %-25s %-5s %-30s %-8s %-30s%n",
                 "ID", "Name", "Age", "Course", "Year", "Email");
-        System.out.println("-------------------------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------------------------------------------");
 
         // Rows
         for (Student s : students) {
-            System.out.printf("%-5d %-25s %-5d %-30s %-10d %-30s%n",
+            System.out.printf("%-5d %-25s %-5d %-30s %-8d %-30s%n",
                 s.getId(), s.getName(), s.getAge(), s.getCourse(), s.getYearLevel(), s.getEmail());
         }
     }
@@ -229,12 +256,12 @@ public class MainMenu {
             default -> System.out.println("Invalid choice, showing unsorted list.");
         }
         
-            System.out.printf("%-5s %-25s %-5s %-30s %-10s %-30s%n",
+            System.out.printf("%-5s %-25s %-5s %-30s %-8s %-30s%n",
                 "ID", "Name", "Age", "Course", "Year", "Email");
-            System.out.println("-------------------------------------------------------------------------------");
+            System.out.println("---------------------------------------------------------------------------------------------------");
 
         for (Student s : results) {
-            System.out.printf("%-5d %-25s %-5d %-30s %-10d %-30s%n",
+            System.out.printf("%-5d %-25s %-5d %-30s %-8d %-30s%n",
                 s.getId(), s.getName(), s.getAge(), s.getCourse(), s.getYearLevel(), s.getEmail());
         }
     }
