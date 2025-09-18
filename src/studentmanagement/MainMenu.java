@@ -4,6 +4,7 @@
  */
 package studentmanagement;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -108,6 +109,26 @@ public class MainMenu {
             System.out.println("No students found.");
             return;
         }
+        
+        //Sorting menu
+        System.out.println("\nSort by: ");
+        System.out.printf("%-3s %s%n", "1.", "Name");
+        System.out.printf("%-3s %s%n", "2.", "Age");
+        System.out.printf("%-3s %s%n", "3.", "Course");
+        System.out.printf("%-3s %s%n", "4.", "Year Level");
+        System.out.printf("%-3s %s%n", "5.", "No Sorting");
+        System.out.print("Enter choice: ");
+        int sortChoice = scanner.nextInt();
+        scanner.nextLine();
+        
+        switch (sortChoice) {
+            case 1 -> students.sort(Comparator.comparing(Student::getName, String.CASE_INSENSITIVE_ORDER));
+            case 2 -> students.sort(Comparator.comparingInt(Student::getAge));
+            case 3 -> students.sort(Comparator.comparing(Student::getCourse, String.CASE_INSENSITIVE_ORDER));
+            case 4 -> students.sort(Comparator.comparingInt(Student::getYearLevel));
+            case 5 -> {/*no sorting */}
+            default -> System.out.println("Invalid choice, showing unsorted list.");
+        }
 
         // Table header
         System.out.printf("%-5s %-25s %-5s %-30s %-10s %-30s%n",
@@ -185,7 +206,29 @@ public class MainMenu {
 
     if (results.isEmpty()) {
         System.out.println("No students found.");
-    } else {
+        return;
+    } 
+    
+        //Sorting menu
+        System.out.println("\nSort by: ");
+        System.out.printf("%-3s %s%n", "1.", "Name");
+        System.out.printf("%-3s %s%n", "2.", "Age");
+        System.out.printf("%-3s %s%n", "3.", "Course");
+        System.out.printf("%-3s %s%n", "4.", "Year Level");
+        System.out.printf("%-3s %s%n", "5.", "No Sorting");
+        System.out.print("Enter choice: ");
+        int sortChoice = scanner.nextInt();
+        scanner.nextLine();
+        
+        switch (sortChoice) {
+            case 1 -> results.sort(Comparator.comparing(Student::getName, String.CASE_INSENSITIVE_ORDER));
+            case 2 -> results.sort(Comparator.comparingInt(Student::getAge));
+            case 3 -> results.sort(Comparator.comparing(Student::getCourse, String.CASE_INSENSITIVE_ORDER));
+            case 4 -> results.sort(Comparator.comparingInt(Student::getYearLevel));
+            case 5 -> {/*no sorting */}
+            default -> System.out.println("Invalid choice, showing unsorted list.");
+        }
+        
             System.out.printf("%-5s %-25s %-5s %-30s %-10s %-30s%n",
                 "ID", "Name", "Age", "Course", "Year", "Email");
             System.out.println("-------------------------------------------------------------------------------");
@@ -194,6 +237,5 @@ public class MainMenu {
             System.out.printf("%-5d %-25s %-5d %-30s %-10d %-30s%n",
                 s.getId(), s.getName(), s.getAge(), s.getCourse(), s.getYearLevel(), s.getEmail());
         }
-      }
     }
 }
