@@ -55,7 +55,7 @@ public class StudentDAO {
         return students;
     }
 
-    public void updateStudent(Student student) {
+    public boolean updateStudent(Student student) {
         String sql = "UPDATE students SET name=?, age=?, course=?, year_level=?, email=? WHERE student_id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -68,31 +68,64 @@ public class StudentDAO {
             stmt.setInt(6, student.getId());
 
             int rows = stmt.executeUpdate();
-            if (rows > 0) {
-                System.out.println("Student updated successfully.");
+            return rows > 0;
+            
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+    }
+    
+    
+    public List<Student> findStudent (String input) {
+        List<Student> students = new ArrayList<>();
+        String sql;
+        boolean isNumeric = input.matches("\\d+"); // checks if the input is ID number
+        
+        if (isNumeric) {
+            sql = "SELECT * FROM students WHERE student_id=?";
+        } else {
+            sql = "SELECT * FROM students WHERE name LIKE ?";
+        }
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            if (isNumeric) {
+                stmt.setInt(1, Integer.parseInt(input));
             } else {
-                System.out.println("Student not found.");
+                stmt.setString(1, "%" + input + "%");
+            }
+            
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()){
+                students.add(new Student(
+                    rs.getInt("student_id"),
+                    rs.getString("name"),
+                    rs.getInt("age"),
+                    rs.getString("course"),
+                    rs.getInt("year_level"),
+                    rs.getString("email")
+                ));       
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return students;
     }
 
-    public void deleteStudent(int studentId) {
+    public boolean deleteStudent(int studentId) {
         String sql = "DELETE FROM students WHERE student_id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, studentId);
             int rows = stmt.executeUpdate();
-            if (rows > 0) {
-                System.out.println("Student deleted successfully.");
-            } else {
-                System.out.println("Student not found.");
-            }
+            return rows > 0;
+            
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        } return false;
     }
     
     public List<Student> searchStudents(String keyword) {
