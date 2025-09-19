@@ -15,27 +15,12 @@ import java.sql.ResultSet;
  */
 public class AuthService {
     
-    // Sign up for new admin
-    public void signUp(String username, String password) {
-        String sql = "INSERT INTO admins (username, password_hash) VALUES (?,?)";
-        String hashedPassword = hashPassword(password);
+    // Login based role
+    public AuthResult login(String username, String password) {
+        AuthResult result = new AuthResult();
         
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setString(1, username);
-            stmt.setString(2, hashedPassword);
-            stmt.executeUpdate();
-            System.out.println("Admin account created successfully.");
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    // Login
-    public boolean login(String username, String password) {
-        String sql = "SELECT password_hash FROM admins WHERE username=?";
+        String sql = "SELECT password_hash, role, linked_id FROM users WHERE username=?";
+        
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -44,10 +29,37 @@ public class AuthService {
            
             if (rs.next()) {
                 String storedHash = rs.getString("password_hash");
-                return storedHash.equals(hashPassword(password));
+                if (storedHash.equals(hashPassword(password))){
+                    result.setSuccess(true);
+                    result.setRole(rs.getString("role"));
+                    result.setLinkedId(rs.getInt("linked_id"));
+                }
+                return result;
             }
-            return false;
             
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        result.setSuccess(false);
+        return result;
+    }
+    
+    public boolean createUser(String username, String password, String role, int linkedId) {
+        String sql = "INSERT INTO users (username, password_hash, role, linked_id) VALUES (?, ?, ?, ?)";
+        String hashedPassword = hashPassword(password);
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+            stmt.setString(2, hashedPassword);
+            stmt.setString(3, role.toUpperCase());
+            stmt.setInt(4, linkedId);
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;

@@ -9,41 +9,64 @@ package studentmanagement;
  * @author USER
  */
 public class Student {
-    private int id;
-    private String name;
+     private int id;
+    private String firstName;
+    private String lastName;
     private int age;
-    private String course;
-    private int yearLevel;
+    private String priorSchool;
+    private int gradeLevel;
     private String email;
+    private String address;
+    private String phone;
+    private int sectionId;
 
-    public Student(int id, String name, int age, String course, int yearLevel, String email) {
+    public Student(int id, String firstName, String lastName, int age, String priorSchool,
+                   int gradeLevel, String email, String address, String phone, int sectionId) {
         this.id = id;
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.age = age;
-        this.course = course;
-        this.yearLevel = yearLevel;
+        this.priorSchool = priorSchool;
+        this.gradeLevel = gradeLevel;
         this.email = email;
+        this.address = address;
+        this.phone = phone;
+        this.sectionId = sectionId;
     }
 
-    public Student(String name, int age, String course, int yearLevel, String email) {
-        this.name = name;
+    public Student(String firstName, String lastName, int age, String priorSchool,
+                   int gradeLevel, String email, String address, String phone, int sectionId) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.age = age;
-        this.course = course;
-        this.yearLevel = yearLevel;
+        this.priorSchool = priorSchool;
+        this.gradeLevel = gradeLevel;
         this.email = email;
+        this.address = address;
+        this.phone = phone;
+        this.sectionId = sectionId;
     }
 
     // Getters
     public int getId() { return id; }
-    public String getName() { return name; }
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
     public int getAge() { return age; }
-    public String getCourse() { return course; }
-    public int getYearLevel() { return yearLevel; }
-    public String getEmail() {return email; };
+    public String getPriorSchool() { return priorSchool; }
+    public int getGradeLevel() { return gradeLevel; }
+    public String getEmail() { return email; }
+    public String getAddress() { return address; }
+    public String getPhone() { return phone; }
+    public int getSectionId() { return sectionId; }
+
     // Setters
-    public void setName(String name) { this.name = name; }
-    public void setAge(int name) { this.age = age; }
-    public void setCourse(String course) { this.course = course; }
-    public void setYearLevel(int yearLevel) { this.yearLevel = yearLevel; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setAge(int age) { this.age = age; }
+    public void setPriorSchool(String priorSchool) { this.priorSchool = priorSchool; }
+    public void setGradeLevel(int gradeLevel) { this.gradeLevel = gradeLevel; }
     public void setEmail(String email) { this.email = email; }
+    public void setAddress(String address) { this.address = address; }
+    public void setPhone(String phone) { this.phone = phone; }
+    public void setSectionId(int sectionId) { this.sectionId = sectionId; }
 }

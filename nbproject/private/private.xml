@@ -5,9 +5,13 @@
         <group>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/studentmanagement/DatabaseConnection.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/studentmanagement/StudentDAO.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/studentmanagement/StudentMenu.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/studentmanagement/MainMenu.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/studentmanagement/AdminMenu.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/studentmanagement/Student.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/studentmanagement/FacultyMenu.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/studentmanagement/AuthService.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/studentmanagement/AuthResult.java</file>
         </group>
     </open-files>
 </project-private>
