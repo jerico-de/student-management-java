@@ -133,397 +133,402 @@ public class MainMenu {
 
         boolean success = new AuthService().createUser(username, password, role, linkedId);
         if (success) {
-            System.out.println("✅ User created successfully.");
+            System.out.println("User created successfully.");
         } else {
-            System.out.println("❌ Failed to create user.");
+            System.out.println("Failed to create user.");
         }
     }
 
     private static void addStudent() {
-    System.out.print("Enter first name: ");
-    String firstName = scanner.nextLine();
-    if (firstName.isEmpty()) {
-        System.out.println("First name cannot be empty.");
-        return;
-    }
+        System.out.print("Enter first name: ");
+        String firstName = scanner.nextLine();
+        if (firstName.isEmpty()) {
+            System.out.println("First name cannot be empty.");
+            return;
+        }
 
-    System.out.print("Enter last name: ");
-    String lastName = scanner.nextLine();
-    if (lastName.isEmpty()) {
-        System.out.println("Last name cannot be empty.");
-        return;
-    }
+        System.out.print("Enter last name: ");
+        String lastName = scanner.nextLine();
+        if (lastName.isEmpty()) {
+            System.out.println("Last name cannot be empty.");
+            return;
+        }
 
-    System.out.print("Enter age: ");
-    if (!scanner.hasNextInt()) {
-        System.out.println("Age must be a valid number.");
-        scanner.nextLine(); // clear invalid input
-        return;
-    }
-    int age = scanner.nextInt();
-    scanner.nextLine();
-    if (age <= 0) {
-        System.out.println("Age must be positive.");
-        return;
-    }
-
-    System.out.print("Enter prior school: ");
-    String priorSchool = scanner.nextLine();
-    if (priorSchool.isEmpty()) {
-        System.out.println("Prior school cannot be empty.");
-        return;
-    }
-
-    System.out.print("Enter grade level (7–12): ");
-    if (!scanner.hasNextInt()) {
-        System.out.println("Grade level must be a valid number.");
+        System.out.print("Enter age: ");
+        if (!scanner.hasNextInt()) {
+            System.out.println("Age must be a valid number.");
+            scanner.nextLine(); // clear invalid input
+            return;
+        }
+        int age = scanner.nextInt();
         scanner.nextLine();
-        return;
-    }
-    int gradeLevel = scanner.nextInt();
-    scanner.nextLine();
-    if (gradeLevel < 7 || gradeLevel > 12) {
-        System.out.println("Grade level must be between 7 and 12.");
-        return;
-    }
+        if (age <= 0) {
+            System.out.println("Age must be positive.");
+            return;
+        }
 
-    System.out.print("Enter email: ");
-    String email = scanner.nextLine();
-    if (!email.contains("@") || !email.contains(".")) {
-        System.out.println("Invalid email format.");
-        return;
-    }
+        System.out.print("Enter sex (Male/Female/Other): ");
+        String sex = scanner.nextLine().trim();
+        if (sex.isEmpty()) {
+            System.out.println("Sex cannot be empty.");
+            return;
+        }
 
-    System.out.print("Enter address: ");
-    String address = scanner.nextLine();
-    if (address.isEmpty()) {
-        System.out.println("Address cannot be empty.");
-        return;
-    }
-
-    System.out.print("Enter phone: ");
-    String phone = scanner.nextLine();
-    if (phone.isEmpty()) {
-        System.out.println("Phone number cannot be empty.");
-        return;
-    }
-
-    System.out.print("Enter section ID: ");
-    if (!scanner.hasNextInt()) {
-        System.out.println("Section ID must be a valid number.");
+        System.out.print("Enter grade level (7–12): ");
+        if (!scanner.hasNextInt()) {
+            System.out.println("Grade level must be a valid number.");
+            scanner.nextLine();
+            return;
+        }
+        int gradeLevel = scanner.nextInt();
         scanner.nextLine();
-        return;
-    }
-    int sectionId = scanner.nextInt();
-    scanner.nextLine();
+        if (gradeLevel < 7 || gradeLevel > 12) {
+            System.out.println("Grade level must be between 7 and 12.");
+            return;
+        }
 
-    // Create student object with full table schema
-    Student student = new Student(firstName, lastName, age, priorSchool, gradeLevel, email, address, phone, sectionId);
-    studentDAO.addStudent(student);
-}
+        System.out.print("Enter email: ");
+        String email = scanner.nextLine();
+        if (!email.contains("@") || !email.contains(".")) {
+            System.out.println("Invalid email format.");
+            return;
+        }
+
+        System.out.print("Enter address: ");
+        String address = scanner.nextLine();
+        if (address.isEmpty()) {
+            System.out.println("Address cannot be empty.");
+            return;
+        }
+
+        System.out.print("Enter phone: ");
+        String phone = scanner.nextLine();
+        if (phone.isEmpty()) {
+            System.out.println("Phone number cannot be empty.");
+            return;
+        }
+
+        System.out.print("Enter section ID: ");
+        if (!scanner.hasNextInt()) {
+            System.out.println("Section ID must be a valid number.");
+            scanner.nextLine();
+            return;
+        }
+        int sectionId = scanner.nextInt();
+        scanner.nextLine();
+
+        // Create student object with updated schema
+        Student student = new Student(firstName, lastName, age, sex, email, address, phone, gradeLevel, sectionId);
+        studentDAO.addStudent(student);
+    }
 
     private static void viewStudents() {
         List<Student> students = studentDAO.getAllStudents();
 
-    if (students.isEmpty()) {
-        System.out.println("No students found.");
-        return;
-    }
-
-    // Sorting menu
-    System.out.println("\nSort by: ");
-    System.out.printf("%-3s %s%n", "1.", "Name");
-    System.out.printf("%-3s %s%n", "2.", "Age");
-    System.out.printf("%-3s %s%n", "3.", "Prior School");
-    System.out.printf("%-3s %s%n", "4.", "Grade Level");
-    System.out.printf("%-3s %s%n", "5.", "No Sorting");
-    System.out.print("Enter choice: ");
-    int sortChoice = scanner.nextInt();
-    scanner.nextLine();
-
-    switch (sortChoice) {
-        case 1 -> students.sort(Comparator.comparing(
-                s -> (s.getFirstName() + " " + s.getLastName()).toLowerCase()
-        ));
-        case 2 -> students.sort(Comparator.comparingInt(Student::getAge));
-        case 3 -> students.sort(Comparator.comparing(Student::getPriorSchool, String.CASE_INSENSITIVE_ORDER));
-        case 4 -> students.sort(Comparator.comparingInt(Student::getGradeLevel));
-        case 5 -> {/* no sorting */}
-        default -> System.out.println("Invalid choice, showing unsorted list.");
-    }
-
-    // Table header
-    System.out.printf("%-5s %-15s %-15s %-5s %-25s %-10s %-30s %-30s %-15s %-10s%n",
-            "ID", "First Name", "Last Name", "Age", "Prior School", "Grade",
-            "Email", "Address", "Phone", "Section");
-    System.out.println("--------------------------------------------------------------------------------------------------------------------------");
-
-    // Rows
-    for (Student s : students) {
-        System.out.printf("%-5d %-15s %-15s %-5d %-25s %-10d %-30s %-30s %-15s %-10d%n",
-                s.getId(), s.getFirstName(), s.getLastName(), s.getAge(),
-                s.getPriorSchool(), s.getGradeLevel(),
-                s.getEmail(), s.getAddress(), s.getPhone(), s.getSectionId());
-    }
-
-    // Show total students
-    System.out.println("\nTotal number of students: " + students.size());
-}
-
-    private static void updateStudent() {
-        
-    System.out.print("Enter student ID or name to update: ");
-    String input = scanner.nextLine();
-
-    // Use list so we can handle multiple matches
-    List<Student> matches = studentDAO.findStudent(input);
-
-    if (matches.isEmpty()) {
-        System.out.println("No students found.");
-        return;
-    }
-
-    // Handle multiple matches
-    Student existingStudent;
-    if (matches.size() > 1) {
-        System.out.println("\nMultiple students found:");
-        System.out.printf("%-5s %-15s %-15s %-5s %-20s %-8s %-25s%n",
-                "ID", "First Name", "Last Name", "Age", "Prior School", "Grade", "Email");
-        System.out.println("----------------------------------------------------------------------------------");
-        for (Student s : matches) {
-            System.out.printf("%-5d %-15s %-15s %-5d %-20s %-8d %-25s%n",
-                    s.getId(), s.getFirstName(), s.getLastName(),
-                    s.getAge(), s.getPriorSchool(),
-                    s.getGradeLevel(), s.getEmail());
-        }
-        System.out.print("Enter the ID of the student you want to update: ");
-        int chosenId = scanner.nextInt();
-        scanner.nextLine();
-
-        existingStudent = matches.stream()
-                .filter(s -> s.getId() == chosenId)
-                .findFirst()
-                .orElse(null);
-
-        if (existingStudent == null) {
-            System.out.println("Invalid ID selected.");
+        if (students.isEmpty()) {
+            System.out.println("No students found.");
             return;
         }
-    } else {
-        existingStudent = matches.get(0);
-    }
 
-    // Show current details
-    System.out.println("\nCurrent details:");
-    System.out.println("1. First Name: " + existingStudent.getFirstName());
-    System.out.println("2. Last Name: " + existingStudent.getLastName());
-    System.out.println("3. Age: " + existingStudent.getAge());
-    System.out.println("4. Prior School: " + existingStudent.getPriorSchool());
-    System.out.println("5. Grade Level: " + existingStudent.getGradeLevel());
-    System.out.println("6. Email: " + existingStudent.getEmail());
-    System.out.println("7. Address: " + existingStudent.getAddress());
-    System.out.println("8. Phone: " + existingStudent.getPhone());
-    System.out.println("9. Section ID: " + existingStudent.getSectionId());
+        // Sorting menu
+        System.out.println("\nSort by: ");
+        System.out.printf("%-3s %s%n", "1.", "Name");
+        System.out.printf("%-3s %s%n", "2.", "Age");
+        System.out.printf("%-3s %s%n", "3.", "Grade Level");
+        System.out.printf("%-3s %s%n", "4.", "Section");
+        System.out.printf("%-3s %s%n", "5.", "No Sorting");
+        System.out.print("Enter choice: ");
+        int sortChoice = scanner.nextInt();
+        scanner.nextLine();
 
-    System.out.println("\nPress Enter to keep the current value.");
-
-    // === Edit fields ===
-    System.out.print("Enter new first name (" + existingStudent.getFirstName() + "): ");
-    String firstName = scanner.nextLine().trim();
-    if (!firstName.isEmpty()) existingStudent.setFirstName(firstName);
-
-    System.out.print("Enter new last name (" + existingStudent.getLastName() + "): ");
-    String lastName = scanner.nextLine().trim();
-    if (!lastName.isEmpty()) existingStudent.setLastName(lastName);
-
-    System.out.print("Enter new age (" + existingStudent.getAge() + "): ");
-    String ageInput = scanner.nextLine().trim();
-    if (!ageInput.isEmpty()) {
-        try {
-            int age = Integer.parseInt(ageInput);
-            if (age > 0) existingStudent.setAge(age);
-            else System.out.println("Invalid age. Keeping old value.");
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Keeping old value.");
+        switch (sortChoice) {
+            case 1 -> students.sort(Comparator.comparing(
+                    s -> (s.getFirstName() + " " + s.getLastName()).toLowerCase()
+            ));
+            case 2 -> students.sort(Comparator.comparingInt(Student::getAge));
+            case 3 -> students.sort(Comparator.comparing(Student::getGradeLevel));
+            case 4 -> students.sort(Comparator.comparingInt(Student::getSectionId));
+            case 5 -> {/* no sorting */}
+            default -> System.out.println("Invalid choice, showing unsorted list.");
         }
-    }
 
-    System.out.print("Enter new prior school (" + existingStudent.getPriorSchool() + "): ");
-    String priorSchool = scanner.nextLine().trim();
-    if (!priorSchool.isEmpty()) existingStudent.setPriorSchool(priorSchool);
+        // Table header
+        System.out.printf("%-5s %-15s %-15s %-5s %-5s %-30s %-30s %-12s %-10s %-8s%n",
+                "ID", "First Name", "Last Name", "Age", "Sex", "Email", "Address",
+                "Phone", "Garde Level", "Section");
+        System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
-    System.out.print("Enter new grade level (" + existingStudent.getGradeLevel() + "): ");
-    String gradeInput = scanner.nextLine().trim();
-    if (!gradeInput.isEmpty()) {
-        try {
-            int gradeLevel = Integer.parseInt(gradeInput);
-            if (gradeLevel >= 1 && gradeLevel <= 12) existingStudent.setGradeLevel(gradeLevel);
-            else System.out.println("Invalid grade level. Keeping old value.");
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Keeping old value.");
+        // Rows
+        for (Student s : students) {
+            System.out.printf("%-5d %-15s %-15s %-5d %-5s %-30s %-30s %-12s %-10d %-8d%n",
+                    s.getStudentId(), s.getFirstName(), s.getLastName(), s.getAge(),
+                    s.getSex(), s.getEmail(), s.getAddress(), s.getPhone(), s.getGradeLevel(),
+                    s.getSectionId());
         }
+
+        // Show total students
+        System.out.println("\nTotal number of students: " + students.size());
     }
 
-    System.out.print("Enter new email (" + existingStudent.getEmail() + "): ");
-    String email = scanner.nextLine().trim();
-    if (!email.isEmpty()) {
-        if (email.contains("@") && email.contains(".")) {
-            existingStudent.setEmail(email);
+    private static void updateStudent() {  
+        System.out.print("Enter student ID or name to update: ");
+        String input = scanner.nextLine();
+
+        // Use list so we can handle multiple matches
+        List<Student> matches = studentDAO.findStudent(input);
+
+        if (matches.isEmpty()) {
+            System.out.println("No students found.");
+            return;
+        }
+
+        // Handle multiple matches
+        Student existingStudent;
+        if (matches.size() > 1) {
+            System.out.println("\nMultiple students found:");
+            System.out.printf("%-5s %-15s %-15s %-5s %-5s %-30s %-30s %-12s %-10s %-8s%n",
+                    "ID", "First Name", "Last Name", "Age", "Sex", "Email", "Address",
+                    "Phone", "Garde Level", "Section");
+            System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+            for (Student s : matches) {
+                System.out.printf("%-5d %-15s %-15s %-5d %-5s %-30s %-30s %-12s %-10d %-8d%n",
+                        s.getStudentId(), s.getFirstName(), s.getLastName(), s.getAge(),
+                        s.getSex(), s.getEmail(), s.getAddress(), s.getPhone(), s.getGradeLevel(),
+                        s.getSectionId());
+            }
+            
+            System.out.print("Enter the ID of the student you want to update: ");
+            int chosenId = scanner.nextInt();
+            scanner.nextLine();
+
+            existingStudent = matches.stream()
+                    .filter(s -> s.getStudentId() == chosenId)
+                    .findFirst()
+                    .orElse(null);
+
+            if (existingStudent == null) {
+                System.out.println("Invalid ID selected.");
+                return;
+            }
         } else {
-            System.out.println("Invalid email format. Keeping old value.");
+            existingStudent = matches.get(0);
         }
-    }
 
-    System.out.print("Enter new address (" + existingStudent.getAddress() + "): ");
-    String address = scanner.nextLine().trim();
-    if (!address.isEmpty()) existingStudent.setAddress(address);
+        // Show current details
+        System.out.println("\nCurrent details:");
+        System.out.println("1. First Name: " + existingStudent.getFirstName());
+        System.out.println("2. Last Name: " + existingStudent.getLastName());
+        System.out.println("3. Age: " + existingStudent.getAge());
+        System.out.println("4. Sex: " + existingStudent.getSex());
+        System.out.println("5. Email: " + existingStudent.getEmail());
+        System.out.println("6. Address: " + existingStudent.getAddress());
+        System.out.println("7. Phone: " + existingStudent.getPhone());
+        System.out.println("8. Grade Level: " + existingStudent.getGradeLevel());
+        System.out.println("9. Section ID: " + existingStudent.getSectionId());
 
-    System.out.print("Enter new phone (" + existingStudent.getPhone() + "): ");
-    String phone = scanner.nextLine().trim();
-    if (!phone.isEmpty()) existingStudent.setPhone(phone);
+        System.out.println("\nPress Enter to keep the current value.");
 
-    System.out.print("Enter new section ID (" + existingStudent.getSectionId() + "): ");
-    String sectionInput = scanner.nextLine().trim();
-    if (!sectionInput.isEmpty()) {
-        try {
-            int sectionId = Integer.parseInt(sectionInput);
-            existingStudent.setSectionId(sectionId);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid section ID. Keeping old value.");
+        // === Edit fields ===
+        System.out.print("Enter new first name (" + existingStudent.getFirstName() + "): ");
+        String firstName = scanner.nextLine().trim();
+        if (!firstName.isEmpty()) existingStudent.setFirstName(firstName);
+
+        System.out.print("Enter new last name (" + existingStudent.getLastName() + "): ");
+        String lastName = scanner.nextLine().trim();
+        if (!lastName.isEmpty()) existingStudent.setLastName(lastName);
+
+        System.out.print("Enter new age (" + existingStudent.getAge() + "): ");
+        String ageInput = scanner.nextLine().trim();
+        if (!ageInput.isEmpty()) {
+            try {
+                int age = Integer.parseInt(ageInput);
+                if (age > 0) existingStudent.setAge(age);
+                else System.out.println("Invalid age. Keeping old value.");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Keeping old value.");
+            }
         }
-    }
 
-    // Confirm update
-    System.out.print("\nDo you want to save these changes? (Y/N): ");
-    String confirm = scanner.nextLine();
-    if (confirm.equalsIgnoreCase("Y")) {
-        boolean success = studentDAO.updateStudent(existingStudent);
-        if (success) {
-            System.out.println("Student updated successfully!");
+        System.out.print("Enter new sex (" + existingStudent.getSex() + "): ");
+        String sex = scanner.nextLine().trim();
+        if (!sex.isEmpty()) existingStudent.setSex(sex);
+        
+        System.out.print("Enter new email (" + existingStudent.getEmail() + "): ");
+        String email = scanner.nextLine().trim();
+        if (!email.isEmpty()) {
+            if (email.contains("@") && email.contains(".")) {
+                existingStudent.setEmail(email);
+            } else {
+                System.out.println("Invalid email format. Keeping old value.");
+            }
+        }
+        
+        System.out.print("Enter new address (" + existingStudent.getAddress() + "): ");
+        String address = scanner.nextLine().trim();
+        if (!address.isEmpty())
+            existingStudent.setAddress(address);
+        
+        System.out.print("Enter new phone (" + existingStudent.getPhone() + "): ");
+        String phone = scanner.nextLine().trim();
+        if (!phone.isEmpty())
+            existingStudent.setPhone(phone);
+
+        System.out.print("Enter new grade level (" + existingStudent.getGradeLevel() + "): ");
+        String gradeInput = scanner.nextLine().trim();
+        if (!gradeInput.isEmpty()) {
+            try {
+                int gradeLevel = Integer.parseInt(gradeInput);
+                if (gradeLevel >= 1 && gradeLevel <= 12) existingStudent.setGradeLevel(gradeLevel);
+                else System.out.println("Invalid grade level. Keeping old value.");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Keeping old value.");
+            }
+        }
+
+        System.out.print("Enter new section ID (" + existingStudent.getSectionId() + "): ");
+        String sectionInput = scanner.nextLine().trim();
+        if (!sectionInput.isEmpty()) {
+            try {
+                int sectionId = Integer.parseInt(sectionInput);
+                existingStudent.setSectionId(sectionId);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid section ID. Keeping old value.");
+            }
+        }
+
+        // Confirm update
+        System.out.print("\nDo you want to save these changes? (Y/N): ");
+        String confirm = scanner.nextLine();
+        if (confirm.equalsIgnoreCase("Y")) {
+            boolean success = studentDAO.updateStudent(existingStudent);
+            if (success) {
+                System.out.println("Student updated successfully!");
+            } else {
+                System.out.println("Update failed.");
+            }
         } else {
-            System.out.println("Update failed.");
+            System.out.println("Update cancelled.");
         }
-    } else {
-        System.out.println("Update cancelled.");
     }
-}
 
     private static void deleteStudent() {
         System.out.print("Enter student ID or name to delete: ");
-    String input = scanner.nextLine();
+        String input = scanner.nextLine();
 
-    List<Student> matches = studentDAO.findStudent(input);
+        List<Student> matches = studentDAO.findStudent(input);
 
-    if (matches.isEmpty()) {
-        System.out.println("No students found.");
-        return;
-    }
-
-    // Handle multiple matches
-    Student studentToDelete;
-    if (matches.size() > 1) {
-        System.out.println("\nMultiple students found:");
-        System.out.printf("%-5s %-15s %-15s %-5s %-20s %-8s %-25s%n",
-                "ID", "First Name", "Last Name", "Age", "Prior School", "Grade", "Email");
-        System.out.println("---------------------------------------------------------------------------------------------------");
-        for (Student s : matches) {
-            System.out.printf("%-5d %-15s %-15s %-5d %-20s %-8d %-25s%n",
-                    s.getId(), s.getFirstName(), s.getLastName(),
-                    s.getAge(), s.getPriorSchool(),
-                    s.getGradeLevel(), s.getEmail());
-        }
-        System.out.print("Enter the ID of the student you want to delete: ");
-        int chosenId = scanner.nextInt();
-        scanner.nextLine();
-
-        studentToDelete = matches.stream()
-                             .filter(s -> s.getId() == chosenId)
-                             .findFirst()
-                             .orElse(null);
-
-        if (studentToDelete == null) {
-            System.out.println("Invalid ID selected.");
+        if (matches.isEmpty()) {
+            System.out.println("No students found.");
             return;
         }
-    } else {
-        studentToDelete = matches.get(0);
-    }
 
-    // Show details before deleting
-    System.out.println("\nFound student:");
-    System.out.printf("%-5s %-15s %-15s %-5s %-20s %-8s %-25s %-25s %-15s %-10s%n",
-            "ID", "First Name", "Last Name", "Age", "Prior School", "Grade",
-            "Email", "Address", "Phone", "Section");
-    System.out.println("-------------------------------------------------------------------------------------------------------------------");
-    System.out.printf("%-5d %-15s %-15s %-5d %-20s %-8d %-25s %-25s %-15s %-10d%n",
-            studentToDelete.getId(), studentToDelete.getFirstName(), studentToDelete.getLastName(),
-            studentToDelete.getAge(), studentToDelete.getPriorSchool(),
-            studentToDelete.getGradeLevel(), studentToDelete.getEmail(),
-            studentToDelete.getAddress(), studentToDelete.getPhone(),
-            studentToDelete.getSectionId());
+        // Handle multiple matches
+        Student studentToDelete;
+        if (matches.size() > 1) {
+            System.out.println("\nMultiple students found:");
+            System.out.printf("%-5s %-15s %-15s %-5s %-5s %-30s %-30s %-12s %-10s %-8s%n",
+                    "ID", "First Name", "Last Name", "Age", "Sex", "Email", "Address",
+                    "Phone", "Garde Level", "Section");
+            System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+            for (Student s : matches) {
+                System.out.printf("%-5d %-15s %-15s %-5d %-5s %-30s %-30s %-12s %-10d %-8d%n",
+                        s.getStudentId(), s.getFirstName(), s.getLastName(), s.getAge(),
+                        s.getSex(), s.getEmail(), s.getAddress(), s.getPhone(), s.getGradeLevel(),
+                        s.getSectionId());
+            }
+            System.out.print("Enter the ID of the student you want to delete: ");
+            int chosenId = scanner.nextInt();
+            scanner.nextLine();
 
-    // Confirm deletion
-    System.out.print("\nAre you sure you want to delete this student? (Y/N): ");
-    String confirm = scanner.nextLine();
-    if (confirm.equalsIgnoreCase("Y")) {
-        if (studentDAO.deleteStudent(studentToDelete.getId())) {
-            System.out.println("✅ Student deleted successfully.");
+            studentToDelete = matches.stream()
+                                 .filter(s -> s.getStudentId() == chosenId)
+                                 .findFirst()
+                                 .orElse(null);
+
+            if (studentToDelete == null) {
+                System.out.println("Invalid ID selected.");
+                return;
+            }
         } else {
-            System.out.println("❌ Error deleting student.");
+            studentToDelete = matches.get(0);
         }
-    } else {
-        System.out.println("Delete cancelled.");
+
+        // Show details before deleting
+        System.out.println("\nFound student:");
+        System.out.printf("%-5s %-15s %-15s %-5s %-5s %-30s %-30s %-12s %-10s %-8s%n",
+                "ID", "First Name", "Last Name", "Age", "Sex", "Email", "Address",
+                "Phone", "Garde Level", "Section");
+        System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.printf("%-5d %-15s %-15s %-5d %-5s %-30s %-30s %-12s %-10d %-8d%n",
+                studentToDelete.getStudentId(), studentToDelete.getFirstName(), studentToDelete.getLastName(),
+                studentToDelete.getAge(), studentToDelete.getSex(), studentToDelete.getEmail(), 
+                studentToDelete.getAddress(), studentToDelete.getPhone(), studentToDelete.getGradeLevel(),
+                studentToDelete.getSectionId());
+
+        // Confirm deletion
+        System.out.print("\nAre you sure you want to delete this student? (Y/N): ");
+        String confirm = scanner.nextLine();
+        if (confirm.equalsIgnoreCase("Y")) {
+            if (studentDAO.deleteStudent(studentToDelete.getStudentId())) {
+                System.out.println("Student deleted successfully.");
+            } else {
+                System.out.println("Error deleting student.");
+            }
+        } else {
+            System.out.println("Delete cancelled.");
+        }
     }
-}
     
     private static void searchStudents() {
         System.out.print("Enter keyword to search (name, prior school, or email): ");
-    String keyword = scanner.nextLine();
+        String keyword = scanner.nextLine();
 
-    List<Student> results = studentDAO.searchStudents(keyword);
+        List<Student> results = studentDAO.searchStudents(keyword);
 
-    if (results.isEmpty()) {
-        System.out.println("No students found.");
-        return;
-    }    
+        if (results.isEmpty()) {
+            System.out.println("No students found.");
+            return;
+        }    
 
-    // Sorting menu
-    System.out.println("\nSort by: ");
-    System.out.printf("%-3s %s%n", "1.", "Name");
-    System.out.printf("%-3s %s%n", "2.", "Age");
-    System.out.printf("%-3s %s%n", "3.", "Prior School");
-    System.out.printf("%-3s %s%n", "4.", "Grade Level");
-    System.out.printf("%-3s %s%n", "5.", "No Sorting");
-    System.out.print("Enter choice: ");
-    int sortChoice = scanner.nextInt();
-    scanner.nextLine();
+        // Sorting menu
+        System.out.println("\nSort by: ");
+        System.out.printf("%-3s %s%n", "1.", "Name");
+        System.out.printf("%-3s %s%n", "2.", "Age");
+        System.out.printf("%-3s %s%n", "3.", "Grade Level");
+        System.out.printf("%-3s %s%n", "4.", "Section");
+        System.out.printf("%-3s %s%n", "5.", "No Sorting");
+        System.out.print("Enter choice: ");
+        int sortChoice = scanner.nextInt();
+        scanner.nextLine();
 
-    switch (sortChoice) {
-        case 1 -> results.sort(
-                Comparator.comparing(
-                    (Student s) -> (s.getFirstName() + " " + s.getLastName()),
-                    String.CASE_INSENSITIVE_ORDER
-                ));
-        case 2 -> results.sort(Comparator.comparingInt(Student::getAge));
-        case 3 -> results.sort(Comparator.comparing(Student::getPriorSchool, String.CASE_INSENSITIVE_ORDER));
-        case 4 -> results.sort(Comparator.comparingInt(Student::getGradeLevel));
-        case 5 -> {/* no sorting */}
-        default -> System.out.println("Invalid choice, showing unsorted list.");
+        switch (sortChoice) {
+            case 1 -> results.sort(
+                    Comparator.comparing(
+                        (Student s) -> (s.getFirstName() + " " + s.getLastName()),
+                        String.CASE_INSENSITIVE_ORDER
+                    ));
+            case 2 -> results.sort(Comparator.comparingInt(Student::getAge));
+            case 3 -> results.sort(Comparator.comparing(Student::getGradeLevel));
+            case 4 -> results.sort(Comparator.comparingInt(Student::getSectionId));
+            case 5 -> {/* no sorting */}
+            default -> System.out.println("Invalid choice, showing unsorted list.");
+        }
+
+        // Table header
+        System.out.printf("%-5s %-15s %-15s %-5s %-5s %-30s %-30s %-12s %-10s %-8s%n",
+                "ID", "First Name", "Last Name", "Age", "Sex", "Email", "Address",
+                "Phone", "Garde Level", "Section");
+        System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+        // Rows
+        for (Student s : results) {
+            System.out.printf("%-5d %-15s %-15s %-5d %-5s %-30s %-30s %-12s %-10d %-8d%n",
+                    s.getStudentId(), s.getFirstName(), s.getLastName(), s.getAge(),
+                    s.getSex(), s.getEmail(), s.getAddress(), s.getPhone(), s.getGradeLevel(),
+                    s.getSectionId());
+        }
+
+        // Show total
+        System.out.println("\nTotal results: " + results.size());
     }
-
-    // Table header
-    System.out.printf("%-5s %-15s %-15s %-5s %-25s %-8s %-30s%n",
-            "ID", "First Name", "Last Name", "Age", "Prior School", "Grade", "Email");
-    System.out.println("---------------------------------------------------------------------------------------------------");
-
-    // Rows
-    for (Student s : results) {
-        System.out.printf("%-5d %-15s %-15s %-5d %-25s %-8d %-30s%n",
-                s.getId(), s.getFirstName(), s.getLastName(),
-                s.getAge(), s.getPriorSchool(), s.getGradeLevel(), s.getEmail());
-    }
-
-    // Show total
-    System.out.println("\nTotal results: " + results.size());
-}
 }

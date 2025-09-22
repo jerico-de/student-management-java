@@ -14,18 +14,18 @@ import java.util.List;
  */
 public class StudentDAO {
     public void addStudent(Student student) {
-        String sql = "INSERT INTO students (first_name, last_name, age, prior_school, grade_level, email, address, phone, section_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO students (first_name, last_name, age, sex, email, address, phone, grade_level, section_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, student.getFirstName());
             stmt.setString(2, student.getLastName());
             stmt.setInt(3, student.getAge());
-            stmt.setString(4, student.getPriorSchool());
-            stmt.setInt(5, student.getGradeLevel());
-            stmt.setString(6, student.getEmail());
-            stmt.setString(7, student.getAddress());
-            stmt.setString(8, student.getPhone());
+            stmt.setString(4, student.getSex());
+            stmt.setString(5, student.getEmail());
+            stmt.setString(6, student.getAddress());
+            stmt.setString(7, student.getPhone());
+            stmt.setInt(8, student.getGradeLevel());
             stmt.setInt(9, student.getSectionId());
 
             stmt.executeUpdate();
@@ -50,11 +50,11 @@ public class StudentDAO {
                         rs.getString("first_name"),
                         rs.getString("last_name"),
                         rs.getInt("age"),
-                        rs.getString("prior_school"),
-                        rs.getInt("grade_level"),
+                        rs.getString("sex"),
                         rs.getString("email"),
                         rs.getString("address"),
                         rs.getString("phone"),
+                        rs.getInt("grade_level"),
                         rs.getInt("section_id")
                 );
                 students.add(student);
@@ -66,22 +66,47 @@ public class StudentDAO {
 
         return students;
     }
+    
+    public Student getStudentById(int id) {
+        String sql = "SELECT * FROM students WHERE student_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection(); 
+                Statement stmt = conn.createStatement(); 
+                ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return new Student(
+                        rs.getInt("student_id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getInt("age"),
+                        rs.getString("sex"),
+                        rs.getString("email"),
+                        rs.getString("address"),
+                        rs.getString("phone"),
+                        rs.getInt("grade_level"),
+                        rs.getInt("section_id")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public boolean updateStudent(Student student) {
-        String sql = "UPDATE students SET first_name=?, last_name=?, age=?, prior_school=?, grade_level=?, email=?, address=?, phone=?, section_id=? WHERE student_id=?";
+        String sql = "UPDATE students SET first_name=?, last_name=?, age=?, sex=?, email=?, address=?, phone=?, grade_level=?, section_id=? WHERE student_id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, student.getFirstName());
             stmt.setString(2, student.getLastName());
             stmt.setInt(3, student.getAge());
-            stmt.setString(4, student.getPriorSchool());
-            stmt.setInt(5, student.getGradeLevel());
-            stmt.setString(6, student.getEmail());
-            stmt.setString(7, student.getAddress());
-            stmt.setString(8, student.getPhone());
+            stmt.setString(4, student.getSex());
+            stmt.setString(5, student.getEmail());
+            stmt.setString(6, student.getAddress());
+            stmt.setString(7, student.getPhone());
+            stmt.setInt(8, student.getGradeLevel());
             stmt.setInt(9, student.getSectionId());
-            stmt.setInt(10, student.getId());
+            stmt.setInt(10, student.getStudentId());
 
             return stmt.executeUpdate() > 0;
 
@@ -129,11 +154,11 @@ public class StudentDAO {
                         rs.getString("first_name"),
                         rs.getString("last_name"),
                         rs.getInt("age"),
-                        rs.getString("prior_school"),
-                        rs.getInt("grade_level"),
+                        rs.getString("sex"),
                         rs.getString("email"),
                         rs.getString("address"),
                         rs.getString("phone"),
+                        rs.getInt("grade_level"),
                         rs.getInt("section_id")
                 ));
             }
@@ -147,7 +172,7 @@ public class StudentDAO {
 
     public List<Student> searchStudents(String keyword) {
         List<Student> students = new ArrayList<>();
-        String sql = "SELECT * FROM students WHERE first_name LIKE ? OR last_name LIKE ? OR prior_school LIKE ? OR email LIKE ?";
+        String sql = "SELECT * FROM students WHERE first_name LIKE ? OR last_name LIKE ? OR email LIKE ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -156,7 +181,6 @@ public class StudentDAO {
             stmt.setString(1, like);
             stmt.setString(2, like);
             stmt.setString(3, like);
-            stmt.setString(4, like);
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -165,11 +189,11 @@ public class StudentDAO {
                         rs.getString("first_name"),
                         rs.getString("last_name"),
                         rs.getInt("age"),
-                        rs.getString("prior_school"),
-                        rs.getInt("grade_level"),
+                        rs.getString("sex"),
                         rs.getString("email"),
                         rs.getString("address"),
                         rs.getString("phone"),
+                        rs.getInt("grade_level"),
                         rs.getInt("section_id")
                 ));
             }
