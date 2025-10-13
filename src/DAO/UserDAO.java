@@ -4,6 +4,7 @@
  */
 package DAO;
         
+import Model.Student;
 import Model.User;
 import Util.DBConnection;
 import java.sql.*;
@@ -199,6 +200,47 @@ public class UserDAO {
         } catch (SQLException e) {
             System.out.println("Error deleting user: " + e.getMessage());
             return false;
+        }
+    }
+    
+    public int createUserForStudent(Student student) throws SQLException {
+        String username = (student.getFirstName() + "." + student.getLastName()).toLowerCase();
+        String password = "password"; // default password
+        String status = "ACTIVE"; // default status
+        String role = "STUDENT";
+
+        try (Connection conn = DBConnection.getConnection()) {
+            String checkSql = "SELECT user_id FROM users WHERE username = ?";
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                checkStmt.setString(1, username);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next()) {
+                        // username exists, return existing user_id
+                        return rs.getInt("user_id");
+                    }
+                }
+            }
+
+            String sql = "INSERT INTO users (username, password, role, status) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setString(1, username);
+                stmt.setString(2, password);
+                stmt.setString(3, role);
+                stmt.setString(4, status);
+
+                int affectedRows = stmt.executeUpdate();
+                if (affectedRows == 0) {
+                    throw new SQLException("Creating user failed, no rows affected.");
+                }
+
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+                    } else {
+                        throw new SQLException("Creating user failed, no ID obtained.");
+                    }
+                }
+            }
         }
     }
 }

@@ -16,25 +16,41 @@ import java.util.List;
  */
 public class StudentDAO {
     
-    public boolean addStudent(Student student) {
-        String sql = "INSERT INTO students (user_id, first_name, last_name, middle_name, gender, birth_date, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    public boolean addStudent(Student student) throws SQLException {
+        String sql = "INSERT INTO students (user_id, first_name, last_name, middle_name, gender, birthdate, address) "
+               + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, student.getUserId());
             stmt.setString(2, student.getFirstName());
             stmt.setString(3, student.getLastName());
             stmt.setString(4, student.getMiddleName());
             stmt.setString(5, student.getGender());
-            stmt.setDate(6, Date.valueOf(student.getBirthdate()));
-            stmt.setString(7, student.getAddress());
-            
-            stmt.executeUpdate();
-            return true;
 
-        } catch (SQLException e) {
-            System.out.println("Error adding student: " + e.getMessage());
-            return false;
+            if (student.getBirthdate() != null) {
+                stmt.setDate(6, java.sql.Date.valueOf(student.getBirthdate()));
+            } else {
+                stmt.setNull(6, Types.DATE);
+            }
+
+            stmt.setString(7, student.getAddress());
+
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                return false;
+            }
+
+            // get generated student_id
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    student.setStudentId(generatedKeys.getInt(1));
+                }
+            }
+
+            return true;
         }
     }
 

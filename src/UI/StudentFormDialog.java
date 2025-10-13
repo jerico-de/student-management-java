@@ -5,11 +5,15 @@
 package UI;
 
 import DAO.StudentDAO;
+import DAO.UserDAO;
 import Model.Student;
 import java.awt.Frame;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,6 +26,8 @@ public class StudentFormDialog extends javax.swing.JDialog {
     private Student student;
     private final StudentDAO studentDAO = new StudentDAO();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private Student savedStudent;
+
 
     /**
      * Creates new form StudentFormDialog
@@ -56,14 +62,12 @@ public class StudentFormDialog extends javax.swing.JDialog {
         lblGender = new javax.swing.JLabel();
         lblBirthdate = new javax.swing.JLabel();
         lblAddress = new javax.swing.JLabel();
-        lblStatus = new javax.swing.JLabel();
         txtFirstName = new javax.swing.JTextField();
         txtLastName = new javax.swing.JTextField();
         txtMiddleName = new javax.swing.JTextField();
         cmbGender = new javax.swing.JComboBox<>();
         jdcBirthdate = new com.toedter.calendar.JDateChooser();
         txtAddress = new javax.swing.JTextField();
-        cmbStatus = new javax.swing.JComboBox<>();
         btnSave = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
 
@@ -82,8 +86,6 @@ public class StudentFormDialog extends javax.swing.JDialog {
 
         lblAddress.setText("Address:");
 
-        lblStatus.setText("Enrollment Status:");
-
         txtFirstName.setText("txtFirstName");
 
         txtLastName.setText("txtLastName");
@@ -93,8 +95,6 @@ public class StudentFormDialog extends javax.swing.JDialog {
         cmbGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Male", "Female", "Other" }));
 
         txtAddress.setText("txtAddress");
-
-        cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Enrolled", "Not Enrolled" }));
 
         btnSave.setText("Save");
 
@@ -132,13 +132,8 @@ public class StudentFormDialog extends javax.swing.JDialog {
                                 .addComponent(cmbGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(txtMiddleName, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                                 .addComponent(jdcBirthdate, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(75, 75, 75))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(lblStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())))
+                            .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(75, 75, 75))))
             .addGroup(layout.createSequentialGroup()
                 .addGap(84, 84, 84)
                 .addComponent(btnSave)
@@ -173,15 +168,11 @@ public class StudentFormDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblAddress))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblStatus)
-                    .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(52, 52, 52)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSave)
                     .addComponent(btnCancel))
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
 
         txtAddress.getAccessibleContext().setAccessibleName("");
@@ -190,32 +181,39 @@ public class StudentFormDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addListeners() {
-        btnSave.addActionListener(e -> saveStudent());
+        btnSave.addActionListener(e -> {
+            try {
+                saveStudent();
+            } catch (SQLException ex) {
+                Logger.getLogger(StudentFormDialog.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         btnCancel.addActionListener(e -> {
             saved = false;
             dispose();
         });
     }
 
-    private void saveStudent() {
+    private void saveStudent() throws SQLException {
+      
         String firstName = txtFirstName.getText().trim();
         String lastName = txtLastName.getText().trim();
         String middleName = txtMiddleName.getText().trim();
         String gender = (String) cmbGender.getSelectedItem();
         String address = txtAddress.getText().trim();
-        String status = (String) cmbStatus.getSelectedItem();
         LocalDate birthdate = null;
         if (jdcBirthdate.getDate() != null) {
-         birthdate = jdcBirthdate.getDate().toInstant()
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate();
-          }
+            birthdate = jdcBirthdate.getDate().toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+        }
 
         if (firstName.isEmpty() || lastName.isEmpty()) {
             JOptionPane.showMessageDialog(this, "First name and last name are required.");
             return;
         }
 
+        
         if (student == null) {
             student = new Student();
         }
@@ -225,14 +223,25 @@ public class StudentFormDialog extends javax.swing.JDialog {
         student.setGender(gender);
         student.setBirthdate(birthdate);
         student.setAddress(address);
-        student.setCurrentStatus(status);
 
+        UserDAO userDAO = new UserDAO();
+
+        
         if (student.getStudentId() == 0) {
-            studentDAO.addStudent(student);
+            // 1. Create or get existing user
+            int userId = userDAO.createUserForStudent(student);
+            student.setUserId(userId);
+
+            // 2. Save student
+            if (!studentDAO.addStudent(student)) {
+                JOptionPane.showMessageDialog(this, "Error adding student.");
+                return;
+            }
         } else {
             studentDAO.updateStudent(student);
         }
 
+        savedStudent = student; // store for getStudent()
         saved = true;
         dispose();
     }
@@ -243,7 +252,6 @@ public class StudentFormDialog extends javax.swing.JDialog {
         txtMiddleName.setText(student.getMiddleName());
         cmbGender.setSelectedItem(student.getGender());
         txtAddress.setText(student.getAddress());
-        cmbStatus.setSelectedItem(student.getCurrentStatus());
 
         if (student.getBirthdate() != null) {
     java.util.Date date = java.util.Date.from(student.getBirthdate()
@@ -252,12 +260,15 @@ public class StudentFormDialog extends javax.swing.JDialog {
     jdcBirthdate.setDate(date);
         }
     }
+    
+    public Student getStudent() {
+    return savedStudent;
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnSave;
     private javax.swing.JComboBox<String> cmbGender;
-    private javax.swing.JComboBox<String> cmbStatus;
     private com.toedter.calendar.JDateChooser jdcBirthdate;
     private javax.swing.JLabel lblAddress;
     private javax.swing.JLabel lblBirthdate;
@@ -265,7 +276,6 @@ public class StudentFormDialog extends javax.swing.JDialog {
     private javax.swing.JLabel lblGender;
     private javax.swing.JLabel lblLastName;
     private javax.swing.JLabel lblMiddleName;
-    private javax.swing.JLabel lblStatus;
     private javax.swing.JTextField txtAddress;
     private javax.swing.JTextField txtFirstName;
     private javax.swing.JTextField txtLastName;

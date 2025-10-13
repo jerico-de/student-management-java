@@ -36,6 +36,18 @@ public class Student {
         this.currentStatus = currentStatus;
     }
     
+    public Student(String firstName, String lastName, String middleName, String gender, LocalDate birthdate, 
+            String address, int userId) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.middleName = middleName;
+        this.gender = gender;
+        this.birthdate = birthdate;
+        this.address = address;
+        this.currentStatus = currentStatus;
+        this.userId = userId;
+    }
+    
     public Student(int studentId, int userId, String firstName, String lastName, String gender, LocalDate birthdate, String address) {
         this.studentId = studentId;
         this.userId = userId;

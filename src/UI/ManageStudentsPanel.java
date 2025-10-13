@@ -6,6 +6,7 @@ package UI;
 
 import Model.Student;
 import DAO.StudentDAO;
+import DAO.UserDAO;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -123,7 +124,7 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
                 getAllStudents();
             } catch (SQLException ex) {
                 Logger.getLogger(ManageStudentsPanel.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } System.out.println("Table refreshed.");
         });
 
         btnAddStudent.addActionListener(e -> {
@@ -131,6 +132,21 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
                     (java.awt.Frame) SwingUtilities.getWindowAncestor(this), null);
             dialog.setVisible(true);
             if (dialog.isSaved()) {
+                
+                Student newStudent = dialog.getStudent();
+
+                
+                try {
+                    UserDAO userDAO = new UserDAO();
+                    userDAO.createUserForStudent(newStudent);
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this,
+                            "Error creating user account for the student: " + ex.getMessage(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+
+                
                 try {
                     getAllStudents();
                 } catch (SQLException ex) {
