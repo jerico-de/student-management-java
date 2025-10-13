@@ -6,7 +6,10 @@ package UI;
 
 import Model.Student;
 import DAO.StudentDAO;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -23,7 +26,7 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
     /**
      * Creates new form ManageStudentsPanel
      */
-    public ManageStudentsPanel() {
+    public ManageStudentsPanel() throws SQLException {
         initComponents();
         initTable();
         addLogic();
@@ -105,7 +108,7 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void initTable() {
+    private void initTable() throws SQLException {
         tableModel = new DefaultTableModel(
                 new Object[]{"Student ID", "First Name", "Last Name", "Enrollment Status"}, 0
         );
@@ -115,14 +118,24 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
     }
     
     private void addLogic() {
-        btnRefresh.addActionListener(e -> getAllStudents());
+        btnRefresh.addActionListener(e -> {
+            try {
+                getAllStudents();
+            } catch (SQLException ex) {
+                Logger.getLogger(ManageStudentsPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
 
         btnAddStudent.addActionListener(e -> {
             StudentFormDialog dialog = new StudentFormDialog(
                     (java.awt.Frame) SwingUtilities.getWindowAncestor(this), null);
             dialog.setVisible(true);
             if (dialog.isSaved()) {
-                getAllStudents();
+                try {
+                    getAllStudents();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ManageStudentsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
 
@@ -139,7 +152,11 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
                         (java.awt.Frame) SwingUtilities.getWindowAncestor(this), student);
                 dialog.setVisible(true);
                 if (dialog.isSaved()) {
-                    getAllStudents();
+                    try {
+                        getAllStudents();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ManageStudentsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         });
@@ -155,22 +172,38 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
                     this, "Are you sure to delete this student?", "Confirm", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
                 studentDAO.deleteStudent(studentId);
-                getAllStudents();
+                try {
+                    getAllStudents();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ManageStudentsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
     
-    private void getAllStudents() {
-        tableModel.setRowCount(0); // clear table
-        List<Student> students = studentDAO.getAllStudents();
-        for (Student student : students) {
-            tableModel.addRow(new Object[]{
-                student.getStudentId(),
-                student.getFirstName(),
-                student.getLastName(),
-                student.getEnrollmentStatus()
-            });
+    private void getAllStudents() throws SQLException {
+            try {
+            tableModel.setRowCount(0); // clear table
+
+            int currentYearId = getCurrentSchoolYearId(); // You can set or retrieve this dynamically
+            List<Student> students = studentDAO.getAllStudentsWithStatus(currentYearId);
+
+            for (Student student : students) {
+                tableModel.addRow(new Object[]{
+                    student.getStudentId(),
+                    student.getFirstName(),
+                    student.getLastName(),
+                    student.getCurrentStatus()
+                });
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading students: " + ex.getMessage());
         }
+    }
+    
+    private int getCurrentSchoolYearId() {
+        return 1; // Replace with actual logic to fetch current active year
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

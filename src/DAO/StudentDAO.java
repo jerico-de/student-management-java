@@ -94,27 +94,45 @@ public class StudentDAO {
         return studentList;
     }
             
-    public List<Student> getAllStudents() {
+    public List<Student> getAllStudentsWithStatus(int currentYearId) throws SQLException {
         List<Student> students = new ArrayList<>();
-        String sql = "SELECT * FROM students";
+        String sql = """
+            SELECT s.*, 
+                   COALESCE(e.status, 'Not Enrolled') AS current_status
+            FROM students s
+            LEFT JOIN enrollment e 
+              ON s.student_id = e.student_id AND e.year_id = ?
+        """;
+
         try (Connection conn = DBConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, currentYearId);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                students.add(new Student(
-                        rs.getInt("student_id"),
-                        rs.getInt("user_id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("enrollment_status")
-                ));
+                Student st = new Student();
+                st.setStudentId(rs.getInt("student_id"));
+                st.setUserId(rs.getInt("user_id"));
+                st.setFirstName(rs.getString("first_name"));
+                st.setLastName(rs.getString("last_name"));
+                st.setMiddleName(rs.getString("middle_name"));
+                st.setGender(rs.getString("gender"));
+                if (rs.getDate("birthdate") != null) {
+                    st.setBirthdate(rs.getDate("birthdate").toLocalDate());
+                }
+                st.setAddress(rs.getString("address"));
+                st.setCurrentStatus(rs.getString("current_status"));
+                students.add(st);
             }
-
-        } catch (SQLException e) {
-            System.out.println("Error fetching students: " + e.getMessage());
         }
         return students;
+    }
+    
+    public List<Student> getAllStudentsWithStatus() throws SQLException {
+        AcademicYearDAO academicYearDAO = new AcademicYearDAO();
+        int currentYearId = academicYearDAO.getCurrentYearId();
+        return getAllStudentsWithStatus(currentYearId);
     }
 
     public boolean updateStudent(Student student) {

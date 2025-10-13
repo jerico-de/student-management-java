@@ -19,12 +19,12 @@ public class Student {
     private String gender;
     private LocalDate birthdate;
     private String address;
-    private String enrollmentStatus;
+    private String currentStatus;
     
     public Student() {}
     
     public Student(int studentId, int userId, String firstName, String lastName, String middleName, String gender, LocalDate birthdate, 
-            String address, String enrollmentStatus) {
+            String address, String currentStatus) {
         this.studentId = studentId;
         this.userId = userId;
         this.firstName = firstName;
@@ -33,7 +33,7 @@ public class Student {
         this.gender = gender;
         this.birthdate = birthdate;
         this.address = address;
-        this.enrollmentStatus = enrollmentStatus;
+        this.currentStatus = currentStatus;
     }
     
     public Student(int studentId, int userId, String firstName, String lastName, String gender, LocalDate birthdate, String address) {
@@ -46,12 +46,19 @@ public class Student {
         this.address = address;
     }
     
-    public Student(int studentId, String firstName, String lastName, String enrollmentStatus) {
+    public Student(int studentId, String firstName, String lastName) {
         this.studentId = studentId;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.enrollmentStatus = enrollmentStatus;
     }
+    
+    public Student(int studentId, int userId, String firstName, String lastName) {
+        this.studentId = studentId;
+        this.userId = userId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+    
     
     // Getters and Setters
     public int getStudentId() {return studentId; }
@@ -77,9 +84,9 @@ public class Student {
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
-
-    public String getEnrollmentStatus() { return enrollmentStatus; }
-    public void setEnrollmentStatus(String enrollmentStatus) { this.enrollmentStatus = enrollmentStatus; }
+    
+    public String getCurrentStatus() { return currentStatus; }
+    public void setCurrentStatus(String currentStatus) { this.currentStatus = currentStatus; }
 
     @Override
     public String toString() {
@@ -89,7 +96,6 @@ public class Student {
                 ", name='" + lastName + ", " + firstName + '\'' +
                 ", gender='" + gender + '\'' +
                 ", birthdate=" + birthdate +
-                ", status='" + enrollmentStatus + '\'' +
                 '}';
     }
  }

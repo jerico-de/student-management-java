@@ -18,6 +18,10 @@ public class Enrollment {
     private int yearId;
     private String status;
     private LocalDateTime enrolledDate;
+    
+    private String gradeLevelName;
+    private String sectionName;
+    private String yearLabel;
 
     public Enrollment() {}
 

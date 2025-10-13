@@ -8,6 +8,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
@@ -22,7 +25,7 @@ public class AdminDashboard extends javax.swing.JFrame {
     /**
      * Creates new form AdminDashboard
      */
-    public AdminDashboard() {
+    public AdminDashboard() throws SQLException {
         initComponents();
         setTitle("Admin Dashboard");
         setLocationRelativeTo(null);
@@ -30,6 +33,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         
         tabbedPane.setComponentAt(0, new ManageUsersPanel());
         tabbedPane.setComponentAt(1, new ManageStudentsPanel());
+        tabbedPane.setComponentAt(2, new ManageEnrollmentPanel());
         
         tabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
         tabbedPane.setTabPlacement(JTabbedPane.TOP);
@@ -50,6 +54,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         tabbedPane = new javax.swing.JTabbedPane();
         manageUsersPanel = new javax.swing.JPanel();
         manageStudentsPanel = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
         manageFacultyPanel = new javax.swing.JPanel();
         curriculumPanel = new javax.swing.JPanel();
         historyPanel = new javax.swing.JPanel();
@@ -74,7 +79,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         );
         manageUsersPanelLayout.setVerticalGroup(
             manageUsersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 390, Short.MAX_VALUE)
+            .addGap(0, 327, Short.MAX_VALUE)
         );
 
         tabbedPane.addTab("Manage Users", manageUsersPanel);
@@ -87,10 +92,23 @@ public class AdminDashboard extends javax.swing.JFrame {
         );
         manageStudentsPanelLayout.setVerticalGroup(
             manageStudentsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 390, Short.MAX_VALUE)
+            .addGap(0, 327, Short.MAX_VALUE)
         );
 
         tabbedPane.addTab("Manage Students", manageStudentsPanel);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 843, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 327, Short.MAX_VALUE)
+        );
+
+        tabbedPane.addTab("Manage Enrollment", jPanel1);
 
         javax.swing.GroupLayout manageFacultyPanelLayout = new javax.swing.GroupLayout(manageFacultyPanel);
         manageFacultyPanel.setLayout(manageFacultyPanelLayout);
@@ -100,7 +118,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         );
         manageFacultyPanelLayout.setVerticalGroup(
             manageFacultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 390, Short.MAX_VALUE)
+            .addGap(0, 327, Short.MAX_VALUE)
         );
 
         tabbedPane.addTab("Manage Faculty", manageFacultyPanel);
@@ -113,7 +131,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         );
         curriculumPanelLayout.setVerticalGroup(
             curriculumPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 390, Short.MAX_VALUE)
+            .addGap(0, 327, Short.MAX_VALUE)
         );
 
         tabbedPane.addTab("Curriculum", curriculumPanel);
@@ -126,7 +144,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         );
         historyPanelLayout.setVerticalGroup(
             historyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 390, Short.MAX_VALUE)
+            .addGap(0, 327, Short.MAX_VALUE)
         );
 
         tabbedPane.addTab("History", historyPanel);
@@ -135,30 +153,29 @@ public class AdminDashboard extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnLogout)
-                .addGap(442, 442, 442))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(72, 72, 72)
+                        .addGap(386, 386, 386)
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(64, 64, 64)
                         .addComponent(tabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 843, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(386, 386, 386)
-                        .addComponent(jLabel1)))
-                .addContainerGap(56, Short.MAX_VALUE))
+                        .addGap(439, 439, 439)
+                        .addComponent(btnLogout)))
+                .addContainerGap(64, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addComponent(jLabel1)
-                .addGap(56, 56, 56)
-                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
+                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
+                .addGap(53, 53, 53)
                 .addComponent(btnLogout)
-                .addGap(45, 45, 45))
+                .addGap(48, 48, 48))
         );
 
         pack();
@@ -186,7 +203,13 @@ public class AdminDashboard extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-       java.awt.EventQueue.invokeLater(() -> new AdminDashboard().setVisible(true));
+       java.awt.EventQueue.invokeLater(() -> {
+           try {
+               new AdminDashboard().setVisible(true);
+           } catch (SQLException ex) {
+               Logger.getLogger(AdminDashboard.class.getName()).log(Level.SEVERE, null, ex);
+           }
+       });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -194,6 +217,7 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JPanel curriculumPanel;
     private javax.swing.JPanel historyPanel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel manageFacultyPanel;
     private javax.swing.JPanel manageStudentsPanel;
     private javax.swing.JPanel manageUsersPanel;

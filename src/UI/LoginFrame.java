@@ -8,6 +8,9 @@ import javax.swing.*;
 import java.awt.event.*;
 import DAO.UserDAO;
 import Model.User;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -128,9 +131,16 @@ public class LoginFrame extends javax.swing.JFrame {
                     // Example redirect based on role
                     switch (user.getRole().toUpperCase()) {
                         case "ADMIN":
-                            new AdminDashboard().setVisible(true);
+                        {
+                            try {
+                                new AdminDashboard().setVisible(true);
+                            } catch (SQLException ex) {
+                                Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
                             dispose();
                             break;
+
                         case "faculty":
                             // new FacultyDashboard().setVisible(true);
                             break;
