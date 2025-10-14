@@ -68,8 +68,9 @@ public class StudentDAO {
                         rs.getInt("user_id"),
                         rs.getString("first_name"),
                         rs.getString("last_name"),
+                        rs.getString("middle_name"),
                         rs.getString("gender"),
-                        rs.getDate("birth_date").toLocalDate(),
+                        rs.getDate("birthdate").toLocalDate(),
                         rs.getString("address")
                 );
             }
@@ -80,34 +81,51 @@ public class StudentDAO {
         return null;
     }
     
-    public List<Student> searchStudent(String keyword) {
-        List<Student> studentList = new ArrayList<>();
-        String sql = "SELECT * FROM student WHERE student_id LIKE ? OR first_name LIKE ? OR last_name LIKE ?";
+    public List<Student> searchStudents(String keyword, int currentYearId) throws SQLException {
+        List<Student> students = new ArrayList<>();
+        String sql = """
+            SELECT s.*, 
+                   COALESCE(e.status, 'Not Enrolled') AS current_status
+            FROM students s
+            LEFT JOIN enrollment e 
+                ON s.student_id = e.student_id AND e.year_id = ?
+            LEFT JOIN users u 
+                ON s.user_id = u.user_id
+            WHERE s.first_name LIKE ? 
+               OR s.last_name LIKE ? 
+               OR u.username LIKE ? 
+               OR s.student_id LIKE ?
+        """;
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            String like = "%" + keyword + "%";
-            stmt.setString(1, like);
-            stmt.setString(2, like);
-            stmt.setString(3, like);
-            ResultSet rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                studentList.add(new Student(
-                        rs.getInt("student_id"),
-                        rs.getInt("user_id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("gender"),
-                        rs.getDate("birth_date").toLocalDate(),
-                        rs.getString("address")
-                ));
+            String likeKeyword = "%" + keyword + "%";
+            stmt.setInt(1, currentYearId);
+            stmt.setString(2, likeKeyword);
+            stmt.setString(3, likeKeyword);
+            stmt.setString(4, likeKeyword);
+            stmt.setString(5, likeKeyword);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Student st = new Student();
+                    st.setStudentId(rs.getInt("student_id"));
+                    st.setUserId(rs.getInt("user_id"));
+                    st.setFirstName(rs.getString("first_name"));
+                    st.setLastName(rs.getString("last_name"));
+                    st.setMiddleName(rs.getString("middle_name"));
+                    st.setGender(rs.getString("gender"));
+                    if (rs.getDate("birthdate") != null) {
+                        st.setBirthdate(rs.getDate("birthdate").toLocalDate());
+                    }
+                    st.setAddress(rs.getString("address"));
+                    st.setCurrentStatus(rs.getString("current_status"));
+                    students.add(st);
+                }
             }
-            
-        } catch (SQLException e) {
-            System.out.println("Error searching student: " + e.getMessage());
         }
-        return studentList;
+        return students;
     }
             
     public List<Student> getAllStudentsWithStatus(int currentYearId) throws SQLException {
@@ -152,16 +170,17 @@ public class StudentDAO {
     }
 
     public boolean updateStudent(Student student) {
-        String sql = "UPDATE students SET first_name = ?, last_name = ?, gender = ?, birth_date = ?, address = ? WHERE student_id = ?";
+        String sql = "UPDATE students SET first_name = ?, last_name = ?, middle_name = ?, gender = ?, birthdate = ?, address = ? WHERE student_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, student.getFirstName());
             stmt.setString(2, student.getLastName());
-            stmt.setString(3, student.getGender());
-            stmt.setDate(4, Date.valueOf(student.getBirthdate()));
-            stmt.setString(5, student.getAddress());
-            stmt.setInt(6, student.getStudentId());
+            stmt.setString(3, student.getMiddleName());
+            stmt.setString(4, student.getGender());
+            stmt.setDate(5, Date.valueOf(student.getBirthdate()));
+            stmt.setString(6, student.getAddress());
+            stmt.setInt(7, student.getStudentId());
             stmt.executeUpdate();
             return true;
 
@@ -172,16 +191,38 @@ public class StudentDAO {
     }
 
     public boolean deleteStudent(int studentId) {
-        String sql = "DELETE FROM students WHERE student_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String getUserIdQuery = "SELECT user_id FROM students WHERE student_id = ?";
+        String deleteStudentQuery = "DELETE FROM students WHERE student_id = ?";
+        String deleteUserQuery = "DELETE FROM users WHERE user_id = ?";
 
-            stmt.setInt(1, studentId);
-            stmt.executeUpdate();
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false);
+
+            int userId = -1;
+            try (PreparedStatement ps = conn.prepareStatement(getUserIdQuery)) {
+                ps.setInt(1, studentId);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    userId = rs.getInt("user_id");
+                }
+            }
+
+            try (PreparedStatement ps = conn.prepareStatement(deleteStudentQuery)) {
+                ps.setInt(1, studentId);
+                ps.executeUpdate();
+            }
+
+            if (userId != -1) {
+                try (PreparedStatement ps = conn.prepareStatement(deleteUserQuery)) {
+                    ps.setInt(1, userId);
+                    ps.executeUpdate();
+                }
+            }
+
+            conn.commit();
             return true;
-
         } catch (SQLException e) {
-            System.out.println("Error deleting student: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

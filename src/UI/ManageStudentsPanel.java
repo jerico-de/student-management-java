@@ -4,10 +4,13 @@
  */
 package UI;
 
+import DAO.AcademicYearDAO;
 import Model.Student;
 import DAO.StudentDAO;
 import DAO.UserDAO;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +51,21 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
         btnEditStudent = new javax.swing.JButton();
         btnDeleteStudent = new javax.swing.JButton();
         btnRefresh = new javax.swing.JButton();
+        lblFirstName = new javax.swing.JLabel();
+        lblLastName = new javax.swing.JLabel();
+        lblMiddleName = new javax.swing.JLabel();
+        lblGender = new javax.swing.JLabel();
+        lblBirthdate = new javax.swing.JLabel();
+        lblAddress = new javax.swing.JLabel();
+        txtFirstName = new javax.swing.JTextField();
+        txtLastName = new javax.swing.JTextField();
+        txtMiddleName = new javax.swing.JTextField();
+        cmbGender = new javax.swing.JComboBox<>();
+        jdcBirthdate = new com.toedter.calendar.JDateChooser();
+        txtAddress = new javax.swing.JTextField();
+        btnClearFields = new javax.swing.JButton();
+        btnSearch = new javax.swing.JButton();
+        txtSearch = new javax.swing.JTextField();
 
         tblStudents.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -68,44 +86,120 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
 
         btnDeleteStudent.setText("Delete Student");
 
-        btnRefresh.setText("Refresh");
+        btnRefresh.setText("Refresh Table");
+
+        lblFirstName.setText("First Name:");
+
+        lblLastName.setText("Last Name:");
+
+        lblMiddleName.setText("Middle Name:");
+
+        lblGender.setText("Gender:");
+
+        lblBirthdate.setText("Birthdate:");
+
+        lblAddress.setText("Address:");
+
+        cmbGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Male", "Female", "Other" }));
+
+        btnClearFields.setText("Clear Fields");
+
+        btnSearch.setText("Search");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(43, 43, 43)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(43, 43, 43)
+                        .addComponent(btnAddStudent)
+                        .addGap(39, 39, 39)
+                        .addComponent(btnEditStudent)
+                        .addGap(31, 31, 31)
+                        .addComponent(btnDeleteStudent)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnClearFields)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                        .addComponent(btnRefresh))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnAddStudent)
-                            .addComponent(btnEditStudent)
-                            .addComponent(btnDeleteStudent)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnRefresh)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(63, 63, 63))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(lblFirstName)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(txtFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(lblLastName)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(txtLastName))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(lblMiddleName)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(txtMiddleName))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(lblGender)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(cmbGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(lblAddress)
+                                    .addComponent(lblBirthdate))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jdcBirthdate, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnSearch)))))
+                .addGap(44, 44, 44))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addGap(46, 46, 46)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblFirstName)
+                    .addComponent(txtFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSearch)
+                    .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addComponent(btnAddStudent)
-                        .addGap(39, 39, 39)
-                        .addComponent(btnEditStudent)
-                        .addGap(36, 36, 36)
-                        .addComponent(btnDeleteStudent)
-                        .addGap(31, 31, 31)
-                        .addComponent(btnRefresh)))
-                .addContainerGap(74, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblLastName)
+                            .addComponent(txtLastName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblMiddleName)
+                            .addComponent(txtMiddleName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(20, 20, 20)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblGender)
+                            .addComponent(cmbGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(32, 32, 32)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblBirthdate)
+                            .addComponent(jdcBirthdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(22, 22, 22)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblAddress)
+                            .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAddStudent)
+                    .addComponent(btnEditStudent)
+                    .addComponent(btnDeleteStudent)
+                    .addComponent(btnRefresh)
+                    .addComponent(btnClearFields))
+                .addGap(81, 81, 81))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -116,42 +210,84 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
         tblStudents.setModel(tableModel);
         tblStudents.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         getAllStudents();
+        
+        tblStudents.getSelectionModel().addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting() && tblStudents.getSelectedRow() != -1) {
+                int selectedRow = tblStudents.getSelectedRow();
+                int studentId = (int) tableModel.getValueAt(selectedRow, 0);
+
+                Student selectedStudent = studentDAO.getStudentById(studentId);
+                if (selectedStudent != null) {
+                    txtFirstName.setText(selectedStudent.getFirstName());
+                    txtLastName.setText(selectedStudent.getLastName());
+                    txtMiddleName.setText(selectedStudent.getMiddleName());
+                    cmbGender.setSelectedItem(selectedStudent.getGender());
+
+                    if (selectedStudent.getBirthdate() != null) {
+                        jdcBirthdate.setDate(java.sql.Date.valueOf(selectedStudent.getBirthdate()));
+                    } else {
+                        jdcBirthdate.setDate(null);
+                    }
+
+                    txtAddress.setText(selectedStudent.getAddress());
+                    }
+                }
+        });
     }
     
     private void addLogic() {
         btnRefresh.addActionListener(e -> {
-            try {
-                getAllStudents();
-            } catch (SQLException ex) {
-                Logger.getLogger(ManageStudentsPanel.class.getName()).log(Level.SEVERE, null, ex);
-            } System.out.println("Table refreshed.");
+            getAllStudents();
+            System.out.println("Table refreshed.");
         });
 
         btnAddStudent.addActionListener(e -> {
-            StudentFormDialog dialog = new StudentFormDialog(
-                    (java.awt.Frame) SwingUtilities.getWindowAncestor(this), null);
-            dialog.setVisible(true);
-            if (dialog.isSaved()) {
-                
-                Student newStudent = dialog.getStudent();
+            String firstName = txtFirstName.getText().trim();
+            String lastName = txtLastName.getText().trim();
+            String middleName = txtMiddleName.getText().trim();
+            String gender = (String) cmbGender.getSelectedItem();
+            LocalDate birthdate = null;
+            if (jdcBirthdate.getDate() != null) {
+                birthdate = jdcBirthdate.getDate().toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
+            }
+            String address = txtAddress.getText().trim();
 
-                
-                try {
-                    UserDAO userDAO = new UserDAO();
-                    userDAO.createUserForStudent(newStudent);
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this,
-                            "Error creating user account for the student: " + ex.getMessage(),
-                            "Error", JOptionPane.ERROR_MESSAGE);
-                    ex.printStackTrace();
-                }
+            if (firstName.isEmpty() || lastName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "First name and last name are required.");
+                return;
+            }
 
-                
-                try {
+            Student student = new Student();
+            student.setFirstName(firstName);
+            student.setLastName(lastName);
+            student.setMiddleName(middleName);
+            student.setGender(gender);
+            student.setBirthdate(birthdate);
+            student.setAddress(address);
+
+            try {
+                UserDAO userDAO = new UserDAO();
+                int userId = userDAO.createUserForStudent(student);
+                student.setUserId(userId);
+
+                StudentDAO studentDAO = new StudentDAO();
+                if (studentDAO.addStudent(student)) {
+                    JOptionPane.showMessageDialog(this, "Student added successfully.");
                     getAllStudents();
-                } catch (SQLException ex) {
-                    Logger.getLogger(ManageStudentsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println("User " + "'" + firstName + "" + lastName + "'" + " addedd successfully.");
+
+                    // Clear input fields after adding
+                    clearFields();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to add student.");
                 }
+
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(),
+                        "Database Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
             }
         });
 
@@ -161,20 +297,43 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Please select a student to edit.");
                 return;
             }
+
             int studentId = (int) tableModel.getValueAt(selectedRow, 0);
-            Student student = studentDAO.getStudentById(studentId);
-            if (student != null) {
-                StudentFormDialog dialog = new StudentFormDialog(
-                        (java.awt.Frame) SwingUtilities.getWindowAncestor(this), student);
-                dialog.setVisible(true);
-                if (dialog.isSaved()) {
-                    try {
-                        getAllStudents();
-                    } catch (SQLException ex) {
-                        Logger.getLogger(ManageStudentsPanel.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
+
+            String firstName = txtFirstName.getText().trim();
+            String lastName = txtLastName.getText().trim();
+            String middleName = txtMiddleName.getText().trim();
+            String gender = (String) cmbGender.getSelectedItem();
+            LocalDate birthdate = null;
+            if (jdcBirthdate.getDate() != null) {
+                birthdate = jdcBirthdate.getDate().toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
             }
+            String address = txtAddress.getText().trim();
+
+            if (firstName.isEmpty() || lastName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "First name and last name are required.");
+                return;
+            }
+
+            Student student = new Student();
+            student.setStudentId(studentId);
+            student.setFirstName(firstName);
+            student.setLastName(lastName);
+            student.setMiddleName(middleName);
+            student.setGender(gender);
+            student.setBirthdate(birthdate);
+            student.setAddress(address);
+
+            boolean updated = studentDAO.updateStudent(student);
+            if (updated) {
+                JOptionPane.showMessageDialog(this, "Student updated successfully.");
+                getAllStudents();
+                System.out.println("User " + "'" + firstName + "" + lastName + "'" + " updated successfully.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to update student.");
+            } clearFields();
         });
 
         btnDeleteStudent.addActionListener(e -> {
@@ -183,21 +342,88 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Please select a student to delete.");
                 return;
             }
+
             int studentId = (int) tableModel.getValueAt(selectedRow, 0);
             int confirm = JOptionPane.showConfirmDialog(
-                    this, "Are you sure to delete this student?", "Confirm", JOptionPane.YES_NO_OPTION);
+                    this, "Are you sure you want to delete this student?", 
+                    "Confirm Deletion", JOptionPane.YES_NO_OPTION
+            );
+
             if (confirm == JOptionPane.YES_OPTION) {
-                studentDAO.deleteStudent(studentId);
-                try {
+                boolean deleted = studentDAO.deleteStudent(studentId);
+                if (deleted) {
+                    JOptionPane.showMessageDialog(this, "Student deleted successfully.");
                     getAllStudents();
-                } catch (SQLException ex) {
-                    Logger.getLogger(ManageStudentsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println("User with student ID " + "'" + studentId + "'" + " deleted successfully.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to delete student.");
+                }
+            } clearFields();
+        });
+        
+        btnClearFields.addActionListener (e -> clearFields());
+        
+        btnSearch.addActionListener(e -> {
+            String keyword = txtSearch.getText().trim();
+            AcademicYearDAO academicYearDAO = new AcademicYearDAO();
+            try {
+                int currentYearId = academicYearDAO.getCurrentYearId();
+                List<Student> students = studentDAO.searchStudents(keyword, currentYearId);
+                loadStudentsToTable(students);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error searching students: " + ex.getMessage());
+            }
+        });
+        
+        tblStudents.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int selectedRow = tblStudents.getSelectedRow();
+                if (selectedRow >= 0) {
+                    int studentId = (int) tblStudents.getValueAt(selectedRow, 0);
+                    Student student = studentDAO.getStudentById(studentId);
+                    if (student != null) {
+                        txtFirstName.setText(student.getFirstName());
+                        txtLastName.setText(student.getLastName());
+                        txtMiddleName.setText(student.getMiddleName());
+                        cmbGender.setSelectedItem(student.getGender());
+                        txtAddress.setText(student.getAddress());
+                        if (student.getBirthdate() != null) {
+                            jdcBirthdate.setDate(java.sql.Date.valueOf(student.getBirthdate()));
+                        }
+                    }
                 }
             }
         });
     }
     
-    private void getAllStudents() throws SQLException {
+        private void loadStudentsToTable(List<Student> students) {
+            tableModel.setRowCount(0); // Clear existing rows
+
+            for (Student student : students) {
+                tableModel.addRow(new Object[]{
+                    student.getStudentId(),
+                    student.getFirstName(),
+                    student.getLastName(),
+                    student.getCurrentStatus()
+                });
+            }
+        }
+    
+        private void clearFields() {
+        txtFirstName.setText("");
+        txtLastName.setText("");
+        txtMiddleName.setText("");
+        cmbGender.setSelectedIndex(0);
+        jdcBirthdate.setDate(null);
+        txtAddress.setText("");
+        txtSearch.setText("");
+        getAllStudents();
+        System.out.println("Fields cleared.");
+    }
+    
+    private void getAllStudents() {
             try {
             tableModel.setRowCount(0); // clear table
 
@@ -219,15 +445,30 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
     }
     
     private int getCurrentSchoolYearId() {
-        return 1; // Replace with actual logic to fetch current active year
+        return 1;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddStudent;
+    private javax.swing.JButton btnClearFields;
     private javax.swing.JButton btnDeleteStudent;
     private javax.swing.JButton btnEditStudent;
     private javax.swing.JButton btnRefresh;
+    private javax.swing.JButton btnSearch;
+    private javax.swing.JComboBox<String> cmbGender;
     private javax.swing.JScrollPane jScrollPane1;
+    private com.toedter.calendar.JDateChooser jdcBirthdate;
+    private javax.swing.JLabel lblAddress;
+    private javax.swing.JLabel lblBirthdate;
+    private javax.swing.JLabel lblFirstName;
+    private javax.swing.JLabel lblGender;
+    private javax.swing.JLabel lblLastName;
+    private javax.swing.JLabel lblMiddleName;
     private javax.swing.JTable tblStudents;
+    private javax.swing.JTextField txtAddress;
+    private javax.swing.JTextField txtFirstName;
+    private javax.swing.JTextField txtLastName;
+    private javax.swing.JTextField txtMiddleName;
+    private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }

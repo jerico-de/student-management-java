@@ -48,11 +48,12 @@ public class Student {
         this.userId = userId;
     }
     
-    public Student(int studentId, int userId, String firstName, String lastName, String gender, LocalDate birthdate, String address) {
+    public Student(int studentId, int userId, String firstName, String lastName, String middleName, String gender, LocalDate birthdate, String address) {
         this.studentId = studentId;
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.middleName = middleName;
         this.gender = gender;
         this.birthdate = birthdate;
         this.address = address;
