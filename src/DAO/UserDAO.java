@@ -94,29 +94,23 @@ public class UserDAO {
         }
     }
 
-    public User getUserById(int userId) {
+    public User getUserById(int userId) throws SQLException {
+        User user = null;
         String sql = "SELECT * FROM users WHERE user_id = ?";
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
-
             if (rs.next()) {
-                return new User(
-                        rs.getInt("user_id"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("role"),
-                        rs.getString("status"),
-                        rs.getTimestamp("created_at").toLocalDateTime()
-                );
+                user = new User();
+                user.setUserId(rs.getInt("user_id"));
+                user.setUsername(rs.getString("username"));
+                user.setRole(rs.getString("role"));
+                user.setStatus(rs.getString("status"));
             }
-
-        } catch (SQLException e) {
-            System.out.println("Error fetching user: " + e.getMessage());
         }
-        return null;
+        return user;
     }
 
     public User getUserByUsername(String username) {
@@ -242,5 +236,39 @@ public class UserDAO {
                 }
             }
         }
+    }
+    
+    public List<User> searchUsers(String keyword) throws SQLException {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM users WHERE username LIKE ? OR user_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            String likeKeyword = "%" + keyword + "%";
+            stmt.setString(1, likeKeyword);
+
+            int userId;
+            try {
+                userId = Integer.parseInt(keyword);
+            } catch (NumberFormatException e) {
+                userId = -1; // no user has negative ID
+            }
+            stmt.setInt(2, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    users.add(new User(
+                            rs.getInt("user_id"),
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("role"),
+                            rs.getString("status"),
+                            rs.getTimestamp("created_at").toLocalDateTime()
+                    ));
+                }
+            }
+        }
+        return users;
     }
 }
