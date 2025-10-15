@@ -5,40 +5,84 @@
 package UI;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 
 /**
  *
  * @author USER
  */
 public class AdminDashboard extends javax.swing.JFrame {
-    
-    
-    /**
-     * Creates new form AdminDashboard
-     */
+
+    private CardLayout cardLayout;
+    private JLabel activeLabel;
+    private final Color defaultColor = new Color(51, 51, 51);
+    private final Color hoverColor = new Color(70, 70, 70);
+    private final Color activeColor = new Color(90, 90, 90);
+
     public AdminDashboard() throws SQLException {
         initComponents();
         setTitle("Admin Dashboard");
         setLocationRelativeTo(null);
         setResizable(false);
+
+        // --- CardLayout Setup ---
+        cardLayout = new CardLayout();
+        mainContent.setLayout(cardLayout);
+
+        // Add sample panels
+        mainContent.add(new DashboardPanel(), "Dashboard");
+        mainContent.add(new ManageUsersPanel(), "Users");
+        mainContent.add(new ManageCurriculumPanel(), "Curriculum");
+        mainContent.add(new ManageSectionsPanel(), "Sections");
+        mainContent.add(new ManageFacultyPanel(), "Faculty");
+        mainContent.add(new ManageFacultyAssignmentPanel(), "Assignment");
+        mainContent.add(new ManageStudentsPanel(), "Students");
+        mainContent.add(new ManageEnrollmentPanel(), "Enrollment");
+        mainContent.add(new HistoryPanel(), "History");
         
-        tabbedPane.setComponentAt(0, new ManageUsersPanel());
-        tabbedPane.setComponentAt(5, new ManageStudentsPanel());
-        tabbedPane.setComponentAt(6, new ManageEnrollmentPanel());
-        tabbedPane.setComponentAt(1, new ManageCurriculumPanel());
-        
-        tabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
-        tabbedPane.setTabPlacement(JTabbedPane.TOP);
-        addLogic();
+        // Apply padding to labels
+        addPadding(lblDashboard);
+        addPadding(lblManageUsers);
+        addPadding(lblManageCurriculum);
+        addPadding(lblManageSections);
+        addPadding(lblManageFaculty);
+        addPadding(lblManageFAssignment);
+        addPadding(lblManageStudents);
+        addPadding(lblManageEnrollment);
+        addPadding(lblHistory);
+
+        // Add listeners
+        addSidebarListeners();
+
+        // Set default active
+        setActiveLabel(lblDashboard);
+        cardLayout.show(mainContent, "Dashboard");
+    }
+    
+    private void addPadding(JLabel label) {
+        label.setOpaque(true);
+        label.setBackground(defaultColor);
+        label.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 5, 0, 0, defaultColor), // left line
+            BorderFactory.createEmptyBorder(10, 20, 10, 20) // padding
+        ));
     }
 
     /**
@@ -50,206 +94,312 @@ public class AdminDashboard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        sidebar = new javax.swing.JPanel();
+        lblDashboard = new javax.swing.JLabel();
+        lblManageUsers = new javax.swing.JLabel();
+        lblManageCurriculum = new javax.swing.JLabel();
+        lblManageSections = new javax.swing.JLabel();
+        lblManageFaculty = new javax.swing.JLabel();
+        lblManageFAssignment = new javax.swing.JLabel();
+        lblManageStudents = new javax.swing.JLabel();
+        lblManageEnrollment = new javax.swing.JLabel();
+        lblHistory = new javax.swing.JLabel();
         btnLogout = new javax.swing.JButton();
-        tabbedPane = new javax.swing.JTabbedPane();
-        manageUsersPanel = new javax.swing.JPanel();
-        curriculumPanel = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        manageFacultyPanel = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        manageStudentsPanel = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
-        historyPanel = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        mainContent = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setBackground(new java.awt.Color(51, 51, 51));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jLabel1.setText("Admin Dashboard");
+        sidebar.setBackground(new java.awt.Color(51, 51, 51));
+        sidebar.setForeground(new java.awt.Color(51, 51, 51));
+
+        lblDashboard.setForeground(new java.awt.Color(255, 255, 255));
+        lblDashboard.setText("Dashboard");
+
+        lblManageUsers.setForeground(new java.awt.Color(255, 255, 255));
+        lblManageUsers.setText("Manage Users");
+
+        lblManageCurriculum.setForeground(new java.awt.Color(255, 255, 255));
+        lblManageCurriculum.setText("Manage Curriculum");
+
+        lblManageSections.setForeground(new java.awt.Color(255, 255, 255));
+        lblManageSections.setText("Manage Sections");
+
+        lblManageFaculty.setForeground(new java.awt.Color(255, 255, 255));
+        lblManageFaculty.setText("Manage Faculty");
+
+        lblManageFAssignment.setForeground(new java.awt.Color(255, 255, 255));
+        lblManageFAssignment.setText("Manage F. Assignment");
+
+        lblManageStudents.setForeground(new java.awt.Color(255, 255, 255));
+        lblManageStudents.setText("Manage Students");
+
+        lblManageEnrollment.setForeground(new java.awt.Color(255, 255, 255));
+        lblManageEnrollment.setText("Manage Enrollment");
+
+        lblHistory.setForeground(new java.awt.Color(255, 255, 255));
+        lblHistory.setText("History");
 
         btnLogout.setText("Log out");
 
-        manageUsersPanel.setPreferredSize(new java.awt.Dimension(850, 460));
-
-        javax.swing.GroupLayout manageUsersPanelLayout = new javax.swing.GroupLayout(manageUsersPanel);
-        manageUsersPanel.setLayout(manageUsersPanelLayout);
-        manageUsersPanelLayout.setHorizontalGroup(
-            manageUsersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 920, Short.MAX_VALUE)
+        javax.swing.GroupLayout sidebarLayout = new javax.swing.GroupLayout(sidebar);
+        sidebar.setLayout(sidebarLayout);
+        sidebarLayout.setHorizontalGroup(
+            sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(sidebarLayout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addGroup(sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblDashboard)
+                    .addComponent(lblManageUsers)
+                    .addComponent(lblManageCurriculum)
+                    .addComponent(lblManageSections)
+                    .addComponent(lblManageFaculty)
+                    .addComponent(lblManageFAssignment)
+                    .addComponent(lblManageStudents)
+                    .addComponent(lblHistory)
+                    .addComponent(lblManageEnrollment)))
+            .addGroup(sidebarLayout.createSequentialGroup()
+                .addGap(33, 33, 33)
+                .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-        manageUsersPanelLayout.setVerticalGroup(
-            manageUsersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 425, Short.MAX_VALUE)
+        sidebarLayout.setVerticalGroup(
+            sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(sidebarLayout.createSequentialGroup()
+                .addGap(87, 87, 87)
+                .addComponent(lblDashboard)
+                .addGap(5, 5, 5)
+                .addComponent(lblManageUsers)
+                .addGap(5, 5, 5)
+                .addComponent(lblManageCurriculum)
+                .addGap(5, 5, 5)
+                .addComponent(lblManageSections)
+                .addGap(5, 5, 5)
+                .addComponent(lblManageFaculty)
+                .addGap(5, 5, 5)
+                .addComponent(lblManageFAssignment)
+                .addGap(5, 5, 5)
+                .addComponent(lblManageStudents)
+                .addGap(5, 5, 5)
+                .addComponent(lblManageEnrollment)
+                .addGap(5, 5, 5)
+                .addComponent(lblHistory)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 358, Short.MAX_VALUE)
+                .addComponent(btnLogout)
+                .addGap(48, 48, 48))
         );
 
-        tabbedPane.addTab("Manage Users", manageUsersPanel);
+        jPanel2.setBackground(new java.awt.Color(102, 0, 0));
+        jPanel2.setPreferredSize(new java.awt.Dimension(926, 90));
 
-        javax.swing.GroupLayout curriculumPanelLayout = new javax.swing.GroupLayout(curriculumPanel);
-        curriculumPanel.setLayout(curriculumPanelLayout);
-        curriculumPanelLayout.setHorizontalGroup(
-            curriculumPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 920, Short.MAX_VALUE)
-        );
-        curriculumPanelLayout.setVerticalGroup(
-            curriculumPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 425, Short.MAX_VALUE)
-        );
-
-        tabbedPane.addTab("Manage Curriculum", curriculumPanel);
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("ADMIN DASHBOARD");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 920, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(35, 35, 35)
+                .addComponent(jLabel1)
+                .addContainerGap(676, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 425, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addComponent(jLabel1)
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
-        tabbedPane.addTab("Manage Sections", jPanel2);
-
-        javax.swing.GroupLayout manageFacultyPanelLayout = new javax.swing.GroupLayout(manageFacultyPanel);
-        manageFacultyPanel.setLayout(manageFacultyPanelLayout);
-        manageFacultyPanelLayout.setHorizontalGroup(
-            manageFacultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 920, Short.MAX_VALUE)
+        javax.swing.GroupLayout mainContentLayout = new javax.swing.GroupLayout(mainContent);
+        mainContent.setLayout(mainContentLayout);
+        mainContentLayout.setHorizontalGroup(
+            mainContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
-        manageFacultyPanelLayout.setVerticalGroup(
-            manageFacultyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 425, Short.MAX_VALUE)
+        mainContentLayout.setVerticalGroup(
+            mainContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
-
-        tabbedPane.addTab("Manage Faculty", manageFacultyPanel);
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 920, Short.MAX_VALUE)
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 425, Short.MAX_VALUE)
-        );
-
-        tabbedPane.addTab("Manage F. Assignment", jPanel3);
-
-        javax.swing.GroupLayout manageStudentsPanelLayout = new javax.swing.GroupLayout(manageStudentsPanel);
-        manageStudentsPanel.setLayout(manageStudentsPanelLayout);
-        manageStudentsPanelLayout.setHorizontalGroup(
-            manageStudentsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 920, Short.MAX_VALUE)
-        );
-        manageStudentsPanelLayout.setVerticalGroup(
-            manageStudentsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 425, Short.MAX_VALUE)
-        );
-
-        tabbedPane.addTab("Manage Students", manageStudentsPanel);
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 920, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 425, Short.MAX_VALUE)
-        );
-
-        tabbedPane.addTab("Manage Enrollment", jPanel1);
-
-        javax.swing.GroupLayout historyPanelLayout = new javax.swing.GroupLayout(historyPanel);
-        historyPanel.setLayout(historyPanelLayout);
-        historyPanelLayout.setHorizontalGroup(
-            historyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 920, Short.MAX_VALUE)
-        );
-        historyPanelLayout.setVerticalGroup(
-            historyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 425, Short.MAX_VALUE)
-        );
-
-        tabbedPane.addTab("History", historyPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(386, 386, 386)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnLogout)
+                .addComponent(sidebar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(329, 329, 329)))
-                .addContainerGap(88, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(tabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 920, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(6, 6, 6)
+                        .addComponent(mainContent, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 953, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(sidebar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnLogout)
-                .addGap(39, 39, 39))
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mainContent, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void addLogic() {
-        btnLogout.addActionListener(new ActionListener() {
+    private void addSidebarListeners() {
+        lblDashboard.addMouseListener(new MouseAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                int confirm = JOptionPane.showConfirmDialog(
-                        AdminDashboard.this,
-                        "Are you sure you want to logout?",
-                        "Logout",
-                        JOptionPane.YES_NO_OPTION
-                );
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainContent, "Dashboard");
+                setActiveLabel(lblDashboard);
+            }
+        });
 
+        lblManageUsers.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainContent, "Users");
+                setActiveLabel(lblManageUsers);
+            }
+        });
+
+        lblManageCurriculum.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainContent, "Curriculum");
+                setActiveLabel(lblManageCurriculum);
+            }
+        });
+        
+        lblManageSections.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainContent, "Sections");
+                setActiveLabel(lblManageSections);
+            }
+        });
+        
+        lblManageFaculty.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainContent, "Faculty");
+                setActiveLabel(lblManageFaculty);
+            }
+        });
+        
+        lblManageFAssignment.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainContent, "Assignment");
+                setActiveLabel(lblManageFAssignment);
+            }
+        });
+        
+        lblManageStudents.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainContent, "Students");
+                setActiveLabel(lblManageStudents);
+            }
+        });
+        
+        lblManageEnrollment.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainContent, "Enrollment");
+                setActiveLabel(lblManageEnrollment);
+            }
+        });
+        
+        lblHistory.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainContent, "History");
+                setActiveLabel(lblHistory);
+            }
+        });
+
+        btnLogout.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int confirm = JOptionPane.showConfirmDialog(
+                    AdminDashboard.this,
+                    "Are you sure you want to logout?",
+                    "Logout",
+                    JOptionPane.YES_NO_OPTION
+                );
                 if (confirm == JOptionPane.YES_OPTION) {
-                    new LoginFrame().setVisible(true);
                     dispose();
+                    new LoginFrame().setVisible(true);
+                }
+            }
+        });
+
+        // hover effect
+        addHoverEffect(lblDashboard);
+        addHoverEffect(lblManageUsers);
+        addHoverEffect(lblManageCurriculum);
+        addHoverEffect(lblManageSections);
+        addHoverEffect(lblManageFaculty);
+        addHoverEffect(lblManageFAssignment);
+        addHoverEffect(lblManageStudents);
+        addHoverEffect(lblManageEnrollment);
+        addHoverEffect(lblHistory);
+    }
+
+    private void addHoverEffect(JLabel label) {
+        label.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                if (label != activeLabel) {
+                    label.setBackground(hoverColor);
+                }
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                if (label != activeLabel) {
+                    label.setBackground(defaultColor);
                 }
             }
         });
     }
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-       java.awt.EventQueue.invokeLater(() -> {
-           try {
-               new AdminDashboard().setVisible(true);
-           } catch (SQLException ex) {
-               Logger.getLogger(AdminDashboard.class.getName()).log(Level.SEVERE, null, ex);
-           }
-       });
+
+    private void setActiveLabel(JLabel newActive) {
+        if (activeLabel != null) {
+            activeLabel.setBackground(defaultColor);
+            activeLabel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 5, 0, 0, defaultColor),
+                BorderFactory.createEmptyBorder(10, 20, 10, 20)
+            ));
+        }
+        activeLabel = newActive;
+        activeLabel.setBackground(activeColor);
+        activeLabel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 5, 0, 0, Color.WHITE),
+            BorderFactory.createEmptyBorder(10, 20, 10, 20)
+        ));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogout;
-    private javax.swing.JPanel curriculumPanel;
-    private javax.swing.JPanel historyPanel;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel manageFacultyPanel;
-    private javax.swing.JPanel manageStudentsPanel;
-    private javax.swing.JPanel manageUsersPanel;
-    private javax.swing.JTabbedPane tabbedPane;
+    private javax.swing.JLabel lblDashboard;
+    private javax.swing.JLabel lblHistory;
+    private javax.swing.JLabel lblManageCurriculum;
+    private javax.swing.JLabel lblManageEnrollment;
+    private javax.swing.JLabel lblManageFAssignment;
+    private javax.swing.JLabel lblManageFaculty;
+    private javax.swing.JLabel lblManageSections;
+    private javax.swing.JLabel lblManageStudents;
+    private javax.swing.JLabel lblManageUsers;
+    private javax.swing.JPanel mainContent;
+    private javax.swing.JPanel sidebar;
     // End of variables declaration//GEN-END:variables
 }
