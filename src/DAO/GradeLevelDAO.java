@@ -16,22 +16,75 @@ import java.sql.*;
  */
 public class GradeLevelDAO {
     
-    public List<GradeLevel> getAllGradeLevels() {
-        List<GradeLevel> list = new ArrayList<>();
-        String sql = "SELECT * FROM grade_levels ORDER BY grade_name ASC";
+    public List<String> getAllGradeLevels() throws SQLException {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT grade_name FROM grade_levels ORDER BY CAST(SUBSTRING(grade_name, 7) AS UNSIGNED)";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                GradeLevel gl = new GradeLevel();
-                gl.setGradeLevelId(rs.getInt("grade_level_id"));
-                gl.setGradeName(rs.getString("grade_name"));
-                list.add(gl);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            list.add(rs.getString("grade_name"));
         }
-        return list;
+    }
+    return list;
+    }
+
+    public GradeLevel getGradeLevelById(int id) throws SQLException {
+        String sql = "SELECT * FROM grade_levels WHERE grade_level_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new GradeLevel(rs.getInt("grade_level_id"), rs.getString("grade_name"));
+                }
+            }
+        }
+        return null;
+    }
+
+    public int getGradeLevelIdByName(String gradeName) throws SQLException {
+        String sql = "SELECT grade_level_id FROM grade_levels WHERE grade_name = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, gradeName);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("grade_level_id");
+                }
+            }
+        }
+        throw new SQLException("Grade level not found: " + gradeName);
+    }
+
+    public void addGradeLevel(String gradeName) throws SQLException {
+        String sql = "INSERT INTO grade_levels (grade_name) VALUES (?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, gradeName);
+            ps.executeUpdate();
+        }
+    }
+
+    public void updateGradeLevel(int id, String newName) throws SQLException {
+        String sql = "UPDATE grade_levels SET grade_name = ? WHERE grade_level_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newName);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        }
+    }
+
+    public void deleteGradeLevel(int id) throws SQLException {
+        String sql = "DELETE FROM grade_levels WHERE grade_level_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
     }
 }

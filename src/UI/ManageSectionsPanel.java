@@ -4,7 +4,23 @@
  */
 package UI;
 
+import DAO.GradeLevelDAO;
+import DAO.SectionDAO;
+import Model.GradeLevel;
+import Model.Section;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.sql.SQLException;
+import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -12,11 +28,19 @@ import java.sql.SQLException;
  */
 public class ManageSectionsPanel extends javax.swing.JPanel {
 
+    private SectionDAO sectionDAO = new SectionDAO();
+    private GradeLevelDAO gradeLevelDAO = new GradeLevelDAO();
+    private DefaultTableModel tableModel;
+    
     /**
      * Creates new form ManageSectionsPanel
      */
     public ManageSectionsPanel() throws SQLException {
         initComponents();
+        initTable();
+        loadGradeLevels();
+        loadSections();
+        addLogic();
     }
 
     /**
@@ -29,50 +53,292 @@ public class ManageSectionsPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
+        lblGradeLevel = new javax.swing.JLabel();
+        lblSectionName = new javax.swing.JLabel();
+        cbGradeLevel = new javax.swing.JComboBox<>();
+        txtSectionName = new javax.swing.JTextField();
+        btnAddSection = new javax.swing.JButton();
+        btnUpdateSection = new javax.swing.JButton();
+        btnDeleteSection = new javax.swing.JButton();
+        btnRefresh = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblSections = new javax.swing.JTable();
+        txtSectionId = new javax.swing.JTextField();
+        lblSectionId = new javax.swing.JLabel();
+        btnClearFields = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setText("MANAGE STUDENTS");
+        jLabel1.setText("MANAGE SECTIONS");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
+        lblGradeLevel.setText("Grade Level:");
+
+        lblSectionName.setText("Section Name:");
+
+        cbGradeLevel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        btnAddSection.setText("Add Section");
+
+        btnUpdateSection.setText("Update Section");
+
+        btnDeleteSection.setText("Delete Section");
+
+        btnRefresh.setText("Refresh Table");
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(476, 400));
+
+        tblSections.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tblSections);
+
+        txtSectionId.setEditable(false);
+
+        lblSectionId.setText("Section ID:");
+
+        btnClearFields.setText("Clear Fields");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(36, 36, 36)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(27, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addComponent(jLabel1))
+                        .addComponent(btnClearFields)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnRefresh))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(76, 76, 76)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(358, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(21, 21, 21)
+                                        .addComponent(lblSectionId)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtSectionId, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblSectionName)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtSectionName, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(80, 80, 80))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(8, 8, 8)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblGradeLevel)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(cbGradeLevel, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(130, 130, 130))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnAddSection)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnUpdateSection)
+                                        .addGap(10, 10, 10)
+                                        .addComponent(btnDeleteSection)
+                                        .addGap(18, 18, 18)))))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(40, 40, 40))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addComponent(jLabel1)
-                .addGap(32, 32, 32)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(253, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(37, 37, 37)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(lblGradeLevel)
+                            .addComponent(cbGradeLevel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(lblSectionName)
+                            .addComponent(txtSectionName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(lblSectionId)
+                            .addComponent(txtSectionId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(69, 69, 69)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnUpdateSection)
+                            .addComponent(btnDeleteSection)
+                            .addComponent(btnAddSection)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(38, 38, 38)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnRefresh)
+                            .addComponent(btnClearFields))))
+                .addContainerGap(62, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void initTable() throws SQLException {
+        String[] columnNames = {"Section ID", "Grade Level", "Section Name"};
+        tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tblSections.setModel(tableModel);
+    }
+    
+    private void loadGradeLevels() throws SQLException {
+        cbGradeLevel.removeAllItems();
+        for (String level : gradeLevelDAO.getAllGradeLevels()) {
+            cbGradeLevel.addItem(level);
+        }
+    }
+
+    private void loadSections() throws SQLException {
+        tableModel.setRowCount(0);  // clear existing rows
+        List<Object[]> sections = sectionDAO.getAllSections();
+        for (Object[] s : sections) {
+            tableModel.addRow(new Object[]{
+                s[0], // section_id
+                s[1], // grade_name
+                s[2]  // section_name
+            });
+        }
+    }
+    
+    private void clearFields() {
+        txtSectionName.setText("");
+        cbGradeLevel.setSelectedIndex(0);
+        txtSectionId.setText("");
+        tblSections.clearSelection();
+    }
+
+    private void addLogic() {
+        btnRefresh.addActionListener(e -> {
+            try {
+                loadSections();
+                System.out.println("Table refreshed.");
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            }
+        });
+
+        btnAddSection.addActionListener(e -> {
+            String sectionName = txtSectionName.getText().trim();
+            String gradeName = (String) cbGradeLevel.getSelectedItem();
+
+            if (sectionName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Section name is required.");
+                return;
+            }
+
+            try {
+                int gradeLevelId = gradeLevelDAO.getGradeLevelIdByName(gradeName);
+                if (sectionDAO.sectionExists(sectionName, gradeLevelId)) {
+                    JOptionPane.showMessageDialog(this, "Section already exists.");
+                    return;
+                }
+
+                sectionDAO.addSection(sectionName, gradeLevelId);
+                JOptionPane.showMessageDialog(this, "Section added successfully.");
+                loadSections();
+                clearFields();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error adding section: " + ex.getMessage());
+            }
+        });
+
+        btnUpdateSection.addActionListener(e -> {
+            int selectedRow = tblSections.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a section to edit.");
+                return;
+            }
+
+            int sectionId = (int) tableModel.getValueAt(selectedRow, 0);
+            String sectionName = txtSectionName.getText().trim();
+            String gradeName = (String) cbGradeLevel.getSelectedItem();
+
+            if (sectionName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Section name is required.");
+                return;
+            }
+
+            try {
+                int gradeLevelId = gradeLevelDAO.getGradeLevelIdByName(gradeName);
+                sectionDAO.updateSection(sectionId, sectionName, gradeLevelId);
+                JOptionPane.showMessageDialog(this, "Section updated successfully.");
+                loadSections();
+                clearFields();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error updating section: " + ex.getMessage());
+            }
+        });
+
+        btnDeleteSection.addActionListener(e -> {
+            int selectedRow = tblSections.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a section to delete.");
+                return;
+            }
+
+            int sectionId = (int) tableModel.getValueAt(selectedRow, 0);
+            int confirm = JOptionPane.showConfirmDialog(
+                    this, "Are you sure you want to delete this section?",
+                    "Confirm Deletion", JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                try {
+                    sectionDAO.deleteSection(sectionId);
+                    JOptionPane.showMessageDialog(this, "Section deleted successfully.");
+                    loadSections();
+                    clearFields();
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Error deleting section: " + ex.getMessage());
+                }
+            }
+        });
+
+        btnClearFields.addActionListener(e -> clearFields());
+        
+        tblSections.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int row = tblSections.getSelectedRow();
+                if (row != -1) {
+                    txtSectionId.setText(String.valueOf(tableModel.getValueAt(row, 0))); // ✅ Column 0 = section_id
+                    cbGradeLevel.setSelectedItem(tableModel.getValueAt(row, 1));        // ✅ Column 1 = grade_name
+                    txtSectionName.setText(String.valueOf(tableModel.getValueAt(row, 2))); // ✅ Column 2 = section_name
+                }
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAddSection;
+    private javax.swing.JButton btnClearFields;
+    private javax.swing.JButton btnDeleteSection;
+    private javax.swing.JButton btnRefresh;
+    private javax.swing.JButton btnUpdateSection;
+    private javax.swing.JComboBox<String> cbGradeLevel;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblGradeLevel;
+    private javax.swing.JLabel lblSectionId;
+    private javax.swing.JLabel lblSectionName;
+    private javax.swing.JTable tblSections;
+    private javax.swing.JTextField txtSectionId;
+    private javax.swing.JTextField txtSectionName;
     // End of variables declaration//GEN-END:variables
 }

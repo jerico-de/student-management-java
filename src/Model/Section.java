@@ -9,33 +9,29 @@ package Model;
  * @author USER
  */
 public class Section {
-    private int sectionId;
+    private int id;
     private int gradeLevelId;
-    private String sectionName;
+    private String name;
 
     public Section() {}
 
-    public Section(int sectionId, int gradeLevelId, String sectionName) {
-        this.sectionId = sectionId;
+    public Section(int id, int gradeLevelId, String name) {
+        this.id = id;
         this.gradeLevelId = gradeLevelId;
-        this.sectionName = sectionName;
+        this.name = name;
     }
 
-    public int getSectionId() { return sectionId; }
-    public void setSectionId(int sectionId) { this.sectionId = sectionId; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
     public int getGradeLevelId() { return gradeLevelId; }
     public void setGradeLevelId(int gradeLevelId) { this.gradeLevelId = gradeLevelId; }
 
-    public String getSectionName() { return sectionName; }
-    public void setSectionName(String sectionName) { this.sectionName = sectionName; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
     @Override
     public String toString() {
-        return "Section{" +
-                "sectionId=" + sectionId +
-                ", gradeLevelId=" + gradeLevelId +
-                ", sectionName='" + sectionName + '\'' +
-                '}';
+        return name;
     }
 }

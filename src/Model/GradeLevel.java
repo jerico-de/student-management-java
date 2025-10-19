@@ -9,27 +9,24 @@ package Model;
  * @author USER
  */
 public class GradeLevel {
-    private int gradeLevelId;
-    private String gradeName;
+    private int id;
+    private String name;
 
     public GradeLevel() {}
 
-    public GradeLevel(int gradeLevelId, String gradeName) {
-        this.gradeLevelId = gradeLevelId;
-        this.gradeName = gradeName;
+    public GradeLevel(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
-    public int getGradeLevelId() { return gradeLevelId; }
-    public void setGradeLevelId(int gradeLevelId) { this.gradeLevelId = gradeLevelId; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public String getGradeName() { return gradeName; }
-    public void setGradeName(String gradeName) { this.gradeName = gradeName; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    @Override
+   @Override
     public String toString() {
-        return "GradeLevel{" +
-                "gradeLevelId=" + gradeLevelId +
-                ", gradeName='" + gradeName + '\'' +
-                '}';
+        return name;
     }
 }
