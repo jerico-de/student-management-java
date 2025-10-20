@@ -17,6 +17,7 @@
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Grade.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/User.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageSectionsPanel.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/DAO/SectionDAO.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/DAO/StudentDAO.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Subject.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Util/DBConnection.java</file>
@@ -28,6 +29,7 @@
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/studentmanagement/MainMenu.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Curriculum.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageFacultyAssignmentPanel.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/DAO/GradeLevelDAO.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Enrollment.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/DAO/FacultyDAO.java</file>
         </group>

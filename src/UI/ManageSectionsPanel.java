@@ -206,7 +206,7 @@ public class ManageSectionsPanel extends javax.swing.JPanel {
     }
 
     private void loadSections() throws SQLException {
-        tableModel.setRowCount(0);  // clear existing rows
+        tableModel.setRowCount(0);
         List<Object[]> sections = sectionDAO.getAllSections();
         for (Object[] s : sections) {
             tableModel.addRow(new Object[]{
@@ -317,9 +317,9 @@ public class ManageSectionsPanel extends javax.swing.JPanel {
             if (!e.getValueIsAdjusting()) {
                 int row = tblSections.getSelectedRow();
                 if (row != -1) {
-                    txtSectionId.setText(String.valueOf(tableModel.getValueAt(row, 0))); // ✅ Column 0 = section_id
-                    cbGradeLevel.setSelectedItem(tableModel.getValueAt(row, 1));        // ✅ Column 1 = grade_name
-                    txtSectionName.setText(String.valueOf(tableModel.getValueAt(row, 2))); // ✅ Column 2 = section_name
+                    txtSectionId.setText(String.valueOf(tableModel.getValueAt(row, 0)));
+                    cbGradeLevel.setSelectedItem(tableModel.getValueAt(row, 1));
+                    txtSectionName.setText(String.valueOf(tableModel.getValueAt(row, 2)));
                 }
             }
         });

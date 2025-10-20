@@ -38,7 +38,7 @@ public class AcademicYearDAO {
 
     public void setActiveYear(int yearId) throws SQLException {
         String deactivateAll = "UPDATE academic_year SET status = 'CLOSED'";
-    String activateSelected = "UPDATE academic_year SET status = 'OPEN' WHERE year_id = ?";
+        String activateSelected = "UPDATE academic_year SET status = 'OPEN' WHERE year_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmtDeactivate = conn.prepareStatement(deactivateAll);
@@ -113,5 +113,29 @@ public class AcademicYearDAO {
             }
         }
         return null;
+    }
+    
+    public int getYearIdByLabel(String yearLabel) throws SQLException {
+        String sql = "SELECT year_id FROM academic_year WHERE year_label = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, yearLabel);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("year_id");
+                }
+            }
+        }
+        throw new SQLException("Academic year not found: " + yearLabel);
+    }
+    
+    public void endActiveAcademicYear() throws SQLException {
+        String sql = "UPDATE academic_year SET status = 'CLOSED' WHERE status = 'OPEN'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.executeUpdate();
+        }
     }
 }

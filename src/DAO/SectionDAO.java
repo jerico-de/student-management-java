@@ -15,8 +15,6 @@ import java.sql.*;
  * @author USER
  */
 public class SectionDAO {
-    
-    private final GradeLevelDAO gradeLevelDAO = new GradeLevelDAO();
 
     public List<Section> getAllSectionsWithGradeNames() throws SQLException {
         List<Section> list = new ArrayList<>();
@@ -31,8 +29,8 @@ public class SectionDAO {
             while (rs.next()) {
                 Section s = new Section();
                 s.setId(rs.getInt("section_id"));
-                s.setName(rs.getString("section_name"));
-                s.setName(rs.getString("grade_name"));
+                s.setSectionName(rs.getString("section_name"));
+                s.setGradeLevelName(rs.getString("grade_name")); // make sure Section has a gradeLevelName field
                 s.setGradeLevelId(rs.getInt("grade_level_id"));
                 list.add(s);
             }
@@ -122,6 +120,21 @@ public class SectionDAO {
                         rs.getString("grade_name"),
                         rs.getString("section_name")
                 });
+            }
+        }
+        return sections;
+    }
+    
+    public List<String> getSectionsByGradeLevel(int gradeLevelId) throws SQLException {
+        List<String> sections = new ArrayList<>();
+        String sql = "SELECT section_name FROM sections WHERE grade_level_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, gradeLevelId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    sections.add(rs.getString("section_name"));
+                }
             }
         }
         return sections;

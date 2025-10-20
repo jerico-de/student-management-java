@@ -10,11 +10,21 @@ import DAO.GradeLevelDAO;
 import DAO.SectionDAO;
 import DAO.StudentDAO;
 import Model.AcademicYear;
+import Model.Enrollment;
+import Model.Section;
 import Model.Student;
+import Util.DBConnection;
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import java.sql.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -31,9 +41,9 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
     private SectionDAO sectionDAO = new SectionDAO();
     private StudentDAO studentDAO = new StudentDAO();
     private EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
+
     private int activeYearId = -1;
     private List<AcademicYear> years;
-
     private DefaultTableModel tableModel;
     
     public ManageEnrollmentPanel() throws SQLException {
@@ -80,8 +90,13 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
         btnSearch = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblStudents = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        txtGradeLevel = new javax.swing.JTextField();
+        txtSection = new javax.swing.JTextField();
+        btnEndAY = new javax.swing.JButton();
 
-        setPreferredSize(new java.awt.Dimension(851, 450));
+        setPreferredSize(new java.awt.Dimension(900, 590));
 
         lblAcademicYear.setText("Academic Year:");
 
@@ -147,6 +162,20 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
         ));
         jScrollPane1.setViewportView(tblStudents);
 
+        jLabel2.setText("Grade Level:");
+
+        jLabel3.setText("Section:");
+
+        txtGradeLevel.setEditable(false);
+        txtGradeLevel.setBackground(new java.awt.Color(204, 204, 204));
+        txtGradeLevel.setForeground(new java.awt.Color(0, 0, 0));
+
+        txtSection.setEditable(false);
+        txtSection.setBackground(new java.awt.Color(204, 204, 204));
+        txtSection.setForeground(new java.awt.Color(0, 0, 0));
+
+        btnEndAY.setText("End A.Y.");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -171,18 +200,27 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
                                     .addComponent(lblGradeLevel)
                                     .addComponent(lblSection)
                                     .addComponent(lblStudentId)
-                                    .addComponent(lblAcademicYear))
+                                    .addComponent(lblAcademicYear)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtStatus)
-                                    .addComponent(cbGradeLevel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(cbSection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(txtStudentId, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(txtEnrollmentStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btnSetActiveYear)
-                                    .addComponent(cboAcademicYear, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 94, Short.MAX_VALUE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnSetActiveYear)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnEndAY))
+                                    .addComponent(cboAcademicYear, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(txtSection, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
+                                        .addComponent(txtGradeLevel, javax.swing.GroupLayout.Alignment.LEADING))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(cbGradeLevel, javax.swing.GroupLayout.Alignment.LEADING, 0, 85, Short.MAX_VALUE)
+                                        .addComponent(cbSection, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(btnEnrollSelected)
@@ -210,17 +248,15 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
                     .addComponent(btnSearch)
                     .addComponent(btnFilter))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnRefresh))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblAcademicYear)
                             .addComponent(cboAcademicYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnSetActiveYear)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnSetActiveYear)
+                            .addComponent(btnEndAY))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(txtStatus)
@@ -237,19 +273,30 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(lblStudentId)
                             .addComponent(txtStudentId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(lblName)
                             .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(lblEnrollmentStatus)
                             .addComponent(txtEnrollmentStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(37, 37, 37)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(txtGradeLevel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(txtSection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(42, 42, 42)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnEnrollSelected)
-                            .addComponent(btnUnenrollSelected))))
-                .addContainerGap(62, Short.MAX_VALUE))
+                            .addComponent(btnUnenrollSelected)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(btnRefresh)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         getAccessibleContext().setAccessibleName("");
@@ -263,26 +310,21 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
         tblStudents.setModel(tableModel);
         tblStudents.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
-    
-    private void loadAcademicYears() {
-            AcademicYearDAO yearDAO = new AcademicYearDAO();
-        years = yearDAO.getAllAcademicYears();   // store in class-level variable
-        cboAcademicYear.removeAllItems();
 
+    private void loadAcademicYears() throws SQLException {
+        years = academicYearDAO.getAllAcademicYears();
+        cboAcademicYear.removeAllItems();
         for (AcademicYear y : years) {
             String label = y.getYearLabel() + (y.getStatus().equalsIgnoreCase("OPEN") ? " (ACTIVE)" : "");
             cboAcademicYear.addItem(label);
         }
-
-        // Move listener outside or add check to avoid multiple listeners stacking
         cboAcademicYear.addActionListener(e -> updateStatusBasedOnSelection());
     }
-    
+
     private void updateStatusBasedOnSelection() {
         int selectedIndex = cboAcademicYear.getSelectedIndex();
         if (selectedIndex != -1 && years != null && !years.isEmpty()) {
             AcademicYear selectedYear = years.get(selectedIndex);
-
             if (selectedYear.getStatus().equalsIgnoreCase("OPEN")) {
                 txtStatus.setText("ACTIVE");
                 txtStatus.setForeground(Color.GREEN);
@@ -292,14 +334,14 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
             }
         }
     }
-    
+
     private void loadGradeLevels() throws SQLException {
         cbGradeLevel.removeAllItems();
         for (String level : gradeLevelDAO.getAllGradeLevels()) {
             cbGradeLevel.addItem(level);
         }
     }
-    
+
     private void loadActiveYearStatus() {
         try {
             AcademicYear activeYear = academicYearDAO.getActiveYear();
@@ -316,11 +358,10 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
             txtStatus.setForeground(Color.RED);
         }
     }
-    
-    private void loadStudents() throws SQLException {
+
+    private void getAllStudents() throws SQLException {
         tableModel.setRowCount(0);
-        // later: filter based on year, grade, section
-        List<Student> students = studentDAO.getAllStudentsWithStatus();
+        List<Student> students = studentDAO.getAllStudentsWithStatus(activeYearId);
         for (Student s : students) {
             tableModel.addRow(new Object[]{
                 s.getStudentId(),
@@ -330,29 +371,11 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
             });
         }
     }
-    
-    private void getAllStudents() throws SQLException {
-        try {
-            tableModel.setRowCount(0);
-            List<Student> students = studentDAO.getAllStudentsWithStatus(activeYearId);
-            for (Student s : students) {
-                tableModel.addRow(new Object[]{
-                    s.getStudentId(),
-                    s.getFirstName(),
-                    s.getLastName(),
-                    s.getCurrentStatus()
-                });
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading students: " + ex.getMessage());
-        }
-    }
-    
+
     private void addLogic() {
         btnRefresh.addActionListener(e -> {
             try {
-                loadStudents();
+                getAllStudents();
             } catch (SQLException ex) {
                 Logger.getLogger(ManageEnrollmentPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -361,16 +384,25 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
         tblStudents.getSelectionModel().addListSelectionListener(e -> {
             int row = tblStudents.getSelectedRow();
             if (row != -1) {
-                txtStudentId.setText(String.valueOf(tableModel.getValueAt(row, 0)));
+                int studentId = (int) tableModel.getValueAt(row, 0);
                 String name = tableModel.getValueAt(row, 1) + " " + tableModel.getValueAt(row, 2);
-                txtName.setText(name);
-                txtEnrollmentStatus.setText((String) tableModel.getValueAt(row, 3));
-            }
-        });
 
-        btnFilter.addActionListener(e -> {
-            System.out.println("Filter logic goes here");
-            // later: filter students by year, grade, section
+                txtStudentId.setText(String.valueOf(studentId));
+                txtName.setText(name);
+
+                try {
+                    String status = enrollmentDAO.getStudentEnrollmentStatus(studentId, activeYearId);
+                    String section = enrollmentDAO.getStudentSection(studentId, activeYearId);
+                    String gradeLevel = enrollmentDAO.getStudentGradeLevel(studentId, activeYearId);
+
+                    txtEnrollmentStatus.setText(status);
+                    txtSection.setText(section);
+                    txtGradeLevel.setText(gradeLevel);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Error loading enrollment info: " + ex.getMessage());
+                }
+            }
         });
 
         btnEnrollSelected.addActionListener(e -> {
@@ -380,7 +412,6 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
                 return;
             }
             System.out.println("Enroll logic here");
-            // enrollmentDAO.enrollStudent(...)
         });
 
         btnUnenrollSelected.addActionListener(e -> {
@@ -390,9 +421,8 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
                 return;
             }
             System.out.println("Unenroll logic here");
-            // enrollmentDAO.unenrollStudent(...)
         });
-        
+
         btnSetActiveYear.addActionListener(e -> {
             try {
                 int selectedIndex = cboAcademicYear.getSelectedIndex();
@@ -414,11 +444,10 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
                     academicYearDAO.setActiveYear(selectedYear.getYearId());
                     JOptionPane.showMessageDialog(this,
                             "Academic year " + selectedYear.getYearLabel() + " is now ACTIVE.");
-
-                    loadAcademicYears();         // reload dropdown
-                    loadActiveYear();            // set selected to active
-                    updateStatusBasedOnSelection(); // refresh status label
-                    getAllStudents();            // reload table
+                    loadAcademicYears();
+                    loadActiveYear();
+                    updateStatusBasedOnSelection();
+                    getAllStudents();
                 }
 
             } catch (SQLException ex) {
@@ -429,18 +458,45 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
                         JOptionPane.ERROR_MESSAGE);
             }
         });
-    }
         
-        private void loadActiveYear() throws SQLException {
-            AcademicYearDAO yearDAO = new AcademicYearDAO();
-            AcademicYear active = yearDAO.getActiveYear();
-            if (active != null) {
+        btnEndAY.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "End the current academic year?\nAll students will be set to 'Not Enrolled' and year will be CLOSED.",
+                    "Confirm",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                try {
+                    enrollmentDAO.markEnrollmentsInactiveForYear(activeYearId);
+                    academicYearDAO.endActiveAcademicYear();
+                    loadAcademicYears();
+                    loadActiveYear();
+                    getAllStudents();
+
+                    txtStatus.setText("CLOSED");
+                    txtStatus.setForeground(Color.RED);
+
+                    JOptionPane.showMessageDialog(this, "Academic year successfully ended.");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Error ending year: " + ex.getMessage());
+                }
+            }
+        });
+    }
+
+    private void loadActiveYear() throws SQLException {
+        AcademicYear active = academicYearDAO.getActiveYear();
+        if (active != null) {
             activeYearId = active.getYearId();
             cboAcademicYear.setSelectedItem(active.getYearLabel());
-            }
         }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnEndAY;
     private javax.swing.JButton btnEnrollSelected;
     private javax.swing.JButton btnFilter;
     private javax.swing.JButton btnRefresh;
@@ -451,6 +507,8 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> cbSection;
     private javax.swing.JComboBox<String> cboAcademicYear;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblAcademicYear;
     private javax.swing.JLabel lblEnrollmentStatus;
@@ -461,8 +519,10 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
     private javax.swing.JLabel lblStudentId;
     private javax.swing.JTable tblStudents;
     private javax.swing.JTextField txtEnrollmentStatus;
+    private javax.swing.JTextField txtGradeLevel;
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtSearch;
+    private javax.swing.JTextField txtSection;
     private javax.swing.JLabel txtStatus;
     private javax.swing.JTextField txtStudentId;
     // End of variables declaration//GEN-END:variables

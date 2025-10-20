@@ -21,6 +21,9 @@ public class Student {
     private String address;
     private String currentStatus;
     
+    private String status;
+    private String gradeLevelName;
+    
     public Student() {}
     
     public Student(int studentId, int userId, String firstName, String lastName, String middleName, String gender, LocalDate birthdate, 
@@ -100,7 +103,13 @@ public class Student {
     
     public String getCurrentStatus() { return currentStatus; }
     public void setCurrentStatus(String currentStatus) { this.currentStatus = currentStatus; }
-
+    
+    public String getStatus() {  return status; }
+    public void setStatus(String status) { this.status = status; }
+    
+    public String getGradeLevelName() {  return gradeLevelName; }
+    public void setGradeLevelName(String gradeLevelName) { this.gradeLevelName = gradeLevelName; }
+            
     @Override
     public String toString() {
         return "Student{" +

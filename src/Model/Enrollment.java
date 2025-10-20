@@ -22,6 +22,9 @@ public class Enrollment {
     private String gradeLevelName;
     private String sectionName;
     private String yearLabel;
+    private String academicYear;
+    
+    private String gradeName;
 
     public Enrollment() {}
 
@@ -35,6 +38,19 @@ public class Enrollment {
         this.yearId = yearId;
         this.status = status;
         this.enrolledDate = enrolledDate;
+    }
+    
+    public Enrollment(int studentId, String academicYear, String sectionName, String gradeName) {
+        this.studentId = studentId;
+        this.academicYear = academicYear;
+        this.sectionName = sectionName;
+        this.gradeName = gradeName;
+    }
+    
+    public Enrollment(int studentId, String sectionName, String gradeName) {
+        this.studentId = studentId;
+        this.sectionName = sectionName;
+        this.gradeName = gradeName;
     }
 
     public int getEnrollmentId() { return enrollmentId; }
@@ -60,7 +76,19 @@ public class Enrollment {
 
     public LocalDateTime getEnrolledDate() { return enrolledDate; }
     public void setEnrolledDate(LocalDateTime enrolledDate) { this.enrolledDate = enrolledDate; }
-
+    
+    public String getSectionName() { return sectionName; }
+    public void setSectionName(String sectionName) { this.sectionName = sectionName; }
+    
+    public String getAcademicYear() {return academicYear; }
+    public void setAcademicYear(String academicYear) { this.academicYear = academicYear; }
+    
+    public String getGradeName() { return gradeName; }
+    public void setGradeName(String gradeName) { this.gradeName = gradeName; }
+    
+    public String getGradeLevelName() { return gradeLevelName; }
+    public void setGradeLevelName(String gradeLevelName) { this.gradeLevelName = gradeLevelName; }
+            
     @Override
     public String toString() {
         return "Enrollment{" +

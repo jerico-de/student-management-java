@@ -226,7 +226,12 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
                 int selectedRow = tblStudents.getSelectedRow();
                 int studentId = (int) tableModel.getValueAt(selectedRow, 0);
 
-                Student selectedStudent = studentDAO.getStudentById(studentId);
+                Student selectedStudent = null;
+                try {
+                    selectedStudent = studentDAO.getStudentById(studentId);
+                } catch (SQLException ex) {
+                    Logger.getLogger(ManageStudentsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 if (selectedStudent != null) {
                     txtFirstName.setText(selectedStudent.getFirstName());
                     txtLastName.setText(selectedStudent.getLastName());
@@ -288,7 +293,6 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
                     getAllStudents();
                     System.out.println("User " + "'" + firstName + "" + lastName + "'" + " addedd successfully.");
 
-                    // Clear input fields after adding
                     clearFields();
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to add student.");
@@ -420,7 +424,12 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
                 int selectedRow = tblStudents.getSelectedRow();
                 if (selectedRow >= 0) {
                     int studentId = (int) tblStudents.getValueAt(selectedRow, 0);
-                    Student student = studentDAO.getStudentById(studentId);
+                    Student student = null;
+                    try {
+                        student = studentDAO.getStudentById(studentId);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ManageStudentsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     if (student != null) {
                         txtFirstName.setText(student.getFirstName());
                         txtLastName.setText(student.getLastName());
@@ -463,9 +472,9 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
     
     private void getAllStudents() {
             try {
-            tableModel.setRowCount(0); // clear table
+            tableModel.setRowCount(0);
 
-            int currentYearId = getCurrentSchoolYearId(); // You can set or retrieve this dynamically
+            int currentYearId = getCurrentSchoolYearId();
             List<Student> students = studentDAO.getAllStudentsWithStatus(currentYearId);
 
             for (Student student : students) {

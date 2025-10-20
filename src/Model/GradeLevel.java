@@ -10,23 +10,23 @@ package Model;
  */
 public class GradeLevel {
     private int id;
-    private String name;
+    private String gradeLevelName;
 
     public GradeLevel() {}
 
-    public GradeLevel(int id, String name) {
+    public GradeLevel(int id, String gradeLevelName) {
         this.id = id;
-        this.name = name;
+        this.gradeLevelName = gradeLevelName;
     }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getGradeLevelName() { return gradeLevelName; }
+    public void setGradeLevelName(String gradeLevelName) { this.gradeLevelName = gradeLevelName; }
 
    @Override
     public String toString() {
-        return name;
+        return gradeLevelName;
     }
 }

@@ -11,14 +11,16 @@ package Model;
 public class Section {
     private int id;
     private int gradeLevelId;
-    private String name;
+    private String sectionName;
+    
+    private String gradeLevelName;
 
     public Section() {}
 
-    public Section(int id, int gradeLevelId, String name) {
+    public Section(int id, int gradeLevelId, String sectionName) {
         this.id = id;
         this.gradeLevelId = gradeLevelId;
-        this.name = name;
+        this.sectionName = sectionName;
     }
 
     public int getId() { return id; }
@@ -27,11 +29,14 @@ public class Section {
     public int getGradeLevelId() { return gradeLevelId; }
     public void setGradeLevelId(int gradeLevelId) { this.gradeLevelId = gradeLevelId; }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getSectonName() { return sectionName; }
+    public void setSectionName(String sectionName) { this.sectionName = sectionName; }
+    
+    public String getGradeLevelName() { return gradeLevelName; }
+    public void setGradeLevelName(String gradeLevelName) { this.gradeLevelName = gradeLevelName; }
 
     @Override
     public String toString() {
-        return name;
+        return sectionName;
     }
 }

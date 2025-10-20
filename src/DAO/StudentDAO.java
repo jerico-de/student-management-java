@@ -54,7 +54,7 @@ public class StudentDAO {
         }
     }
 
-    public Student getStudentById(int studentId) {
+    public Student getStudentById(int studentId) throws SQLException {
         String sql = "SELECT * FROM students WHERE student_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
