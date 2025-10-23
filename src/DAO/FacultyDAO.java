@@ -16,129 +16,135 @@ import java.util.List;
  */
 public class FacultyDAO {
     
-    public boolean addFaculty(Faculty faculty) {
-        String sql = "INSERT INTO faculty (user_id, first_name, last_name, gender) VALUES (?, ?, ?, ?)";
+    public boolean addFaculty(Faculty faculty) throws SQLException {
+        String sql = "INSERT INTO faculty (user_id, first_name, last_name, middle_name, gender, birthdate, address, advisory_grade_level_id, advisory_section_id) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, faculty.getUserId());
             stmt.setString(2, faculty.getFirstName());
             stmt.setString(3, faculty.getLastName());
-            stmt.setString(4, faculty.getGender());
-            
-            stmt.executeUpdate();
-            return true;
-
-        } catch (SQLException e) {
-            System.out.println("Error adding faculty: " + e.getMessage());
-            return false;
+            stmt.setString(4, faculty.getMiddleName());
+            stmt.setString(5, faculty.getGender());
+            stmt.setObject(6, faculty.getBirthdate());
+            stmt.setString(7, faculty.getAddress());
+            stmt.setObject(8, faculty.getAdvisoryGradeLevelId());
+            stmt.setObject(9, faculty.getAdvisorySectionId());
+            return stmt.executeUpdate() > 0;
         }
     }
 
-    public Faculty getFacultyById(int facultyId) {
+    public boolean updateFaculty(Faculty faculty) throws SQLException {
+        String sql = "UPDATE faculty SET first_name=?, last_name=?, middle_name=?, gender=?, birthdate=?, address=?, advisory_grade_level_id=?, advisory_section_id=? WHERE faculty_id=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, faculty.getFirstName());
+            stmt.setString(2, faculty.getLastName());
+            stmt.setString(3, faculty.getMiddleName());
+            stmt.setString(4, faculty.getGender());
+            stmt.setObject(5, faculty.getBirthdate());
+            stmt.setString(6, faculty.getAddress());
+            stmt.setObject(7, faculty.getAdvisoryGradeLevelId());
+            stmt.setObject(8, faculty.getAdvisorySectionId());
+            stmt.setInt(9, faculty.getFacultyId());
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    public boolean deleteFaculty(int facultyId) throws SQLException {
+        String sql = "DELETE FROM faculty WHERE faculty_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, facultyId);
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    public List<Faculty> getAllFaculty() throws SQLException {
+        List<Faculty> facultyList = new ArrayList<>();
+        String sql = "SELECT * FROM faculty";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Faculty f = new Faculty();
+                f.setFacultyId(rs.getInt("faculty_id"));
+                f.setUserId(rs.getInt("user_id"));
+                f.setFirstName(rs.getString("first_name"));
+                f.setLastName(rs.getString("last_name"));
+                f.setMiddleName(rs.getString("middle_name"));
+                f.setGender(rs.getString("gender"));
+                f.setBirthdate(rs.getDate("birthdate") != null ? rs.getDate("birthdate").toLocalDate() : null);
+                f.setAddress(rs.getString("address"));
+                f.setAdvisoryGradeLevelId((Integer) rs.getObject("advisory_grade_level_id"));
+                f.setAdvisorySectionId((Integer) rs.getObject("advisory_section_id"));
+                facultyList.add(f);
+            }
+        }
+        return facultyList;
+    }
+
+    public Faculty getFacultyById(int id) throws SQLException {
         String sql = "SELECT * FROM faculty WHERE faculty_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, facultyId);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return new Faculty(
-                        rs.getInt("faculty_id"),
-                        rs.getInt("user_id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("gender")
-                );
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Faculty f = new Faculty();
+                    f.setFacultyId(rs.getInt("faculty_id"));
+                    f.setUserId(rs.getInt("user_id"));
+                    f.setFirstName(rs.getString("first_name"));
+                    f.setLastName(rs.getString("last_name"));
+                    f.setMiddleName(rs.getString("middle_name"));
+                    f.setGender(rs.getString("gender"));
+                    f.setBirthdate(rs.getDate("birthdate") != null ? rs.getDate("birthdate").toLocalDate() : null);
+                    f.setAddress(rs.getString("address"));
+                    f.setAdvisoryGradeLevelId((Integer) rs.getObject("advisory_grade_level_id"));
+                    f.setAdvisorySectionId((Integer) rs.getObject("advisory_section_id"));
+                    return f;
+                }
             }
-
-        } catch (SQLException e) {
-            System.out.println("Error fetching faculty: " + e.getMessage());
         }
         return null;
     }
     
     public List<Faculty> searchFaculty(String keyword) {
-        List<Faculty> facultyList = new ArrayList<>();
-        String sql = "SELECT * FROM faculty WHERE faculty_id LIKE ? OR first_name LIKE ? OR last_name LIKE ?";
+        List<Faculty> list = new ArrayList<>();
+        String sql = """
+                    SELECT * FROM faculty 
+                    WHERE first_name LIKE ? 
+                       OR last_name LIKE ? 
+                       OR middle_name LIKE ?
+                    """;
+
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            String like = "%" + keyword + "%";
-            stmt.setString(1, like);
-            stmt.setString(2, like);
-            stmt.setString(3, like);
-            ResultSet rs = stmt.executeQuery();
-            
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            String searchPattern = "%" + keyword + "%";
+            ps.setString(1, searchPattern);
+            ps.setString(2, searchPattern);
+            ps.setString(3, searchPattern);
+
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                facultyList.add(new Faculty(
-                        rs.getInt("faculty_id"),
-                        rs.getInt("user_id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("gender")
-                ));
+                Faculty f = new Faculty();
+                f.setFacultyId(rs.getInt("faculty_id"));
+                f.setUserId(rs.getInt("user_id"));
+                f.setFirstName(rs.getString("first_name"));
+                f.setLastName(rs.getString("last_name"));
+                f.setMiddleName(rs.getString("middle_name"));
+                f.setGender(rs.getString("gender"));
+                f.setBirthdate(rs.getDate("birthdate") != null ? rs.getDate("birthdate").toLocalDate() : null);
+                f.setAddress(rs.getString("address"));
+                f.setAdvisoryGradeLevelId((Integer) rs.getObject("advisory_grade_level_id"));
+                f.setAdvisorySectionId((Integer) rs.getObject("advisory_section_id"));
+                list.add(f);
             }
         } catch (SQLException e) {
-            System.out.println("Error searching faculty: " + e.getMessage());
+            e.printStackTrace();
         }
-        return facultyList;
-    }
-
-    public List<Faculty> getAllFaculty() {
-        List<Faculty> facultyList = new ArrayList<>();
-        String sql = "SELECT * FROM faculty";
-        try (Connection conn = DBConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            while (rs.next()) {
-                facultyList.add(new Faculty(
-                        rs.getInt("faculty_id"),
-                        rs.getInt("user_id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("gender")
-                ));
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Error fetching faculty list: " + e.getMessage());
-        }
-        return facultyList;
-    }
-
-    public boolean updateFaculty(Faculty faculty) {
-        String sql = "UPDATE faculty SET first_name = ?, last_name = ?, gender = ?  WHERE faculty_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, faculty.getFirstName());
-            stmt.setString(2, faculty.getLastName());
-            stmt.setString(3, faculty.getGender());
-            stmt.setInt(4, faculty.getFacultyId());
-            stmt.executeUpdate();
-            return true;
-
-        } catch (SQLException e) {
-            System.out.println("Error updating faculty: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean deleteFaculty(int facultyId) {
-        String sql = "DELETE FROM faculty WHERE faculty_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, facultyId);
-            stmt.executeUpdate();
-            return true;
-
-        } catch (SQLException e) {
-            System.out.println("Error deleting faculty: " + e.getMessage());
-            return false;
-        }
+        return list;
     }
 }

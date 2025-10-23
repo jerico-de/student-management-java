@@ -445,20 +445,20 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
         });
     }
     
-        private void loadStudentsToTable(List<Student> students) {
-            tableModel.setRowCount(0); // Clear existing rows
+    private void loadStudentsToTable(List<Student> students) {
+        tableModel.setRowCount(0);
 
-            for (Student student : students) {
-                tableModel.addRow(new Object[]{
-                    student.getStudentId(),
-                    student.getFirstName(),
-                    student.getLastName(),
-                    student.getCurrentStatus()
-                });
-            }
+        for (Student student : students) {
+            tableModel.addRow(new Object[]{
+                student.getStudentId(),
+                student.getFirstName(),
+                student.getLastName(),
+                student.getCurrentStatus()
+            });
         }
+    }
     
-        private void clearFields() {
+    private void clearFields() {
         txtFirstName.setText("");
         txtLastName.setText("");
         txtMiddleName.setText("");

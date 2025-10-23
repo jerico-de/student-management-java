@@ -4,6 +4,7 @@
  */
 package DAO;
         
+import Model.Faculty;
 import Model.Student;
 import Model.User;
 import Util.DBConnection;
@@ -270,5 +271,36 @@ public class UserDAO {
             }
         }
         return users;
+    }
+    
+    public int createUserForFaculty(Faculty faculty) throws SQLException {
+        String username = (faculty.getFirstName() + "." + faculty.getLastName()).toLowerCase();
+        String password = "password";
+        String status = "ACTIVE";
+        String role = "FACULTY";
+
+        try (Connection conn = DBConnection.getConnection()) {
+            String checkSql = "SELECT user_id FROM users WHERE username = ?";
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                checkStmt.setString(1, username);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next()) return rs.getInt("user_id");
+                }
+            }
+
+            String sql = "INSERT INTO users (username, password, role, status) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setString(1, username);
+                stmt.setString(2, password);
+                stmt.setString(3, role);
+                stmt.setString(4, status);
+                stmt.executeUpdate();
+
+                try (ResultSet keys = stmt.getGeneratedKeys()) {
+                    if (keys.next()) return keys.getInt(1);
+                }
+            }
+        }
+        throw new SQLException("Failed to create faculty user.");
     }
 }

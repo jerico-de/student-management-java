@@ -4,7 +4,17 @@
  */
 package UI;
 
+import DAO.FacultyDAO;
+import DAO.UserDAO;
+import Model.Faculty;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -12,11 +22,15 @@ import java.sql.SQLException;
  */
 public class ManageFacultyPanel extends javax.swing.JPanel {
 
+    private FacultyDAO facultyDAO = new FacultyDAO();
+    private DefaultTableModel tableModel;
     /**
      * Creates new form ManageFacultyPanel
      */
     public ManageFacultyPanel() throws SQLException {
         initComponents();
+        initTable();
+        addLogic();
     }
 
     /**
@@ -28,19 +42,405 @@ public class ManageFacultyPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        lblFirstName = new javax.swing.JLabel();
+        txtFirstName = new javax.swing.JTextField();
+        lblLastName = new javax.swing.JLabel();
+        txtLastName = new javax.swing.JTextField();
+        lblMiddleName = new javax.swing.JLabel();
+        txtMiddleName = new javax.swing.JTextField();
+        lblGender = new javax.swing.JLabel();
+        cmbGender = new javax.swing.JComboBox<>();
+        lblBirthdate = new javax.swing.JLabel();
+        jdcBirthdate = new com.toedter.calendar.JDateChooser();
+        lblAddress = new javax.swing.JLabel();
+        txtAddress = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblFaculty = new javax.swing.JTable();
+        btnAddFaculty = new javax.swing.JButton();
+        btnEditFaculty = new javax.swing.JButton();
+        btnDeleteFaculty = new javax.swing.JButton();
+        btnRefresh = new javax.swing.JButton();
+        btnClearFields = new javax.swing.JButton();
+        txtSearch = new javax.swing.JTextField();
+        btnSearch = new javax.swing.JButton();
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel1.setText("MANAGE STUDENTS");
+
+        lblFirstName.setText("First Name:");
+
+        lblLastName.setText("Last Name:");
+
+        lblMiddleName.setText("Middle Name:");
+
+        lblGender.setText("Gender:");
+
+        cmbGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Male", "Female", "Other" }));
+
+        lblBirthdate.setText("Birthdate:");
+
+        lblAddress.setText("Address:");
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(476, 400));
+
+        tblFaculty.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tblFaculty);
+
+        btnAddFaculty.setText("Add Faculty");
+
+        btnEditFaculty.setText("Edit Faculty");
+
+        btnDeleteFaculty.setText("Delete Faculty");
+
+        btnRefresh.setText("Refresh Table");
+
+        btnClearFields.setText("Clear Fields");
+
+        btnSearch.setText("Search");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSearch))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnClearFields)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnRefresh))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(65, 65, 65)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblFirstName, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(lblLastName, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(lblMiddleName, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(lblGender, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(lblBirthdate, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(lblAddress, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addGap(6, 6, 6)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtLastName, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtMiddleName, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(cmbGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jdcBirthdate, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(47, 47, 47)
+                                .addComponent(btnAddFaculty)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnEditFaculty)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnDeleteFaculty)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(36, 36, 36))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addComponent(jLabel1)
+                        .addGap(35, 35, 35)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(lblFirstName)
+                            .addComponent(txtFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(lblLastName)
+                            .addComponent(txtLastName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(lblMiddleName)
+                            .addComponent(txtMiddleName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(lblGender)
+                            .addComponent(cmbGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(lblBirthdate)
+                            .addComponent(jdcBirthdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblAddress))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(56, 56, 56)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btnAddFaculty)
+                                    .addComponent(btnEditFaculty)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(65, 65, 65)
+                                .addComponent(btnDeleteFaculty))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(44, 44, 44)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnSearch))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnRefresh)
+                    .addComponent(btnClearFields))
+                .addContainerGap(76, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void initTable() throws SQLException {
+        tableModel = new DefaultTableModel(
+                new Object[]{"Faculty ID", "First Name", "Last Name", "Gender"}, 0
+        );
+        tblFaculty.setModel(tableModel);
+        tblFaculty.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        loadAllFaculty();
+    }
+    
+    private void loadAllFaculty() {
+        try {
+            tableModel.setRowCount(0);
+            List<Faculty> facultyList = facultyDAO.getAllFaculty();
+            for (Faculty f : facultyList) {
+                tableModel.addRow(new Object[]{f.getFacultyId(), f.getFirstName(), f.getLastName(), f.getGender()});
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error loading faculty: " + ex.getMessage());
+        }
+    }
+    
+    private void addLogic() {
+        btnAddFaculty.addActionListener(e -> {
+            String firstName = txtFirstName.getText().trim();
+            String lastName = txtLastName.getText().trim();
+            String middleName = txtMiddleName.getText().trim();
+            String gender = (String) cmbGender.getSelectedItem();
+            String address = txtAddress.getText().trim();
+
+            LocalDate birthdate = null;
+            if (jdcBirthdate.getDate() != null) {
+                birthdate = jdcBirthdate.getDate().toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
+            }
+
+            if (firstName.isEmpty() || lastName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "First and last name are required.");
+                return;
+            }
+
+            Faculty f = new Faculty();
+            f.setFirstName(firstName);
+            f.setLastName(lastName);
+            f.setMiddleName(middleName);
+            f.setGender(gender);
+            f.setBirthdate(birthdate);
+            f.setAddress(address);
+
+            try {
+                // create user automatically for faculty
+                UserDAO userDAO = new UserDAO();
+                int userId = userDAO.createUserForFaculty(f);
+                f.setUserId(userId);
+
+                if (facultyDAO.addFaculty(f)) {
+                    JOptionPane.showMessageDialog(this, "Faculty added successfully.");
+                    loadAllFaculty();
+                    clearFields();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to add faculty.");
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            }
+        });
+        
+        btnEditFaculty.addActionListener(e -> {
+            int selectedRow = tblFaculty.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a student to edit.");
+                return;
+            }
+
+            int facultyId = (int) tableModel.getValueAt(selectedRow, 0);
+
+            String firstName = txtFirstName.getText().trim();
+            String lastName = txtLastName.getText().trim();
+            String middleName = txtMiddleName.getText().trim();
+            String gender = (String) cmbGender.getSelectedItem();
+            LocalDate birthdate = null;
+            if (jdcBirthdate.getDate() != null) {
+                birthdate = jdcBirthdate.getDate().toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
+            }
+            String address = txtAddress.getText().trim();
+
+            if (firstName.isEmpty() || lastName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "First name and last name are required.");
+                return;
+            }
+
+            Faculty faculty = new Faculty();
+            faculty.setFacultyId(facultyId);
+            faculty.setFirstName(firstName);
+            faculty.setLastName(lastName);
+            faculty.setMiddleName(middleName);
+            faculty.setGender(gender);
+            faculty.setBirthdate(birthdate);
+            faculty.setAddress(address);
+            
+            int confirm = JOptionPane.showConfirmDialog(
+                    this, "Are you sure you want to delete this student?", 
+                    "Confirm Deletion", JOptionPane.YES_NO_OPTION
+            );
+            
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                boolean updated = false;
+                try {
+                    updated = facultyDAO.updateFaculty(faculty);
+                } catch (SQLException ex) {
+                    Logger.getLogger(ManageFacultyPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if (updated) {
+                    JOptionPane.showMessageDialog(this, "Student updated successfully.");
+                    loadAllFaculty();
+                    System.out.println("User " + "'" + firstName + "" + lastName + "'" + " updated successfully.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to update student.");
+                }
+            } clearFields();
+        });
+
+        btnDeleteFaculty.addActionListener(e -> {
+            int row = tblFaculty.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Select a faculty to delete.");
+                return;
+            }
+            int id = (int) tableModel.getValueAt(row, 0);
+            try {
+                if (facultyDAO.deleteFaculty(id)) {
+                    JOptionPane.showMessageDialog(this, "Faculty deleted successfully.");
+                    loadAllFaculty();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error deleting faculty: " + ex.getMessage());
+            }
+        });
+
+        btnRefresh.addActionListener(e -> loadAllFaculty());
+        
+        btnClearFields.addActionListener (e -> clearFields());
+        
+        btnSearch.addActionListener(e -> {
+            String keyword = txtSearch.getText().trim();
+            List<Faculty> results = facultyDAO.searchFaculty(keyword);
+            loadFacultyTable(results);
+        });
+        
+        tblFaculty.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int selectedRow = tblFaculty.getSelectedRow();
+                if (selectedRow >= 0) {
+                    int facultyId = (int) tblFaculty.getValueAt(selectedRow, 0);
+                    Faculty faculty = null;
+                    try {
+                        faculty = facultyDAO.getFacultyById(facultyId);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ManageStudentsPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    if (faculty != null) {
+                        txtFirstName.setText(faculty.getFirstName());
+                        txtLastName.setText(faculty.getLastName());
+                        txtMiddleName.setText(faculty.getMiddleName());
+                        cmbGender.setSelectedItem(faculty.getGender());
+                        txtAddress.setText(faculty.getAddress());
+                        if (faculty.getBirthdate() != null) {
+                            jdcBirthdate.setDate(java.sql.Date.valueOf(faculty.getBirthdate()));
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    private void loadFacultyTable(List<Faculty> list) {
+        DefaultTableModel model = (DefaultTableModel) tblFaculty.getModel();
+        model.setRowCount(0);
+
+        for (Faculty f : list) {
+            model.addRow(new Object[]{
+                f.getFacultyId(),
+                f.getFirstName(),
+                f.getMiddleName(),
+                f.getLastName(),
+                f.getGender(),
+                f.getBirthdate(),
+                f.getAddress(),
+                f.getAdvisoryGradeLevelId(),
+                f.getAdvisorySectionId()
+            });
+        }
+    }
+    
+    private void clearFields() {
+        txtFirstName.setText("");
+        txtLastName.setText("");
+        txtMiddleName.setText("");
+        txtAddress.setText("");
+        cmbGender.setSelectedIndex(0);
+        jdcBirthdate.setDate(null);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAddFaculty;
+    private javax.swing.JButton btnClearFields;
+    private javax.swing.JButton btnDeleteFaculty;
+    private javax.swing.JButton btnEditFaculty;
+    private javax.swing.JButton btnRefresh;
+    private javax.swing.JButton btnSearch;
+    private javax.swing.JComboBox<String> cmbGender;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private com.toedter.calendar.JDateChooser jdcBirthdate;
+    private javax.swing.JLabel lblAddress;
+    private javax.swing.JLabel lblBirthdate;
+    private javax.swing.JLabel lblFirstName;
+    private javax.swing.JLabel lblGender;
+    private javax.swing.JLabel lblLastName;
+    private javax.swing.JLabel lblMiddleName;
+    private javax.swing.JTable tblFaculty;
+    private javax.swing.JTextField txtAddress;
+    private javax.swing.JTextField txtFirstName;
+    private javax.swing.JTextField txtLastName;
+    private javax.swing.JTextField txtMiddleName;
+    private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }
