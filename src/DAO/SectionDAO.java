@@ -139,4 +139,18 @@ public class SectionDAO {
         }
         return sections;
     }
+    
+    public int getSectionIdByName(String sectionName) throws SQLException {
+        String sql = "SELECT section_id FROM sections WHERE section_name = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, sectionName);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("section_id");
+                }
+            }
+        }
+        return -1;
+    }
 }

@@ -200,8 +200,8 @@ public class ManageSectionsPanel extends javax.swing.JPanel {
     
     private void loadGradeLevels() throws SQLException {
         cbGradeLevel.removeAllItems();
-        for (String level : gradeLevelDAO.getAllGradeLevels()) {
-            cbGradeLevel.addItem(level);
+        for (GradeLevel level : gradeLevelDAO.getAllGradeLevels()) {
+            cbGradeLevel.addItem(level.getGradeLevelName());
         }
     }
 

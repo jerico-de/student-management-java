@@ -4,19 +4,52 @@
  */
 package UI;
 
+import DAO.AcademicYearDAO;
+import DAO.CurriculumDAO;
+import DAO.GradeLevelDAO;
+import DAO.SubjectDAO;
+import Model.AcademicYear;
+import Model.Curriculum;
+import Model.GradeLevel;
+import Model.Subject;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author USER
  */
 public class ManageCurriculumPanel extends javax.swing.JPanel {
+    
+    private final CurriculumDAO curriculumDAO = new CurriculumDAO();
+    private final GradeLevelDAO gradeLevelDAO = new GradeLevelDAO();
+    private final SubjectDAO subjectDAO = new SubjectDAO();
+    private final AcademicYearDAO academicYearDAO = new AcademicYearDAO();
+
+    private DefaultTableModel tableModel;
+    private Map<String, Integer> gradeLevelMap = new HashMap<>();
+    private Map<String, Integer> subjectMap = new HashMap<>();
+
+    private AcademicYear activeYear;
 
     /**
      * Creates new form ManageCurriculumPanel
      */
     public ManageCurriculumPanel() throws SQLException {
         initComponents();
+        initTable();
+        initSubjectsTable();
+        loadActiveAcademicYear();
+        loadGradeLevels();
+        loadAllSubjects();
+        addLogic();
     }
 
     /**
@@ -28,33 +61,447 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblCurriculum = new javax.swing.JTable();
+        lblGradeLevel = new javax.swing.JLabel();
+        lblSubject = new javax.swing.JLabel();
+        cbGradeLevel = new javax.swing.JComboBox<>();
+        cbSubject = new javax.swing.JComboBox<>();
+        lblActiveYear = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        btnAddSubject = new javax.swing.JButton();
+        btnRemoveSubject = new javax.swing.JButton();
+        btnRefresh = new javax.swing.JButton();
+        lblNewSubject = new javax.swing.JLabel();
+        txtNewSubject = new javax.swing.JTextField();
+        btnAddNewSubject = new javax.swing.JButton();
+        lblCurrentGrade = new javax.swing.JLabel();
+        lblCurrentGradeLvl = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tblSubjects = new javax.swing.JTable();
+        btnEditSubject = new javax.swing.JButton();
+        btnDeleteSubject = new javax.swing.JButton();
 
-        setPreferredSize(new java.awt.Dimension(851, 450));
+        setPreferredSize(new java.awt.Dimension(900, 590));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setText("MANAGE CURRICULUM");
+        jLabel.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel.setText("MANAGE CURRICULUM");
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(476, 400));
+
+        tblCurriculum.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tblCurriculum);
+
+        lblGradeLevel.setText("Grade Level:");
+
+        lblSubject.setText("Subject:");
+
+        cbGradeLevel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        cbSubject.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        lblActiveYear.setText("Active Year:");
+
+        jLabel1.setText("active year");
+
+        btnAddSubject.setText("Add to Curriculum");
+
+        btnRemoveSubject.setText("Remove from Curriculum");
+
+        btnRefresh.setText("Refresh Table");
+
+        lblNewSubject.setText("Subject Name:");
+
+        btnAddNewSubject.setText("Add New Subject");
+
+        lblCurrentGrade.setText("Grade Level: ");
+
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(476, 400));
+
+        tblSubjects.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane2.setViewportView(tblSubjects);
+
+        btnEditSubject.setText("Edit Subject");
+
+        btnDeleteSubject.setText("Delete Subject");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnRefresh))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 44, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnAddNewSubject)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btnEditSubject)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btnDeleteSubject)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                            .addComponent(btnAddSubject)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(btnRemoveSubject)
+                                            .addGap(40, 40, 40))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                                .addGroup(layout.createSequentialGroup()
+                                                    .addComponent(lblNewSubject)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                    .addComponent(txtNewSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                            .addGap(85, 85, 85)))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(112, 112, 112)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(lblActiveYear)
+                                    .addComponent(lblGradeLevel)
+                                    .addComponent(lblSubject))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel1)
+                                    .addComponent(cbGradeLevel, 0, 84, Short.MAX_VALUE)
+                                    .addComponent(cbSubject, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblCurrentGrade)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblCurrentGradeLvl, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(34, 34, 34))
             .addGroup(layout.createSequentialGroup()
-                .addGap(51, 51, 51)
-                .addComponent(jLabel1)
-                .addContainerGap(531, Short.MAX_VALUE))
+                .addGap(61, 61, 61)
+                .addComponent(jLabel)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addComponent(jLabel)
                 .addGap(21, 21, 21)
-                .addComponent(jLabel1)
-                .addContainerGap(397, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblCurrentGrade)
+                    .addComponent(lblCurrentGradeLvl, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblActiveYear)
+                            .addComponent(jLabel1))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cbGradeLevel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblGradeLevel))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cbSubject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblSubject))
+                        .addGap(31, 31, 31)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnAddSubject)
+                            .addComponent(btnRemoveSubject))
+                        .addGap(35, 35, 35)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblNewSubject)
+                            .addComponent(txtNewSubject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(22, 22, 22)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnRefresh)
+                    .addComponent(btnAddNewSubject)
+                    .addComponent(btnEditSubject)
+                    .addComponent(btnDeleteSubject))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void initTable() {
+        tableModel = new DefaultTableModel(
+                new Object[]{"Curriculum ID", "Subject"}, 0
+        );
+        tblCurriculum.setModel(tableModel);
+        tblCurriculum.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+    }
+    
+    private void initSubjectsTable() {
+        DefaultTableModel subjectModel = new DefaultTableModel(
+                new Object[]{"Subject ID", "Subject Name"}, 0
+        );
+        tblSubjects.setModel(subjectModel);
+        tblSubjects.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        // load all subjects
+        loadSubjectsTable();
+    }
+    
+    private void loadSubjectsTable() {
+        try {
+            DefaultTableModel model = (DefaultTableModel) tblSubjects.getModel();
+            model.setRowCount(0);
+            List<Subject> subjects = subjectDAO.getAllSubjects();
+            for (Subject s : subjects) {
+                model.addRow(new Object[]{s.getSubjectId(), s.getSubjectName()});
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void addLogic() {
+        cbGradeLevel.addActionListener(e -> {
+            String selectedGrade = (String) cbGradeLevel.getSelectedItem();
+            if (selectedGrade != null && gradeLevelMap.containsKey(selectedGrade)) {
+                int gradeLevelId = gradeLevelMap.get(selectedGrade);
+                lblCurrentGradeLvl.setText(selectedGrade);
+                loadCurriculumTable(gradeLevelId);
+            }
+        });
+
+        btnAddSubject.addActionListener(e -> {
+            String grade = (String) cbGradeLevel.getSelectedItem();
+            String subject = (String) cbSubject.getSelectedItem();
+            if (grade == null || subject == null) {
+                JOptionPane.showMessageDialog(this, "Please select both grade and subject.");
+                return;
+            }
+
+            int gradeLevelId = gradeLevelMap.get(grade);
+            int subjectId = subjectMap.get(subject);
+
+            boolean success = curriculumDAO.addSubjectToCurriculum(gradeLevelId, subjectId);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Subject added to curriculum.");
+                loadCurriculumTable(gradeLevelId);
+            } else {
+                JOptionPane.showMessageDialog(this, "Subject already exists for this grade.");
+            }
+        });
+
+        btnRemoveSubject.addActionListener(e -> {
+            int row = tblCurriculum.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Select a subject first.");
+                return;
+            }
+            int id = (int) tableModel.getValueAt(row, 0);
+            curriculumDAO.removeSubjectFromCurriculum(id);
+            JOptionPane.showMessageDialog(this, "Subject removed.");
+            String grade = (String) cbGradeLevel.getSelectedItem();
+            if (grade != null) loadCurriculumTable(gradeLevelMap.get(grade));
+        });
+
+        btnAddNewSubject.addActionListener(e -> {
+            String subjectName = txtNewSubject.getText().trim();
+            if (subjectName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Enter a subject name.");
+                return;
+            }
+
+            try {
+                boolean added = subjectDAO.addNewSubject(subjectName);
+                if (added) {
+                    JOptionPane.showMessageDialog(this, "New subject added successfully!");
+                    txtNewSubject.setText("");
+                    loadAllSubjects();
+                    loadSubjectsTable();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Subject already exists.");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(ManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        btnRefresh.addActionListener(e -> {
+            try {
+                loadActiveAcademicYear();
+                loadAllSubjects();
+                String grade = (String) cbGradeLevel.getSelectedItem();
+                if (grade != null) loadCurriculumTable(gradeLevelMap.get(grade));
+            } catch (SQLException ex) {
+                Logger.getLogger(ManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        tblSubjects.getSelectionModel().addListSelectionListener(e -> {
+            int row = tblSubjects.getSelectedRow();
+            if (row != -1) {
+                int id = (int) tblSubjects.getValueAt(row, 0);
+                String name = (String) tblSubjects.getValueAt(row, 1);
+                txtNewSubject.setText(name);
+                txtNewSubject.putClientProperty("selectedSubjectId", id);
+            }
+        });
+        
+        btnEditSubject.addActionListener(e -> {
+            Object idObj = txtNewSubject.getClientProperty("selectedSubjectId");
+            if (idObj == null) {
+                JOptionPane.showMessageDialog(this, "Please select a subject to edit.");
+                return;
+            }
+
+            String newName = txtNewSubject.getText().trim();
+            if (newName.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Enter a new subject name.");
+                return;
+            }
+
+            int id = (int) idObj;
+            try {
+                boolean updated = subjectDAO.updateSubject(id, newName);
+                if (updated) {
+                    JOptionPane.showMessageDialog(this, "Subject updated successfully!");
+                    txtNewSubject.setText("");
+                    txtNewSubject.putClientProperty("selectedSubjectId", null);
+                    loadSubjectsTable();
+                    loadAllSubjects();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Subject name already exists.");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(ManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        btnDeleteSubject.addActionListener(e -> {
+            Object idObj = txtNewSubject.getClientProperty("selectedSubjectId");
+            if (idObj == null) {
+                JOptionPane.showMessageDialog(this, "Please select a subject to delete.");
+                return;
+            }
+
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "Are you sure you want to delete this subject?",
+                    "Confirm Delete", JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                int id = (int) idObj;
+                try {
+                    boolean deleted = subjectDAO.deleteSubject(id);
+                    if (deleted) {
+                        JOptionPane.showMessageDialog(this, "Subject deleted successfully!");
+                        txtNewSubject.setText("");
+                        txtNewSubject.putClientProperty("selectedSubjectId", null);
+                        loadSubjectsTable();
+                        loadAllSubjects();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Unable to delete subject (possibly in use).");
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(ManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+    }
+
+    private void loadActiveAcademicYear() throws SQLException {
+        AcademicYear activeYear = academicYearDAO.getActiveYear();
+        if (activeYear != null) {
+            jLabel1.setText(activeYear.getYearLabel());
+        } else {
+            jLabel1.setText("N/A");
+        }
+    }
+
+    private void loadGradeLevels() throws SQLException {
+        cbGradeLevel.removeAllItems();
+        gradeLevelMap.clear();
+        List<GradeLevel> levels = gradeLevelDAO.getAllGradeLevels();
+        for (GradeLevel g : levels) {
+            cbGradeLevel.addItem(g.getGradeLevelName());
+            gradeLevelMap.put(g.getGradeLevelName(), g.getId());
+        }
+    }
+    
+    private void loadAllSubjects() throws SQLException {
+        cbSubject.removeAllItems();
+        subjectMap.clear();
+        List<Subject> subjects = subjectDAO.getAllSubjects();
+        for (Subject s : subjects) {
+            cbSubject.addItem(s.getSubjectName());
+            subjectMap.put(s.getSubjectName(), s.getSubjectId());
+        }
+    }
+
+    private void loadSubjectsByGradeLevel(int gradeLevelId) {
+        try {
+            cbSubject.removeAllItems();
+            subjectMap.clear();
+
+            List<Subject> subjects = subjectDAO.getSubjectsByGradeLevel(gradeLevelId);
+            for (Subject s : subjects) {
+                cbSubject.addItem(s.getSubjectName());
+                subjectMap.put(s.getSubjectName(), s.getSubjectId());
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void loadCurriculumTable(int gradeLevelId) {
+        tableModel.setRowCount(0);
+        List<Curriculum> list = curriculumDAO.getCurriculumByGradeLevel(gradeLevelId);
+        for (Curriculum c : list) {
+            tableModel.addRow(new Object[]{c.getCurriculumId(), c.getSubjectName()});
+        }
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAddNewSubject;
+    private javax.swing.JButton btnAddSubject;
+    private javax.swing.JButton btnDeleteSubject;
+    private javax.swing.JButton btnEditSubject;
+    private javax.swing.JButton btnRefresh;
+    private javax.swing.JButton btnRemoveSubject;
+    private javax.swing.JComboBox<String> cbGradeLevel;
+    private javax.swing.JComboBox<String> cbSubject;
+    private javax.swing.JLabel jLabel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lblActiveYear;
+    private javax.swing.JLabel lblCurrentGrade;
+    private javax.swing.JLabel lblCurrentGradeLvl;
+    private javax.swing.JLabel lblGradeLevel;
+    private javax.swing.JLabel lblNewSubject;
+    private javax.swing.JLabel lblSubject;
+    private javax.swing.JTable tblCurriculum;
+    private javax.swing.JTable tblSubjects;
+    private javax.swing.JTextField txtNewSubject;
     // End of variables declaration//GEN-END:variables
 }

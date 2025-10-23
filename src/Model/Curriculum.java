@@ -12,6 +12,8 @@ public class Curriculum {
     private int curriculumId;
     private int gradeLevelId;
     private int subjectId;
+    
+    private String subjectName;
 
     public Curriculum() {}
 
@@ -29,6 +31,9 @@ public class Curriculum {
 
     public int getSubjectId() { return subjectId; }
     public void setSubjectId(int subjectId) { this.subjectId = subjectId; }
+    
+    public String getSubjectName() { return subjectName; }
+    public void setSubjectName(String subjectName) { this.subjectName = subjectName; }
 
     @Override
     public String toString() {

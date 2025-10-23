@@ -11,6 +11,7 @@ import DAO.SectionDAO;
 import DAO.StudentDAO;
 import Model.AcademicYear;
 import Model.Enrollment;
+import Model.GradeLevel;
 import Model.Section;
 import Model.Student;
 import Util.DBConnection;
@@ -337,8 +338,8 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
 
     private void loadGradeLevels() throws SQLException {
         cbGradeLevel.removeAllItems();
-        for (String level : gradeLevelDAO.getAllGradeLevels()) {
-            cbGradeLevel.addItem(level);
+        for (GradeLevel level : gradeLevelDAO.getAllGradeLevels()) {
+            cbGradeLevel.addItem(level.getGradeLevelName());
         }
     }
 

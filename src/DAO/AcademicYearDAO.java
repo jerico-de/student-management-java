@@ -116,18 +116,18 @@ public class AcademicYearDAO {
     }
     
     public int getYearIdByLabel(String yearLabel) throws SQLException {
-        String sql = "SELECT year_id FROM academic_year WHERE year_label = ?";
+        String sql = "SELECT academic_year_id FROM academic_years WHERE academic_year_label = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, yearLabel);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt("year_id");
+                    return rs.getInt("academic_year_id");
                 }
             }
         }
-        throw new SQLException("Academic year not found: " + yearLabel);
+        return -1;
     }
     
     public void endActiveAcademicYear() throws SQLException {

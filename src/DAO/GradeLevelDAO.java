@@ -16,18 +16,21 @@ import java.sql.*;
  */
 public class GradeLevelDAO {
     
-    public List<String> getAllGradeLevels() throws SQLException {
-        List<String> list = new ArrayList<>();
-        String sql = "SELECT grade_name FROM grade_levels ORDER BY CAST(SUBSTRING(grade_name, 7) AS UNSIGNED)";
+    public List<GradeLevel> getAllGradeLevels() throws SQLException {
+        List<GradeLevel> list = new ArrayList<>();
+        String sql = "SELECT grade_level_id, grade_name FROM grade_levels ORDER BY CAST(SUBSTRING(grade_name, 7) AS UNSIGNED)";
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-            list.add(rs.getString("grade_name"));
+                GradeLevel gradeLevel = new GradeLevel();
+                gradeLevel.setId(rs.getInt("grade_level_id"));
+                gradeLevel.setGradeLevelName(rs.getString("grade_name"));
+                list.add(gradeLevel);
+            }
         }
-    }
-    return list;
+        return list;
     }
 
     public GradeLevel getGradeLevelById(int id) throws SQLException {

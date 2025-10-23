@@ -16,17 +16,18 @@ import java.util.List;
  */
 public class EnrollmentDAO {
     
-    public void enrollStudent(int studentId, int gradeLevelId, int sectionId, int yearId) throws SQLException {
-        String sql = "INSERT INTO enrollment (student_id, grade_level_id, section_id, year_id, status) " +
-                     "VALUES (?, ?, ?, ?, 'Enrolled')";
+    public boolean enrollStudent(int studentId, int gradeLevelId, int sectionId, int yearId) throws SQLException {
+        String sql = """
+            INSERT INTO enrollment (student_id, grade_level_id, section_id, year_id, status)
+            VALUES (?, ?, ?, ?, 'Enrolled')
+        """;
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setInt(1, studentId);
             ps.setInt(2, gradeLevelId);
             ps.setInt(3, sectionId);
             ps.setInt(4, yearId);
-            ps.executeUpdate();
+            return ps.executeUpdate() > 0;
         }
     }
 
@@ -179,10 +180,8 @@ public class EnrollmentDAO {
         String sql = "SELECT status FROM enrollment WHERE student_id = ? AND year_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setInt(1, studentId);
             ps.setInt(2, yearId);
-
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getString("status");
@@ -212,6 +211,18 @@ public class EnrollmentDAO {
         return "Not Enrolled";
     }
     
+    public boolean isStudentEnrolled(int studentId, int yearId) throws SQLException {
+        String sql = "SELECT 1 FROM enrollment WHERE student_id = ? AND year_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, studentId);
+            ps.setInt(2, yearId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+    
     public String getStudentGradeLevel(int studentId, int yearId) throws SQLException {
         String sql = "SELECT g.grade_name " +
                      "FROM enrollment e " +
@@ -239,6 +250,25 @@ public class EnrollmentDAO {
 
             ps.setInt(1, yearId);
             ps.executeUpdate();
+        }
+    }
+    
+    public boolean endAcademicYear(int yearId) throws SQLException {
+        String sql = "UPDATE enrollment SET status = 'Not Enrolled' WHERE year_id = ? AND status = 'Enrolled'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, yearId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+    
+    public boolean dropStudent(int studentId, int yearId) throws SQLException {
+        String sql = "UPDATE enrollment SET status = 'Dropped' WHERE student_id = ? AND year_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, studentId);
+            ps.setInt(2, yearId);
+            return ps.executeUpdate() > 0;
         }
     }
 }
