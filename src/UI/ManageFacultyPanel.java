@@ -66,7 +66,7 @@ public class ManageFacultyPanel extends javax.swing.JPanel {
         btnSearch = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setText("MANAGE STUDENTS");
+        jLabel1.setText("MANAGE FACULTY");
 
         lblFirstName.setText("First Name:");
 

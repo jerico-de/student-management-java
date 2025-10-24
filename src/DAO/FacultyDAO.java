@@ -147,4 +147,15 @@ public class FacultyDAO {
         }
         return list;
     }
+    
+    public void setAsAdviser(int facultyId, int sectionId) throws SQLException {
+        String sql = "UPDATE faculty SET advisory_section_id=?, advisory_grade_level_id=(SELECT grade_level_id FROM sections WHERE section_id=?) WHERE faculty_id=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, sectionId);
+            ps.setInt(2, sectionId);
+            ps.setInt(3, facultyId);
+            ps.executeUpdate();
+        }
+    }
 }

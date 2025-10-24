@@ -253,7 +253,7 @@ public class UserDAO {
             try {
                 userId = Integer.parseInt(keyword);
             } catch (NumberFormatException e) {
-                userId = -1; // no user has negative ID
+                userId = -1; 
             }
             stmt.setInt(2, userId);
 

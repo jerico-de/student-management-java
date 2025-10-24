@@ -153,4 +153,51 @@ public class SectionDAO {
         }
         return -1;
     }
+    
+    public List<Object[]> getSectionsByGrade(String gradeName) throws SQLException {
+        String sql = """
+            SELECT sec.section_id, sec.grade_level_id, sec.section_name
+            FROM sections sec
+            JOIN grade_levels gl ON sec.grade_level_id = gl.grade_level_id
+            WHERE gl.grade_name = ?
+            ORDER BY sec.section_name
+        """;
+
+        List<Object[]> list = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, gradeName);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new Object[]{
+                        rs.getInt("section_id"),
+                        rs.getInt("grade_level_id"),
+                        rs.getString("section_name")
+                    });
+                }
+            }
+        }
+        return list;
+    }
+    
+    public String getGradeBySection(String sectionName) throws SQLException {
+        String sql = """
+            SELECT gl.grade_name
+            FROM sections sec
+            JOIN grade_levels gl ON sec.grade_level_id = gl.grade_level_id
+            WHERE sec.section_name = ?
+            LIMIT 1
+        """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, sectionName);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("grade_name");
+                }
+            }
+        }
+        return null;
+    }
 }

@@ -4,32 +4,24 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageStudentsPanel.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/DAO/StudentDAO.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/FacultySubject.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Subject.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Util/DBConnection.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/AcademicYear.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/LoginFrame.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/GradeLevel.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/DashboardPanel.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageEnrollmentPanel.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Student.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Section.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageUsersPanel.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Faculty.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageFacultyPanel.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/studentmanagement/MainMenu.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Curriculum.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/DAO/UserDAO.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/AdminDashboard.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Grade.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/User.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageSectionsPanel.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/DAO/SectionDAO.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/DAO/StudentDAO.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Subject.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Util/DBConnection.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageCurriculumPanel.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/AcademicYear.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/HistoryPanel.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Student.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageFacultyPanel.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/studentmanagement/MainMenu.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Curriculum.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageFacultyAssignmentPanel.java</file>
-            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/DAO/GradeLevelDAO.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Enrollment.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/DAO/FacultyDAO.java</file>
         </group>

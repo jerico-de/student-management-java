@@ -4,19 +4,52 @@
  */
 package UI;
 
+import DAO.FacultyAssignmentDAO;
+import DAO.FacultyDAO;
+import DAO.GradeLevelDAO;
+import DAO.SectionDAO;
+import DAO.SubjectDAO;
+import Model.Faculty;
+import Model.FacultyAssignment;
+import Model.GradeLevel;
+import Model.Section;
+import Model.Subject;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author USER
  */
 public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
+    
+    private FacultyDAO facultyDAO = new FacultyDAO();
+    private SubjectDAO subjectDAO = new SubjectDAO();
+    private GradeLevelDAO gradeLevelDAO = new GradeLevelDAO();
+    private SectionDAO sectionDAO = new SectionDAO();
+    private FacultyAssignmentDAO assignmentDAO = new FacultyAssignmentDAO();
+
+    private DefaultTableModel tableModel;
+    
+    private boolean isUpdatingFilters = false;
 
     /**
      * Creates new form ManageFacultyAssignmentPanel
      */
     public ManageFacultyAssignmentPanel() throws SQLException {
         initComponents();
+        initComponents();
+        initTable();
+        loadDropdowns();
+        loadFilterOptions();
+        addFilterSyncLogic();
+        loadAssignments();
+        addLogic();
     }
 
     /**
@@ -28,19 +61,443 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel = new javax.swing.JLabel();
+        lblFaculty = new javax.swing.JLabel();
+        lblSubject = new javax.swing.JLabel();
+        lblSection = new javax.swing.JLabel();
+        cbFaculty = new javax.swing.JComboBox<>();
+        cbSubject = new javax.swing.JComboBox<>();
+        cbSection = new javax.swing.JComboBox<>();
+        chkAdviser = new javax.swing.JCheckBox();
+        btnAssign = new javax.swing.JButton();
+        btnRemove = new javax.swing.JButton();
+        btnRefresh = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblAssignments = new javax.swing.JTable();
+        btnSearch = new javax.swing.JButton();
+        txtSearch = new javax.swing.JTextField();
+        btnReset = new javax.swing.JButton();
+        cbSubjectFilter = new javax.swing.JComboBox<>();
+        cbSectionFilter = new javax.swing.JComboBox<>();
+        cbAdviserFilter = new javax.swing.JComboBox<>();
+        cbGradeFilter = new javax.swing.JComboBox<>();
+
+        jLabel.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel.setText("MANAGE ASSIGNMENT");
+
+        lblFaculty.setText("Faculty");
+
+        lblSubject.setText("Subject");
+
+        lblSection.setText("Section");
+
+        cbFaculty.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        cbSubject.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        cbSection.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        chkAdviser.setText("Set as Adviser for this Section");
+
+        btnAssign.setText("Assign Faculty");
+
+        btnRemove.setText("Remove Assignment");
+
+        btnRefresh.setText("Refresh Table");
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(476, 400));
+
+        tblAssignments.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tblAssignments);
+
+        btnSearch.setText("Search");
+
+        btnReset.setText("Reset");
+
+        cbSubjectFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        cbSectionFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        cbAdviserFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        cbGradeFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btnRefresh)
+                .addGap(67, 67, 67))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addComponent(jLabel)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(99, 99, 99)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblFaculty)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(cbFaculty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblSubject)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(cbSubject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblSection)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(cbSection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(chkAdviser)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(58, 58, 58)
+                                .addComponent(btnAssign)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnRemove)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(btnReset)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cbSubjectFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(15, 15, 15)
+                                .addComponent(cbGradeFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cbSectionFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cbAdviserFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnSearch))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(38, 38, 38))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addComponent(jLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSearch))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 15, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cbAdviserFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbSectionFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbSubjectFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnReset)
+                            .addComponent(cbGradeFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24)
+                        .addComponent(btnRefresh)
+                        .addGap(52, 52, 52))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(58, 58, 58)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblFaculty)
+                            .addComponent(cbFaculty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblSubject)
+                            .addComponent(cbSubject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblSection)
+                            .addComponent(cbSection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(chkAdviser)
+                        .addGap(47, 47, 47)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnAssign)
+                            .addComponent(btnRemove))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void initTable() {
+        tableModel = new DefaultTableModel(
+                new Object[]{"Faculty", "Subject", "Grade Level", "Section", "Adviser"}, 0
+        );
+        tblAssignments.setModel(tableModel);
+    }
+
+    private void loadDropdowns() throws SQLException {
+        cbFaculty.removeAllItems();
+        cbSubject.removeAllItems();
+        cbSection.removeAllItems();
+
+        for (Faculty f : facultyDAO.getAllFaculty()) {
+            cbFaculty.addItem(f);
+        }
+        for (Subject s : subjectDAO.getAllSubjects()) {
+            cbSubject.addItem(s);
+        }
+        for (Object[] sec : sectionDAO.getAllSections()) {
+            Section section = new Section((int) sec[0], (String) sec[2]);
+            cbSection.addItem(section);
+    }
+
+    private void loadAssignments() throws SQLException {
+        tableModel.setRowCount(0);
+        List<FacultyAssignment> assignments = assignmentDAO.getAllAssignments();
+        for (FacultyAssignment fa : assignments) {
+            tableModel.addRow(new Object[]{
+                    fa.getFacultyName(),
+                    fa.getSubjectName(),
+                    fa.getGradeLevelName(),
+                    fa.getSectionName(),
+                    fa.isAdviser() ? "Yes" : "No"
+            });
+        }
+    }
+
+    private void loadFilterOptions() throws SQLException {
+        cbSubjectFilter.removeAllItems();
+        cbGradeFilter.removeAllItems();
+        cbSectionFilter.removeAllItems();
+        cbAdviserFilter.removeAllItems();
+
+        cbSubjectFilter.addItem("All");
+        cbGradeFilter.addItem("All");
+        cbSectionFilter.addItem("All");
+        cbAdviserFilter.addItem("All");
+        cbAdviserFilter.addItem("Yes");
+        cbAdviserFilter.addItem("No");
+
+        for (Subject s : subjectDAO.getAllSubjects()) {
+            cbSubjectFilter.addItem(s.getSubjectName());
+        }
+        for (GradeLevel gl : gradeLevelDAO.getAllGradeLevels()) {
+            cbGradeFilter.addItem(gl.getGradeLevelName());
+        }
+        for (Object[] sec : sectionDAO.getAllSections()) {
+            cbSectionFilter.addItem((String) sec[2]);
+        }
+
+        // Prevent resizing based on text width
+        cbSubjectFilter.setPrototypeDisplayValue("Longest Subject Name");
+        cbGradeFilter.setPrototypeDisplayValue("Grade 10");
+        cbSectionFilter.setPrototypeDisplayValue("Section 10");
+        cbAdviserFilter.setPrototypeDisplayValue("Yes");
+    }
+
+    private void addFilterSyncLogic() {
+        cbGradeFilter.addActionListener(e -> {
+            if (isUpdatingFilters) return;
+            isUpdatingFilters = true;
+            try {
+                String selectedGrade = (String) cbGradeFilter.getSelectedItem();
+                cbSectionFilter.removeAllItems();
+                cbSectionFilter.addItem("All");
+
+                if (selectedGrade != null && !selectedGrade.equals("All")) {
+                    List<Object[]> sections = sectionDAO.getSectionsByGrade(selectedGrade);
+                    for (Object[] sec : sections) {
+                        cbSectionFilter.addItem((String) sec[2]);
+                    }
+                } else {
+                    for (Object[] sec : sectionDAO.getAllSections()) {
+                        cbSectionFilter.addItem((String) sec[2]);
+                    }
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error loading sections: " + ex.getMessage());
+            } finally {
+                isUpdatingFilters = false;
+            }
+        });
+
+        cbSectionFilter.addActionListener(e -> {
+            if (isUpdatingFilters) return;
+            isUpdatingFilters = true;
+            try {
+                String selectedSection = (String) cbSectionFilter.getSelectedItem();
+                cbGradeFilter.removeAllItems();
+                cbGradeFilter.addItem("All");
+
+                if (selectedSection != null && !selectedSection.equals("All")) {
+                    String gradeName = sectionDAO.getGradeBySection(selectedSection);
+                    if (gradeName != null) {
+                        cbGradeFilter.addItem(gradeName);
+                        cbGradeFilter.setSelectedItem(gradeName);
+                    }
+                } else {
+                    for (GradeLevel gl : gradeLevelDAO.getAllGradeLevels()) {
+                        cbGradeFilter.addItem(gl.getGradeLevelName());
+                    }
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error loading grade levels: " + ex.getMessage());
+            } finally {
+                isUpdatingFilters = false;
+            }
+        });
+    }
+
+    private void addLogic() {
+        btnAssign.addActionListener(e -> {
+            try {
+                if (cbFaculty.getSelectedItem() == null || cbSubject.getSelectedItem() == null || cbSection.getSelectedItem() == null) {
+                    JOptionPane.showMessageDialog(this, "Please select Faculty, Subject, and Grade Level and Section.");
+                    return;
+                }
+
+                int facultyId = Integer.parseInt(cbFaculty.getSelectedItem().toString().split(" - ")[0]);
+                int subjectId = Integer.parseInt(cbSubject.getSelectedItem().toString().split(" - ")[0]);
+                int sectionId = Integer.parseInt(cbSection.getSelectedItem().toString().split(" - ")[0]);
+                boolean isAdviser = chkAdviser.isSelected();
+
+                boolean assigned = assignmentDAO.assignFacultyToSubject(facultyId, subjectId, sectionId, isAdviser);
+
+                if (assigned) {
+                    if (isAdviser) {
+                        facultyDAO.setAsAdviser(facultyId, sectionId);
+                    }
+                    JOptionPane.showMessageDialog(this, "Faculty successfully assigned!");
+                    loadAssignments();
+                } else {
+                    JOptionPane.showMessageDialog(this, "This faculty is already assigned to this subject and section.");
+                }
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            }
+        });
+
+        btnRemove.addActionListener(e -> {
+            int row = tblAssignments.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Select an assignment to remove.");
+                return;
+            }
+
+            String facultyName = (String) tableModel.getValueAt(row, 0);
+            String subjectName = (String) tableModel.getValueAt(row, 1);
+            String sectionName = (String) tableModel.getValueAt(row, 3);
+
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "Remove " + facultyName + " from " + subjectName + " (" + sectionName + ")?",
+                    "Confirm Removal", JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                try {
+                    assignmentDAO.removeAssignment(facultyName, subjectName, sectionName);
+                    loadAssignments();
+                    JOptionPane.showMessageDialog(this, "Assignment removed successfully!");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+                }
+            }
+        });
+
+        btnRefresh.addActionListener(e -> {
+            try {
+                loadAssignments();
+                loadDropdowns();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        btnSearch.addActionListener(e -> {
+            String keyword = txtSearch.getText().trim();
+            String subjectFilter = (String) cbSubjectFilter.getSelectedItem();
+            String gradeFilter = (String) cbGradeFilter.getSelectedItem();
+            String sectionFilter = (String) cbSectionFilter.getSelectedItem();
+            String adviserFilter = (String) cbAdviserFilter.getSelectedItem();
+
+            try {
+                List<FacultyAssignment> results = assignmentDAO.searchAssignments(
+                        keyword, subjectFilter, gradeFilter, sectionFilter, adviserFilter
+                );
+
+                tableModel.setRowCount(0);
+                for (FacultyAssignment fa : results) {
+                    tableModel.addRow(new Object[]{
+                            fa.getFacultyName(),
+                            fa.getSubjectName(),
+                            fa.getGradeLevelName(),
+                            fa.getSectionName(),
+                            fa.isAdviser() ? "Yes" : "No"
+                    });
+                }
+
+                // ✅ Only show "No results" once
+                if (results.isEmpty() && !keyword.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "No results found.");
+                }
+
+            } catch (SQLException ex) {
+                Logger.getLogger(ManageFacultyAssignmentPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        btnReset.addActionListener(e -> {
+            txtSearch.setText("");
+            cbSubjectFilter.setSelectedIndex(0);
+            cbGradeFilter.setSelectedIndex(0);
+            cbSectionFilter.setSelectedIndex(0);
+            cbAdviserFilter.setSelectedIndex(0);
+            try {
+                loadAssignments();
+            } catch (SQLException ex) {
+                Logger.getLogger(ManageFacultyAssignmentPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        // Auto-refresh table when filters change
+        ActionListener filterListener = e -> btnSearch.doClick();
+        cbSubjectFilter.addActionListener(filterListener);
+        cbGradeFilter.addActionListener(filterListener);
+        cbSectionFilter.addActionListener(filterListener);
+        cbAdviserFilter.addActionListener(filterListener);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAssign;
+    private javax.swing.JButton btnRefresh;
+    private javax.swing.JButton btnRemove;
+    private javax.swing.JButton btnReset;
+    private javax.swing.JButton btnSearch;
+    private javax.swing.JComboBox<String> cbAdviserFilter;
+    private javax.swing.JComboBox<String> cbFaculty;
+    private javax.swing.JComboBox<String> cbGradeFilter;
+    private javax.swing.JComboBox<String> cbSection;
+    private javax.swing.JComboBox<String> cbSectionFilter;
+    private javax.swing.JComboBox<String> cbSubject;
+    private javax.swing.JComboBox<String> cbSubjectFilter;
+    private javax.swing.JCheckBox chkAdviser;
+    private javax.swing.JLabel jLabel;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblFaculty;
+    private javax.swing.JLabel lblSection;
+    private javax.swing.JLabel lblSubject;
+    private javax.swing.JTable tblAssignments;
+    private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }

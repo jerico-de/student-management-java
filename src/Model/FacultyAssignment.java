@@ -8,15 +8,21 @@ package Model;
  *
  * @author USER
  */
-public class FacultySubject {
+public class FacultyAssignment {
     private int facultySubjectId;
     private int facultyId;
     private int subjectId;
     private int sectionId;
+    
+    private String facultyName;
+    private String subjectName;
+    private String gradeLevelName;
+    private String sectionName;
+    private boolean adviser;
 
-    public FacultySubject() {}
+    public FacultyAssignment() {}
 
-    public FacultySubject(int facultySubjectId, int facultyId, int subjectId, int sectionId) {
+    public FacultyAssignment(int facultySubjectId, int facultyId, int subjectId, int sectionId) {
         this.facultySubjectId = facultySubjectId;
         this.facultyId = facultyId;
         this.subjectId = subjectId;
@@ -34,6 +40,21 @@ public class FacultySubject {
 
     public int getSectionId() { return sectionId; }
     public void setSectionId(int sectionId) { this.sectionId = sectionId; }
+    
+    public String getFacultyName() { return facultyName; }
+    public void setFacultyName(String facultyName) { this.facultyName = facultyName; }
+    
+    public String getSubjectName() { return subjectName; }
+    public void setSubjectName(String subjectName) { this.subjectName = subjectName; }
+    
+    public String getGradeLevelName() { return gradeLevelName; }
+    public void setGradeLevelName(String gradeLevelName) { this.gradeLevelName = gradeLevelName; }
+    
+    public String getSectionName() { return sectionName; }
+    public void setSectionName(String sectionName) { this.sectionName = sectionName; }
+    
+    public boolean isAdviser() { return adviser; }
+    public void setAdviser(boolean adviser) { this.adviser = adviser; }
 
     @Override
     public String toString() {
