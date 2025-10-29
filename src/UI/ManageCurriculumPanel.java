@@ -313,15 +313,24 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Select a subject first.");
                 return;
             }
+            
             int id = (int) tableModel.getValueAt(row, 0);
-            curriculumDAO.removeSubjectFromCurriculum(id);
-            JOptionPane.showMessageDialog(this, "Subject removed.");
-            String grade = (String) cbGradeLevel.getSelectedItem();
-            if (grade != null) loadCurriculumTable(gradeLevelMap.get(grade));
+            int confirm = JOptionPane.showConfirmDialog(
+                    this, "Are you sure you want to remove this subject?", 
+                    "Confirm removal", JOptionPane.YES_NO_OPTION);
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                curriculumDAO.removeSubjectFromCurriculum(id);
+                JOptionPane.showMessageDialog(this, "Subject removed.");
+                String grade = (String) cbGradeLevel.getSelectedItem();
+                if (grade != null) loadCurriculumTable(gradeLevelMap.get(grade));
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to remove subject.");
+            }
         });
 
         btnAddNewSubject.addActionListener(e -> {
-            String subjectName = txtNewSubject.getText().trim();
+            String subjectName = capitalizeWords(txtNewSubject.getText().trim());
             if (subjectName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Enter a subject name.");
                 return;
@@ -353,6 +362,15 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
             }
         });
         
+        tblCurriculum.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int row = tblCurriculum.getSelectedRow();
+                if (row != -1) {
+                    cbSubject.setSelectedItem(tableModel.getValueAt(row, 1));
+                }
+            }
+        });
+        
         tblSubjects.getSelectionModel().addListSelectionListener(e -> {
             int row = tblSubjects.getSelectedRow();
             if (row != -1) {
@@ -370,7 +388,7 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
                 return;
             }
 
-            String newName = txtNewSubject.getText().trim();
+            String newName = capitalizeWords(txtNewSubject.getText().trim());
             if (newName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Enter a new subject name.");
                 return;
@@ -459,6 +477,22 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
         for (Curriculum c : list) {
             tableModel.addRow(new Object[]{c.getCurriculumId(), c.getSubjectName()});
         }
+    }
+    
+    private String capitalizeWords(String input) {
+        if (input == null || input.isEmpty()) return input;
+        String[] words = input.split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            if (word.length() > 1) {
+                sb.append(Character.toUpperCase(word.charAt(0)))
+                  .append(word.substring(1).toLowerCase());
+            } else {
+                sb.append(word.toUpperCase());
+            }
+            sb.append(" ");
+        }
+        return sb.toString().trim();
     }
 
 

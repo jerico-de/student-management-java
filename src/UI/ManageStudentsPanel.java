@@ -257,9 +257,9 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
         });
 
         btnAddStudent.addActionListener(e -> {
-            String firstName = txtFirstName.getText().trim();
-            String lastName = txtLastName.getText().trim();
-            String middleName = txtMiddleName.getText().trim();
+            String firstName = capitalizeWords(txtFirstName.getText().trim());
+            String lastName = capitalizeWords(txtLastName.getText().trim());
+            String middleName = capitalizeWords(txtMiddleName.getText().trim());
             String gender = (String) cmbGender.getSelectedItem();
             LocalDate birthdate = null;
             if (jdcBirthdate.getDate() != null) {
@@ -267,7 +267,7 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate();
             }
-            String address = txtAddress.getText().trim();
+            String address = capitalizeWords(txtAddress.getText().trim());
 
             if (firstName.isEmpty() || lastName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "First name and last name are required.");
@@ -314,9 +314,9 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
 
             int studentId = (int) tableModel.getValueAt(selectedRow, 0);
 
-            String firstName = txtFirstName.getText().trim();
-            String lastName = txtLastName.getText().trim();
-            String middleName = txtMiddleName.getText().trim();
+            String firstName = capitalizeWords(txtFirstName.getText().trim());
+            String lastName = capitalizeWords(txtLastName.getText().trim());
+            String middleName = capitalizeWords(txtMiddleName.getText().trim());
             String gender = (String) cmbGender.getSelectedItem();
             LocalDate birthdate = null;
             if (jdcBirthdate.getDate() != null) {
@@ -324,7 +324,7 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate();
             }
-            String address = txtAddress.getText().trim();
+            String address = capitalizeWords(txtAddress.getText().trim());
 
             if (firstName.isEmpty() || lastName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "First name and last name are required.");
@@ -493,6 +493,22 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
     
     private int getCurrentSchoolYearId() {
         return 1;
+    }
+    
+    private String capitalizeWords(String input) {
+        if (input == null || input.isEmpty()) return input;
+        String[] words = input.split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            if (word.length() > 1) {
+                sb.append(Character.toUpperCase(word.charAt(0)))
+                  .append(word.substring(1).toLowerCase());
+            } else {
+                sb.append(word.toUpperCase());
+            }
+            sb.append(" ");
+        }
+        return sb.toString().trim();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -235,7 +235,7 @@ public class ManageSectionsPanel extends javax.swing.JPanel {
         });
 
         btnAddSection.addActionListener(e -> {
-            String sectionName = txtSectionName.getText().trim();
+            String sectionName = capitalizeWords(txtSectionName.getText().trim());
             String gradeName = (String) cbGradeLevel.getSelectedItem();
 
             if (sectionName.isEmpty()) {
@@ -267,7 +267,7 @@ public class ManageSectionsPanel extends javax.swing.JPanel {
             }
 
             int sectionId = (int) tableModel.getValueAt(selectedRow, 0);
-            String sectionName = txtSectionName.getText().trim();
+            String sectionName = capitalizeWords(txtSectionName.getText().trim());
             String gradeName = (String) cbGradeLevel.getSelectedItem();
 
             if (sectionName.isEmpty()) {
@@ -323,6 +323,22 @@ public class ManageSectionsPanel extends javax.swing.JPanel {
                 }
             }
         });
+    }
+    
+    private String capitalizeWords(String input) {
+        if (input == null || input.isEmpty()) return input;
+        String[] words = input.split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            if (word.length() > 1) {
+                sb.append(Character.toUpperCase(word.charAt(0)))
+                  .append(word.substring(1).toLowerCase());
+            } else {
+                sb.append(word.toUpperCase());
+            }
+            sb.append(" ");
+        }
+        return sb.toString().trim();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

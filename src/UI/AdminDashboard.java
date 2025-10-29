@@ -42,11 +42,9 @@ public class AdminDashboard extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // --- CardLayout Setup ---
         cardLayout = new CardLayout();
         mainContent.setLayout(cardLayout);
 
-        // Add sample panels
         mainContent.add(new DashboardPanel(), "Dashboard");
         mainContent.add(new ManageUsersPanel(), "Users");
         mainContent.add(new ManageCurriculumPanel(), "Curriculum");
@@ -56,8 +54,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         mainContent.add(new ManageStudentsPanel(), "Students");
         mainContent.add(new ManageEnrollmentPanel(), "Enrollment");
         mainContent.add(new HistoryPanel(), "History");
-        
-        // Apply padding to labels
+       
         addPadding(lblDashboard);
         addPadding(lblManageUsers);
         addPadding(lblManageCurriculum);
@@ -68,10 +65,8 @@ public class AdminDashboard extends javax.swing.JFrame {
         addPadding(lblManageEnrollment);
         addPadding(lblHistory);
 
-        // Add listeners
         addSidebarListeners();
 
-        // Set default active
         setActiveLabel(lblDashboard);
         cardLayout.show(mainContent, "Dashboard");
     }

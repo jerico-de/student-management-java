@@ -578,7 +578,6 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
                     });
                 }
 
-                // Only show "No results" once
                 if (results.isEmpty() && !keyword.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "No results found.");
                 }
@@ -601,7 +600,6 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
             }
         });
 
-        // Auto-refresh table when filters change
         ActionListener filterListener = e -> btnSearch.doClick();
         cbSubjectFilter.addActionListener(filterListener);
         cbGradeFilter.addActionListener(filterListener);
