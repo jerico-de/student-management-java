@@ -10,6 +10,7 @@ import Model.Faculty;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -241,15 +242,26 @@ public class ManageFacultyPanel extends javax.swing.JPanel {
             String gender = (String) cmbGender.getSelectedItem();
             String address = capitalizeWords(txtAddress.getText().trim());
 
+            Date selectedDate = jdcBirthdate.getDate();
             LocalDate birthdate = null;
-            if (jdcBirthdate.getDate() != null) {
-                birthdate = jdcBirthdate.getDate().toInstant()
+            if (selectedDate != null) {
+                birthdate = selectedDate.toInstant()
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate();
             }
 
             if (firstName.isEmpty() || lastName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "First and last name are required.");
+                return;
+            }
+            
+            if (selectedDate == null) {
+                JOptionPane.showMessageDialog(this, "Birthdate is required.");
+                return;
+            }
+            
+            if (address.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Address is required.");
                 return;
             }
 
@@ -292,16 +304,27 @@ public class ManageFacultyPanel extends javax.swing.JPanel {
             String lastName = capitalizeWords(txtLastName.getText().trim());
             String middleName = capitalizeWords(txtMiddleName.getText().trim());
             String gender = (String) cmbGender.getSelectedItem();
+            Date selectedDate = jdcBirthdate.getDate();
             LocalDate birthdate = null;
-            if (jdcBirthdate.getDate() != null) {
-                birthdate = jdcBirthdate.getDate().toInstant()
+            if (selectedDate != null) {
+                birthdate = selectedDate.toInstant()
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate();
             }
             String address = capitalizeWords(txtAddress.getText().trim());
 
             if (firstName.isEmpty() || lastName.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "First name and last name are required.");
+                JOptionPane.showMessageDialog(this, "First and last name are required.");
+                return;
+            }
+            
+            if (selectedDate == null) {
+                JOptionPane.showMessageDialog(this, "Birthdate is required.");
+                return;
+            }
+            
+            if (address.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Address is required.");
                 return;
             }
 
@@ -315,8 +338,8 @@ public class ManageFacultyPanel extends javax.swing.JPanel {
             faculty.setAddress(address);
             
             int confirm = JOptionPane.showConfirmDialog(
-                    this, "Are you sure you want to delete this student?", 
-                    "Confirm Deletion", JOptionPane.YES_NO_OPTION
+                    this, "Are you sure you want to update this faculty?", 
+                    "Confirm Update", JOptionPane.YES_NO_OPTION
             );
             
             
@@ -328,11 +351,11 @@ public class ManageFacultyPanel extends javax.swing.JPanel {
                     Logger.getLogger(ManageFacultyPanel.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 if (updated) {
-                    JOptionPane.showMessageDialog(this, "Student updated successfully.");
+                    JOptionPane.showMessageDialog(this, "Faculty updated successfully.");
                     loadAllFaculty();
                     System.out.println("User " + "'" + firstName + "" + lastName + "'" + " updated successfully.");
                 } else {
-                    JOptionPane.showMessageDialog(this, "Failed to update student.");
+                    JOptionPane.showMessageDialog(this, "Failed to update faculty.");
                 }
             } clearFields();
         });
@@ -343,14 +366,22 @@ public class ManageFacultyPanel extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Select a faculty to delete.");
                 return;
             }
+            
             int id = (int) tableModel.getValueAt(row, 0);
-            try {
-                if (facultyDAO.deleteFaculty(id)) {
-                    JOptionPane.showMessageDialog(this, "Faculty deleted successfully.");
-                    loadAllFaculty();
+            int confirm = JOptionPane.showConfirmDialog(
+                    this, "Are you sure you want to delet this faculty?",
+                    "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                try {
+                    if (facultyDAO.deleteFaculty(id)) {
+                        JOptionPane.showMessageDialog(this, "Faculty deleted successfully.");
+                        loadAllFaculty();
+                    }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Error deleting faculty: " + ex.getMessage());
                 }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error deleting faculty: " + ex.getMessage());
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to delete faculty.");
             }
         });
 

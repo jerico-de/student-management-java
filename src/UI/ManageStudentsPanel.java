@@ -11,6 +11,7 @@ import DAO.UserDAO;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -261,16 +262,32 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
             String lastName = capitalizeWords(txtLastName.getText().trim());
             String middleName = capitalizeWords(txtMiddleName.getText().trim());
             String gender = (String) cmbGender.getSelectedItem();
+            Date selectedDate = jdcBirthdate.getDate();
             LocalDate birthdate = null;
-            if (jdcBirthdate.getDate() != null) {
-                birthdate = jdcBirthdate.getDate().toInstant()
+            if (selectedDate != null) {
+                birthdate = selectedDate.toInstant()
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate();
             }
             String address = capitalizeWords(txtAddress.getText().trim());
 
             if (firstName.isEmpty() || lastName.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "First name and last name are required.");
+                JOptionPane.showMessageDialog(this, "First and last name are required.");
+                return;
+            }
+            
+            if (selectedDate == null) {
+                JOptionPane.showMessageDialog(this, "Birthdate is required.");
+                return;
+            }
+            
+            if (birthdate.isAfter(LocalDate.now())) {
+                JOptionPane.showMessageDialog(this, "Birthdate cannot be in the future.");
+                return;
+            }
+            
+            if (address.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Address is required.");
                 return;
             }
 
@@ -318,16 +335,32 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
             String lastName = capitalizeWords(txtLastName.getText().trim());
             String middleName = capitalizeWords(txtMiddleName.getText().trim());
             String gender = (String) cmbGender.getSelectedItem();
+            Date selectedDate = jdcBirthdate.getDate();
             LocalDate birthdate = null;
-            if (jdcBirthdate.getDate() != null) {
-                birthdate = jdcBirthdate.getDate().toInstant()
+            if (selectedDate != null) {
+                birthdate = selectedDate.toInstant()
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate();
             }
             String address = capitalizeWords(txtAddress.getText().trim());
 
             if (firstName.isEmpty() || lastName.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "First name and last name are required.");
+                JOptionPane.showMessageDialog(this, "First and last name are required.");
+                return;
+            }
+            
+            if (selectedDate == null) {
+                JOptionPane.showMessageDialog(this, "Birthdate is required.");
+                return;
+            }
+            
+            if (birthdate.isAfter(LocalDate.now())) {
+                JOptionPane.showMessageDialog(this, "Birthdate cannot be in the future.");
+                return;
+            }
+            
+            if (address.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Address is required.");
                 return;
             }
 
@@ -341,8 +374,8 @@ public class ManageStudentsPanel extends javax.swing.JPanel {
             student.setAddress(address);
             
             int confirm = JOptionPane.showConfirmDialog(
-                    this, "Are you sure you want to delete this student?", 
-                    "Confirm Deletion", JOptionPane.YES_NO_OPTION
+                    this, "Are you sure you want to update this student?", 
+                    "Confirm Update", JOptionPane.YES_NO_OPTION
             );
             
             

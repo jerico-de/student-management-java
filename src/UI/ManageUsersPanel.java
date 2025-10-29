@@ -216,6 +216,16 @@ public class ManageUsersPanel extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Username is required.");
                 return;
             }
+            
+            if (role == "NONE") {
+                JOptionPane.showMessageDialog(this, "Select a valid role.");
+                return;
+            }
+            
+            if (status == "NONE") {
+                JOptionPane.showMessageDialog(this, "Select a valid status.");
+                return;
+            }
 
             String defaultPassword = "password";
             
@@ -246,6 +256,21 @@ public class ManageUsersPanel extends javax.swing.JPanel {
             String username = txtUsername.getText().trim();
             String role = (String) cbRole.getSelectedItem();
             String status = (String) cbStatus.getSelectedItem();
+            
+            if (username.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Username is required.");
+                return;
+            }
+            
+            if (role == "NONE") {
+                JOptionPane.showMessageDialog(this, "Select a valid role.");
+                return;
+            }
+            
+            if (status == "NONE") {
+                JOptionPane.showMessageDialog(this, "Select a valid status.");
+                return;
+            }
 
             User u = new User();
             u.setUserId(userId);

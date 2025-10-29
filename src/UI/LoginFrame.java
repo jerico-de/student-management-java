@@ -192,8 +192,7 @@ public class LoginFrame extends javax.swing.JFrame {
                             "Login successful. Welcome, " + user.getUsername() + "!",
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE);
-                    
-                    // Example redirect based on role
+                   
                     switch (user.getRole().toUpperCase()) {
                         case "ADMIN":
                         {
@@ -212,8 +211,21 @@ public class LoginFrame extends javax.swing.JFrame {
                             dispose();
                             break;
 
-                        case "faculty":
-                            // new FacultyDashboard().setVisible(true);
+                        case "FACULTY":
+                            {
+                            try {
+                                new FacultyDashboard().setVisible(true);
+                            } catch (SQLException ex) {
+                                Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
+                                    JOptionPane.showMessageDialog(
+                                    LoginFrame.this,
+                                    "Failed to load Admin Dashboard: " + ex.getMessage(),
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE
+                                    );
+                                }
+                            }
+                            dispose();
                             break;
                         case "student":
                             // new StudentDashboard().setVisible(true);
