@@ -28,7 +28,7 @@ public class SectionDAO {
 
             while (rs.next()) {
                 Section s = new Section();
-                s.setId(rs.getInt("section_id"));
+                s.setSectionId(rs.getInt("section_id"));
                 s.setSectionName(rs.getString("section_name"));
                 s.setGradeLevelName(rs.getString("grade_name")); // make sure Section has a gradeLevelName field
                 s.setGradeLevelId(rs.getInt("grade_level_id"));

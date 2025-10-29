@@ -32,10 +32,6 @@ public class Subject {
 
     @Override
     public String toString() {
-        return "Subject{" +
-                "subjectId=" + subjectId +
-                ", gradeLevelId=" + gradeLevelId +
-                ", subjectName='" + subjectName + '\'' +
-                '}';
+        return subjectId == -1 ? "Select" :subjectName;
     }
 }

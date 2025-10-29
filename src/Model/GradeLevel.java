@@ -9,24 +9,24 @@ package Model;
  * @author USER
  */
 public class GradeLevel {
-    private int id;
+    private int gradeLevelId;
     private String gradeLevelName;
 
     public GradeLevel() {}
 
-    public GradeLevel(int id, String gradeLevelName) {
-        this.id = id;
+    public GradeLevel(int gradeLevelId, String gradeLevelName) {
+        this.gradeLevelId = gradeLevelId;
         this.gradeLevelName = gradeLevelName;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getGradeLevelId() { return gradeLevelId; }
+    public void setGradeLevelId(int gradeLevelId) { this.gradeLevelId = gradeLevelId; }
 
     public String getGradeLevelName() { return gradeLevelName; }
     public void setGradeLevelName(String gradeLevelName) { this.gradeLevelName = gradeLevelName; }
 
    @Override
     public String toString() {
-        return gradeLevelName;
+        return gradeLevelId == -1 ? "Select" :gradeLevelName;
     }
 }

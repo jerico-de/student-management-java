@@ -9,7 +9,7 @@ package Model;
  * @author USER
  */
 public class Section {
-    private int id;
+    private int sectionId;
     private int gradeLevelId;
     private String sectionName;
     
@@ -17,19 +17,24 @@ public class Section {
 
     public Section() {}
 
-    public Section(int id, int gradeLevelId, String sectionName) {
-        this.id = id;
+    public Section(int sectionId, int gradeLevelId, String sectionName) {
+        this.sectionId = sectionId;
         this.gradeLevelId = gradeLevelId;
         this.sectionName = sectionName;
     }
+    
+    public Section(int sectionId, String sectionName) {
+        this.sectionId = sectionId;
+        this.sectionName = sectionName;
+    }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getSectionId() { return sectionId; }
+    public void setSectionId(int sectionId) { this.sectionId = sectionId; }
 
     public int getGradeLevelId() { return gradeLevelId; }
     public void setGradeLevelId(int gradeLevelId) { this.gradeLevelId = gradeLevelId; }
 
-    public String getSectonName() { return sectionName; }
+    public String getSectionName() { return sectionName; }
     public void setSectionName(String sectionName) { this.sectionName = sectionName; }
     
     public String getGradeLevelName() { return gradeLevelName; }
@@ -37,6 +42,6 @@ public class Section {
 
     @Override
     public String toString() {
-        return sectionName;
+        return sectionId == -1 ? "Select" : sectionName;
     }
 }

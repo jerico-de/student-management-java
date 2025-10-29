@@ -79,12 +79,6 @@ public class Faculty {
 
     @Override
     public String toString() {
-        return "Faculty{" +
-                "facultyId=" + facultyId +
-                ", userId=" + userId +
-                ", name='" + lastName + ", " + firstName + '\'' +
-                ", advisoryGradeLevelId=" + advisoryGradeLevelId +
-                ", advisorySectionId=" + advisorySectionId +
-                '}';
+        return facultyId == -1 ? "Select" : lastName + ", " + firstName;
     }
 }

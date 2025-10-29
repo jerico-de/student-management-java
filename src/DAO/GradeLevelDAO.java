@@ -25,7 +25,7 @@ public class GradeLevelDAO {
 
             while (rs.next()) {
                 GradeLevel gradeLevel = new GradeLevel();
-                gradeLevel.setId(rs.getInt("grade_level_id"));
+                gradeLevel.setGradeLevelId(rs.getInt("grade_level_id"));
                 gradeLevel.setGradeLevelName(rs.getString("grade_name"));
                 list.add(gradeLevel);
             }

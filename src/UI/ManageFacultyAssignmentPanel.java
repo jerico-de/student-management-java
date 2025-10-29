@@ -43,9 +43,9 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
      */
     public ManageFacultyAssignmentPanel() throws SQLException {
         initComponents();
-        initComponents();
         initTable();
         loadDropdowns();
+        addGradeLevelSectionSync();
         loadFilterOptions();
         addFilterSyncLogic();
         loadAssignments();
@@ -81,21 +81,23 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
         cbSectionFilter = new javax.swing.JComboBox<>();
         cbAdviserFilter = new javax.swing.JComboBox<>();
         cbGradeFilter = new javax.swing.JComboBox<>();
+        cbGradeLevel = new javax.swing.JComboBox<>();
+        lblSubject1 = new javax.swing.JLabel();
 
         jLabel.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel.setText("MANAGE ASSIGNMENT");
 
-        lblFaculty.setText("Faculty");
+        lblFaculty.setText("Faculty:");
 
-        lblSubject.setText("Subject");
+        lblSubject.setText("Subject:");
 
-        lblSection.setText("Section");
+        lblSection.setText("Section:");
 
-        cbFaculty.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbFaculty.setModel(new javax.swing.DefaultComboBoxModel<Faculty>());
 
-        cbSubject.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbSubject.setModel(new javax.swing.DefaultComboBoxModel<Subject>());
 
-        cbSection.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbSection.setModel(new javax.swing.DefaultComboBoxModel<Section>());
 
         chkAdviser.setText("Set as Adviser for this Section");
 
@@ -132,6 +134,10 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
 
         cbGradeFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
+        cbGradeLevel.setModel(new javax.swing.DefaultComboBoxModel<GradeLevel>());
+
+        lblSubject1.setText("Grade Level:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -147,32 +153,23 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
                         .addComponent(jLabel)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(99, 99, 99)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblFaculty)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(cbFaculty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblSubject)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(cbSubject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblSection)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(cbSection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(chkAdviser)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(58, 58, 58)
-                                .addComponent(btnAssign)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnRemove)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
+                            .addComponent(lblFaculty, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblSubject, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblSubject1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblSection, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cbFaculty, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbGradeLevel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbSection, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(chkAdviser))
+                        .addGap(39, 39, 39)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(btnReset)
+                                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(cbSubjectFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(15, 15, 15)
@@ -185,7 +182,13 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
                                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnSearch))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(57, 57, 57)
+                        .addComponent(btnAssign)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnRemove)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 542, Short.MAX_VALUE)))
                 .addGap(38, 38, 38))
         );
         layout.setVerticalGroup(
@@ -197,7 +200,6 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSearch))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 15, Short.MAX_VALUE)
@@ -214,15 +216,19 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
                         .addGap(52, 52, 52))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(58, 58, 58)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(lblFaculty)
-                            .addComponent(cbFaculty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cbFaculty, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(lblSubject)
-                            .addComponent(cbSubject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cbSubject, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(lblSubject1)
+                            .addComponent(cbGradeLevel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(lblSection)
                             .addComponent(cbSection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
@@ -245,17 +251,87 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
     private void loadDropdowns() throws SQLException {
         cbFaculty.removeAllItems();
         cbSubject.removeAllItems();
+        cbGradeLevel.removeAllItems();
         cbSection.removeAllItems();
 
+        Faculty placeholderFaculty = new Faculty();
+        placeholderFaculty.setFacultyId(-1);
+        placeholderFaculty.setFirstName("");
+        placeholderFaculty.setLastName("Select");
+        cbFaculty.addItem(placeholderFaculty);
         for (Faculty f : facultyDAO.getAllFaculty()) {
             cbFaculty.addItem(f);
         }
+        
+        Subject placeholderSubject = new Subject();
+        placeholderSubject.setSubjectId(-1);
+        placeholderSubject.setSubjectName("Select");
+        cbSubject.addItem(placeholderSubject);
         for (Subject s : subjectDAO.getAllSubjects()) {
             cbSubject.addItem(s);
         }
+        
+        GradeLevel placeholderGrade = new GradeLevel();
+        placeholderGrade.setGradeLevelId(-1);
+        placeholderGrade.setGradeLevelName("Select");
+        cbGradeLevel.addItem(placeholderGrade);
+        for (GradeLevel gl : gradeLevelDAO.getAllGradeLevels()) {
+            cbGradeLevel.addItem(gl);
+        }
+        
+        Section placeholderSection = new Section(-1, "Select");
+        cbSection.addItem(placeholderSection);
         for (Object[] sec : sectionDAO.getAllSections()) {
-            Section section = new Section((int) sec[0], (String) sec[2]);
+            int sectionId = (int) sec[0];
+            String sectionName = (String) sec[2];
+            Section section = new Section(sectionId, sectionName);
             cbSection.addItem(section);
+        }
+    }
+    
+    private void addGradeLevelSectionSync() {
+        cbGradeLevel.addActionListener(e -> {
+            try {
+                GradeLevel selectedGrade = (GradeLevel) cbGradeLevel.getSelectedItem();
+                cbSection.removeAllItems();
+
+                if (selectedGrade != null) {
+                    
+                    List<Object[]> sections = sectionDAO.getSectionsByGrade(selectedGrade.getGradeLevelName());
+                    for (Object[] sec : sections) {
+                        int sectionId = (int) sec[0];
+                        String sectionName = (String) sec[2];
+                        Section section = new Section(sectionId, sectionName);
+                        cbSection.addItem(section);
+                    }
+                }
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error loading sections: " + ex.getMessage());
+            }
+        });
+        
+        cbSection.addActionListener(e -> {
+            try {
+                Section selectedSection = (Section) cbSection.getSelectedItem();
+                if (selectedSection != null) {
+                    String gradeName = sectionDAO.getGradeBySection(selectedSection.getSectionName());
+                    if (gradeName != null) {
+                        for (int i = 0; i < cbGradeLevel.getItemCount(); i++) {
+                            GradeLevel gl = cbGradeLevel.getItemAt(i);
+                            if (gl.getGradeLevelName().equals(gradeName)) {
+                                cbGradeLevel.setSelectedItem(gl);
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error loading grade level: " + ex.getMessage());
+            }
+        });
     }
 
     private void loadAssignments() throws SQLException {
@@ -279,8 +355,6 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
         cbAdviserFilter.removeAllItems();
 
         cbSubjectFilter.addItem("All");
-        cbGradeFilter.addItem("All");
-        cbSectionFilter.addItem("All");
         cbAdviserFilter.addItem("All");
         cbAdviserFilter.addItem("Yes");
         cbAdviserFilter.addItem("No");
@@ -295,7 +369,6 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
             cbSectionFilter.addItem((String) sec[2]);
         }
 
-        // Prevent resizing based on text width
         cbSubjectFilter.setPrototypeDisplayValue("Longest Subject Name");
         cbGradeFilter.setPrototypeDisplayValue("Grade 10");
         cbSectionFilter.setPrototypeDisplayValue("Section 10");
@@ -360,14 +433,23 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
     private void addLogic() {
         btnAssign.addActionListener(e -> {
             try {
-                if (cbFaculty.getSelectedItem() == null || cbSubject.getSelectedItem() == null || cbSection.getSelectedItem() == null) {
-                    JOptionPane.showMessageDialog(this, "Please select Faculty, Subject, and Grade Level and Section.");
+                Faculty selectedFaculty = (Faculty) cbFaculty.getSelectedItem();
+                Subject selectedSubject = (Subject) cbSubject.getSelectedItem();
+                GradeLevel selectedGradeLevel = (GradeLevel) cbGradeLevel.getSelectedItem();
+                Section selectedSection = (Section) cbSection.getSelectedItem();
+
+                if (selectedFaculty == null || selectedFaculty.getFacultyId() == -1 || 
+                    selectedSubject == null || selectedSubject.getSubjectId() == -1 ||
+                    selectedGradeLevel == null || selectedGradeLevel.getGradeLevelId() == -1 ||
+                    selectedSection == null || selectedSection.getSectionId() == -1) {
+                
+                    JOptionPane.showMessageDialog(this, "Please select Faculty, Subject, Grade Level, and Section.");
                     return;
                 }
 
-                int facultyId = Integer.parseInt(cbFaculty.getSelectedItem().toString().split(" - ")[0]);
-                int subjectId = Integer.parseInt(cbSubject.getSelectedItem().toString().split(" - ")[0]);
-                int sectionId = Integer.parseInt(cbSection.getSelectedItem().toString().split(" - ")[0]);
+                int facultyId = selectedFaculty.getFacultyId();
+                int subjectId = selectedSubject.getSubjectId();
+                int sectionId = selectedSection.getSectionId();
                 boolean isAdviser = chkAdviser.isSelected();
 
                 boolean assigned = assignmentDAO.assignFacultyToSubject(facultyId, subjectId, sectionId, isAdviser);
@@ -397,11 +479,12 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
 
             String facultyName = (String) tableModel.getValueAt(row, 0);
             String subjectName = (String) tableModel.getValueAt(row, 1);
+            String gradeLevelName = (String) tableModel.getValueAt(row, 2);
             String sectionName = (String) tableModel.getValueAt(row, 3);
 
             int confirm = JOptionPane.showConfirmDialog(this,
-                    "Remove " + facultyName + " from " + subjectName + " (" + sectionName + ")?",
-                    "Confirm Removal", JOptionPane.YES_NO_OPTION);
+                    "Remove " + facultyName + " from " + subjectName + " (" + gradeLevelName + " - " + 
+                    sectionName + ")?", "Confirm Removal", JOptionPane.YES_NO_OPTION);
 
             if (confirm == JOptionPane.YES_OPTION) {
                 try {
@@ -414,6 +497,54 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
                 }
             }
         });
+        
+        tblAssignments.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int selectedRow = tblAssignments.getSelectedRow();
+                if (selectedRow >= 0) {
+                    
+                String facultyName = (String) tblAssignments.getValueAt(selectedRow, 0);
+                String subjectName = (String) tblAssignments.getValueAt(selectedRow, 1);
+                String gradeLevelName = (String) tblAssignments.getValueAt(selectedRow, 2);
+                String sectionName = (String) tblAssignments.getValueAt(selectedRow, 3);
+
+                // Loop through combo box items to find matching objects
+                for (int i = 0; i < cbFaculty.getItemCount(); i++) {
+                    Faculty f = cbFaculty.getItemAt(i);
+                    String fullName = f.getLastName() + ", " + f.getFirstName();
+                    if (fullName.equalsIgnoreCase(facultyName)) {
+                        cbFaculty.setSelectedIndex(i);
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < cbSubject.getItemCount(); i++) {
+                    Subject s = cbSubject.getItemAt(i);
+                    if (s.getSubjectName().equalsIgnoreCase(subjectName)) {
+                        cbSubject.setSelectedIndex(i);
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < cbGradeLevel.getItemCount(); i++) {
+                    GradeLevel g = cbGradeLevel.getItemAt(i);
+                    if (g.getGradeLevelName().equalsIgnoreCase(gradeLevelName)) {
+                        cbGradeLevel.setSelectedIndex(i);
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < cbSection.getItemCount(); i++) {
+                    Section s = cbSection.getItemAt(i);
+                    if (s.getSectionName().equalsIgnoreCase(sectionName)) {
+                        cbSection.setSelectedIndex(i);
+                        break;
+                    }
+                }
+            }
+        }
+    });
 
         btnRefresh.addActionListener(e -> {
             try {
@@ -447,7 +578,7 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
                     });
                 }
 
-                // ✅ Only show "No results" once
+                // Only show "No results" once
                 if (results.isEmpty() && !keyword.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "No results found.");
                 }
@@ -485,11 +616,12 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
     private javax.swing.JButton btnReset;
     private javax.swing.JButton btnSearch;
     private javax.swing.JComboBox<String> cbAdviserFilter;
-    private javax.swing.JComboBox<String> cbFaculty;
+    private javax.swing.JComboBox<Faculty> cbFaculty;
     private javax.swing.JComboBox<String> cbGradeFilter;
-    private javax.swing.JComboBox<String> cbSection;
+    private javax.swing.JComboBox<GradeLevel> cbGradeLevel;
+    private javax.swing.JComboBox<Section> cbSection;
     private javax.swing.JComboBox<String> cbSectionFilter;
-    private javax.swing.JComboBox<String> cbSubject;
+    private javax.swing.JComboBox<Subject> cbSubject;
     private javax.swing.JComboBox<String> cbSubjectFilter;
     private javax.swing.JCheckBox chkAdviser;
     private javax.swing.JLabel jLabel;
@@ -497,6 +629,7 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
     private javax.swing.JLabel lblFaculty;
     private javax.swing.JLabel lblSection;
     private javax.swing.JLabel lblSubject;
+    private javax.swing.JLabel lblSubject1;
     private javax.swing.JTable tblAssignments;
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables

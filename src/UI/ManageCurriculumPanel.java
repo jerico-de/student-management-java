@@ -37,8 +37,6 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
     private Map<String, Integer> gradeLevelMap = new HashMap<>();
     private Map<String, Integer> subjectMap = new HashMap<>();
 
-    private AcademicYear activeYear;
-
     /**
      * Creates new form ManageCurriculumPanel
      */
@@ -441,7 +439,7 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
         List<GradeLevel> levels = gradeLevelDAO.getAllGradeLevels();
         for (GradeLevel g : levels) {
             cbGradeLevel.addItem(g.getGradeLevelName());
-            gradeLevelMap.put(g.getGradeLevelName(), g.getId());
+            gradeLevelMap.put(g.getGradeLevelName(), g.getGradeLevelId());
         }
     }
     
