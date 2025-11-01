@@ -36,7 +36,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         mainContent.setLayout(cardLayout);
 
         mainContent.add(new AdminDashboardPanel(), "Dashboard");
-        mainContent.add(new AdminViewProfile(), "Profile");
+        mainContent.add(new AdminViewProfilePanel(), "Profile");
         mainContent.add(new ManageUsersPanel(), "Users");
         mainContent.add(new AdminManageCurriculumPanel(), "Curriculum");
         mainContent.add(new AdminManageSectionsPanel(), "Sections");

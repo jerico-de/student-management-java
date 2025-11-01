@@ -303,4 +303,28 @@ public class UserDAO {
         }
         throw new SQLException("Failed to create faculty user.");
     }
+    
+    public boolean checkPassword(int userId, String inputPassword) throws SQLException {
+        String sql = "SELECT password FROM users WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String storedPassword = rs.getString("password");
+                return storedPassword.equals(inputPassword);
+            }
+        }
+        return false;
+    }
+    
+    public boolean updatePassword(int userId, String newPassword) throws SQLException {
+        String sql = "UPDATE users SET password = ? WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newPassword);
+            ps.setInt(2, userId);
+            return ps.executeUpdate() > 0;
+        }
+    }
 }

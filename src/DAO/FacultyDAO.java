@@ -158,4 +158,29 @@ public class FacultyDAO {
             ps.executeUpdate();
         }
     }
+    
+    public Faculty getFacultyByUserId(int id) throws SQLException {
+        String sql = "SELECT * FROM faculty WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Faculty f = new Faculty();
+                    f.setFacultyId(rs.getInt("faculty_id"));
+                    f.setUserId(rs.getInt("user_id"));
+                    f.setFirstName(rs.getString("first_name"));
+                    f.setLastName(rs.getString("last_name"));
+                    f.setMiddleName(rs.getString("middle_name"));
+                    f.setGender(rs.getString("gender"));
+                    f.setBirthdate(rs.getDate("birthdate") != null ? rs.getDate("birthdate").toLocalDate() : null);
+                    f.setAddress(rs.getString("address"));
+                    f.setAdvisoryGradeLevelId((Integer) rs.getObject("advisory_grade_level_id"));
+                    f.setAdvisorySectionId((Integer) rs.getObject("advisory_section_id"));
+                    return f;
+                }
+            }
+        }
+        return null;
+    }
 }

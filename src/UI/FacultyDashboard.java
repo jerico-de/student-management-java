@@ -36,9 +36,11 @@ public class FacultyDashboard extends javax.swing.JFrame {
         cardLayout = new CardLayout();
         mainContent.setLayout(cardLayout);
 
-        mainContent.add(new AdminDashboardPanel(), "Dashboard");
+        mainContent.add(new FacultyDashboardPanel(), "Dashboard");
+        mainContent.add(new FacultyViewProfilePanel(), "Profile");
        
         addPadding(lblDashboard);
+        addPadding(lblViewProfile);
         addPadding(lblUserInformation);
 
         addSidebarListeners();
@@ -70,6 +72,7 @@ public class FacultyDashboard extends javax.swing.JFrame {
         lblDashboard = new javax.swing.JLabel();
         lblUserInformation = new javax.swing.JLabel();
         btnLogout = new javax.swing.JButton();
+        lblViewProfile = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
 
@@ -97,6 +100,9 @@ public class FacultyDashboard extends javax.swing.JFrame {
 
         btnLogout.setText("Log out");
 
+        lblViewProfile.setForeground(new java.awt.Color(255, 255, 255));
+        lblViewProfile.setText("View Profile");
+
         javax.swing.GroupLayout sidebarLayout = new javax.swing.GroupLayout(sidebar);
         sidebar.setLayout(sidebarLayout);
         sidebarLayout.setHorizontalGroup(
@@ -107,7 +113,8 @@ public class FacultyDashboard extends javax.swing.JFrame {
                         .addGap(21, 21, 21)
                         .addGroup(sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblDashboard)
-                            .addComponent(lblUserInformation)))
+                            .addComponent(lblUserInformation)
+                            .addComponent(lblViewProfile)))
                     .addGroup(sidebarLayout.createSequentialGroup()
                         .addGap(33, 33, 33)
                         .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -118,9 +125,11 @@ public class FacultyDashboard extends javax.swing.JFrame {
             .addGroup(sidebarLayout.createSequentialGroup()
                 .addGap(87, 87, 87)
                 .addComponent(lblDashboard)
-                .addGap(5, 5, 5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblViewProfile)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblUserInformation)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 505, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 482, Short.MAX_VALUE)
                 .addComponent(btnLogout)
                 .addGap(48, 48, 48))
         );
@@ -184,6 +193,14 @@ public class FacultyDashboard extends javax.swing.JFrame {
                 setActiveLabel(lblDashboard);
             }
         });
+        
+        lblViewProfile.addMouseListener(new MouseAdapter() {
+           @Override
+           public void mouseClicked(MouseEvent e) {
+               cardLayout.show(mainContent, "Profile");
+               setActiveLabel(lblViewProfile);
+           }
+        });
 
         btnLogout.addMouseListener(new MouseAdapter() {
             @Override
@@ -203,6 +220,7 @@ public class FacultyDashboard extends javax.swing.JFrame {
 
         // hover effect
         addHoverEffect(lblDashboard);
+        addHoverEffect(lblViewProfile);
     }
 
     private void addHoverEffect(JLabel label) {
@@ -245,6 +263,7 @@ public class FacultyDashboard extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblDashboard;
     private javax.swing.JLabel lblUserInformation;
+    private javax.swing.JLabel lblViewProfile;
     private javax.swing.JPanel mainContent;
     private javax.swing.JPanel sidebar;
     // End of variables declaration//GEN-END:variables

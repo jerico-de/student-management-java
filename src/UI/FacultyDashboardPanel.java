@@ -8,12 +8,12 @@ package UI;
  *
  * @author USER
  */
-public class FacultyViewProfile extends javax.swing.JPanel {
+public class FacultyDashboardPanel extends javax.swing.JPanel {
 
     /**
-     * Creates new form FacultyViewProfile
+     * Creates new form FacultyDashboardPanel
      */
-    public FacultyViewProfile() {
+    public FacultyDashboardPanel() {
         initComponents();
     }
 

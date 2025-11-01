@@ -85,6 +85,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="lblDashboard" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="lblUserInformation" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblViewProfile" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
@@ -101,9 +102,11 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="87" max="-2" attributes="0"/>
                   <Component id="lblDashboard" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="lblViewProfile" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Component id="lblUserInformation" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="505" max="32767" attributes="0"/>
+                  <EmptySpace pref="482" max="32767" attributes="0"/>
                   <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
               </Group>
@@ -130,6 +133,14 @@
         <Component class="javax.swing.JButton" name="btnLogout">
           <Properties>
             <Property name="text" type="java.lang.String" value="Log out"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="lblViewProfile">
+          <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ff" green="ff" red="ff" type="rgb"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="View Profile"/>
           </Properties>
         </Component>
       </SubComponents>
