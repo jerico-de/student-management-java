@@ -4,18 +4,16 @@
  */
 package UI;
 
-import java.sql.SQLException;
-
 /**
  *
  * @author USER
  */
-public class DashboardPanel extends javax.swing.JPanel {
+public class FacultyViewProfile extends javax.swing.JPanel {
 
     /**
-     * Creates new form DashboardPanel
+     * Creates new form FacultyViewProfile
      */
-    public DashboardPanel() throws SQLException {
+    public FacultyViewProfile() {
         initComponents();
     }
 

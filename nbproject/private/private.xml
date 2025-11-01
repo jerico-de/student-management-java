@@ -4,8 +4,10 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageStudentsPanel.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/FacultyDashboard.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/LoginFrame.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/GradeLevel.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/DashboardPanel.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageEnrollmentPanel.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Section.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageUsersPanel.java</file>
@@ -23,6 +25,7 @@
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Util/DBConnection.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageCurriculumPanel.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/AcademicYear.java</file>
+            <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/HistoryPanel.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/Model/Student.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/UI/ManageFacultyPanel.java</file>
             <file>file:/C:/Users/USER/Documents/NetBeansProjects/JAVA-MATERIALS/studentmanagement/src/studentmanagement/MainMenu.java</file>

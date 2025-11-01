@@ -26,7 +26,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author USER
  */
-public class ManageSectionsPanel extends javax.swing.JPanel {
+public class AdminManageSectionsPanel extends javax.swing.JPanel {
 
     private SectionDAO sectionDAO = new SectionDAO();
     private GradeLevelDAO gradeLevelDAO = new GradeLevelDAO();
@@ -35,7 +35,7 @@ public class ManageSectionsPanel extends javax.swing.JPanel {
     /**
      * Creates new form ManageSectionsPanel
      */
-    public ManageSectionsPanel() throws SQLException {
+    public AdminManageSectionsPanel() throws SQLException {
         initComponents();
         initTable();
         loadGradeLevels();

@@ -10,12 +10,12 @@ import java.sql.SQLException;
  *
  * @author USER
  */
-public class HistoryPanel extends javax.swing.JPanel {
+public class AdminHistoryPanel extends javax.swing.JPanel {
 
     /**
      * Creates new form HistoryPanel
      */
-    public HistoryPanel()throws SQLException {
+    public AdminHistoryPanel()throws SQLException {
         initComponents();
     }
 

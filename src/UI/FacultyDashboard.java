@@ -36,7 +36,7 @@ public class FacultyDashboard extends javax.swing.JFrame {
         cardLayout = new CardLayout();
         mainContent.setLayout(cardLayout);
 
-        mainContent.add(new DashboardPanel(), "Dashboard");
+        mainContent.add(new AdminDashboardPanel(), "Dashboard");
        
         addPadding(lblDashboard);
         addPadding(lblUserInformation);

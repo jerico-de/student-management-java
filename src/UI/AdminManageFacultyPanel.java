@@ -21,14 +21,14 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author USER
  */
-public class ManageFacultyPanel extends javax.swing.JPanel {
+public class AdminManageFacultyPanel extends javax.swing.JPanel {
 
     private FacultyDAO facultyDAO = new FacultyDAO();
     private DefaultTableModel tableModel;
     /**
      * Creates new form ManageFacultyPanel
      */
-    public ManageFacultyPanel() throws SQLException {
+    public AdminManageFacultyPanel() throws SQLException {
         initComponents();
         initTable();
         addLogic();
@@ -260,6 +260,11 @@ public class ManageFacultyPanel extends javax.swing.JPanel {
                 return;
             }
             
+            if (birthdate.isAfter(LocalDate.now())) {
+                JOptionPane.showMessageDialog(this, "Birthdate cannot be in the future.");
+                return;
+            }
+            
             if (address.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Address is required.");
                 return;
@@ -323,6 +328,11 @@ public class ManageFacultyPanel extends javax.swing.JPanel {
                 return;
             }
             
+            if (birthdate.isAfter(LocalDate.now())) {
+                JOptionPane.showMessageDialog(this, "Birthdate cannot be in the future.");
+                return;
+            }
+            
             if (address.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Address is required.");
                 return;
@@ -348,7 +358,7 @@ public class ManageFacultyPanel extends javax.swing.JPanel {
                 try {
                     updated = facultyDAO.updateFaculty(faculty);
                 } catch (SQLException ex) {
-                    Logger.getLogger(ManageFacultyPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(AdminManageFacultyPanel.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 if (updated) {
                     JOptionPane.showMessageDialog(this, "Faculty updated successfully.");

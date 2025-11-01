@@ -26,7 +26,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author USER
  */
-public class ManageCurriculumPanel extends javax.swing.JPanel {
+public class AdminManageCurriculumPanel extends javax.swing.JPanel {
     
     private final CurriculumDAO curriculumDAO = new CurriculumDAO();
     private final GradeLevelDAO gradeLevelDAO = new GradeLevelDAO();
@@ -40,7 +40,7 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
     /**
      * Creates new form ManageCurriculumPanel
      */
-    public ManageCurriculumPanel() throws SQLException {
+    public AdminManageCurriculumPanel() throws SQLException {
         initComponents();
         initTable();
         initSubjectsTable();
@@ -163,12 +163,6 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
                                 .addComponent(btnRefresh))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addGap(0, 8, Short.MAX_VALUE)
-                                        .addComponent(btnAddSubject)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(btnRemoveSubject)
-                                        .addGap(40, 40, 40))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(112, 112, 112)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -182,13 +176,21 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
                                             .addComponent(cbSubject, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addGap(0, 8, Short.MAX_VALUE)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(lblNewSubject)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(txtNewSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(90, 90, 90)))
+                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addComponent(btnAddSubject)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(btnRemoveSubject)
+                                                .addGap(40, 40, 40))
+                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addGroup(layout.createSequentialGroup()
+                                                        .addComponent(lblNewSubject)
+                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(txtNewSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addGap(90, 90, 90)))))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(lblCurrentGrade)
@@ -273,7 +275,7 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
                 model.addRow(new Object[]{s.getSubjectId(), s.getSubjectName()});
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AdminManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -347,7 +349,7 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
                     JOptionPane.showMessageDialog(this, "Subject already exists.");
                 }
             } catch (SQLException ex) {
-                Logger.getLogger(ManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AdminManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
 
@@ -358,7 +360,7 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
                 String grade = (String) cbGradeLevel.getSelectedItem();
                 if (grade != null) loadCurriculumTable(gradeLevelMap.get(grade));
             } catch (SQLException ex) {
-                Logger.getLogger(ManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AdminManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         
@@ -407,7 +409,7 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
                     JOptionPane.showMessageDialog(this, "Subject name already exists.");
                 }
             } catch (SQLException ex) {
-                Logger.getLogger(ManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AdminManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         
@@ -436,7 +438,7 @@ public class ManageCurriculumPanel extends javax.swing.JPanel {
                         JOptionPane.showMessageDialog(this, "Unable to delete subject (possibly in use).");
                     }
                 } catch (SQLException ex) {
-                    Logger.getLogger(ManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(AdminManageCurriculumPanel.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });

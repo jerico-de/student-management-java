@@ -7,6 +7,7 @@ package UI;
 import javax.swing.*;
 import java.awt.event.*;
 import DAO.UserDAO;
+import Model.Session;
 import Model.User;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -186,14 +187,15 @@ public class LoginFrame extends javax.swing.JFrame {
                     return;
                 }
 
-                User user = userDAO.getUserByUsernameAndPassword(username, password);
-                if (user != null) {
+                User loggedInUser = userDAO.getUserByUsernameAndPassword(username, password);
+                if (loggedInUser != null) {
+                    Session.setCurrentUser(loggedInUser);
                     JOptionPane.showMessageDialog(LoginFrame.this,
-                            "Login successful. Welcome, " + user.getUsername() + "!",
+                            "Login successful. Welcome, " + loggedInUser.getUsername() + "!",
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE);
                    
-                    switch (user.getRole().toUpperCase()) {
+                    switch (loggedInUser.getRole().toUpperCase()) {
                         case "ADMIN":
                         {
                             try {

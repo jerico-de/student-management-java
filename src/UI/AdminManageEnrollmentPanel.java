@@ -35,7 +35,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author USER
  */
-public class ManageEnrollmentPanel extends javax.swing.JPanel {
+public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
 
     private AcademicYearDAO academicYearDAO = new AcademicYearDAO();
     private GradeLevelDAO gradeLevelDAO = new GradeLevelDAO();
@@ -47,7 +47,7 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
     private List<AcademicYear> years;
     private DefaultTableModel tableModel;
     
-    public ManageEnrollmentPanel() throws SQLException {
+    public AdminManageEnrollmentPanel() throws SQLException {
         initComponents();
         initTable();
         loadAcademicYears();
@@ -378,7 +378,7 @@ public class ManageEnrollmentPanel extends javax.swing.JPanel {
             try {
                 getAllStudents();
             } catch (SQLException ex) {
-                Logger.getLogger(ManageEnrollmentPanel.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AdminManageEnrollmentPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
 

@@ -4,25 +4,15 @@
  */
 package UI;
 
-import java.awt.BorderLayout;
+import Model.Session;
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingConstants;
 
 /**
  *
@@ -45,17 +35,19 @@ public class AdminDashboard extends javax.swing.JFrame {
         cardLayout = new CardLayout();
         mainContent.setLayout(cardLayout);
 
-        mainContent.add(new DashboardPanel(), "Dashboard");
+        mainContent.add(new AdminDashboardPanel(), "Dashboard");
+        mainContent.add(new AdminViewProfile(), "Profile");
         mainContent.add(new ManageUsersPanel(), "Users");
-        mainContent.add(new ManageCurriculumPanel(), "Curriculum");
-        mainContent.add(new ManageSectionsPanel(), "Sections");
-        mainContent.add(new ManageFacultyPanel(), "Faculty");
-        mainContent.add(new ManageFacultyAssignmentPanel(), "Assignment");
+        mainContent.add(new AdminManageCurriculumPanel(), "Curriculum");
+        mainContent.add(new AdminManageSectionsPanel(), "Sections");
+        mainContent.add(new AdminManageFacultyPanel(), "Faculty");
+        mainContent.add(new AdminManageFacultyAssignmentPanel(), "Assignment");
         mainContent.add(new ManageStudentsPanel(), "Students");
-        mainContent.add(new ManageEnrollmentPanel(), "Enrollment");
-        mainContent.add(new HistoryPanel(), "History");
+        mainContent.add(new AdminManageEnrollmentPanel(), "Enrollment");
+        mainContent.add(new AdminHistoryPanel(), "History");
        
         addPadding(lblDashboard);
+        addPadding(lblViewProfile);
         addPadding(lblManageUsers);
         addPadding(lblManageCurriculum);
         addPadding(lblManageSections);
@@ -100,6 +92,7 @@ public class AdminDashboard extends javax.swing.JFrame {
         lblManageEnrollment = new javax.swing.JLabel();
         lblHistory = new javax.swing.JLabel();
         btnLogout = new javax.swing.JButton();
+        lblViewProfile = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         mainContent = new javax.swing.JPanel();
@@ -138,13 +131,20 @@ public class AdminDashboard extends javax.swing.JFrame {
 
         btnLogout.setText("Log out");
 
+        lblViewProfile.setForeground(new java.awt.Color(255, 255, 255));
+        lblViewProfile.setText("View Profile");
+
         javax.swing.GroupLayout sidebarLayout = new javax.swing.GroupLayout(sidebar);
         sidebar.setLayout(sidebarLayout);
         sidebarLayout.setHorizontalGroup(
             sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(sidebarLayout.createSequentialGroup()
+                .addGap(33, 33, 33)
+                .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(sidebarLayout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addGroup(sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblViewProfile)
                     .addComponent(lblDashboard)
                     .addComponent(lblManageUsers)
                     .addComponent(lblManageCurriculum)
@@ -154,16 +154,15 @@ public class AdminDashboard extends javax.swing.JFrame {
                     .addComponent(lblManageStudents)
                     .addComponent(lblHistory)
                     .addComponent(lblManageEnrollment)))
-            .addGroup(sidebarLayout.createSequentialGroup()
-                .addGap(33, 33, 33)
-                .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         sidebarLayout.setVerticalGroup(
             sidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(sidebarLayout.createSequentialGroup()
                 .addGap(87, 87, 87)
                 .addComponent(lblDashboard)
-                .addGap(5, 5, 5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblViewProfile)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblManageUsers)
                 .addGap(5, 5, 5)
                 .addComponent(lblManageCurriculum)
@@ -179,7 +178,7 @@ public class AdminDashboard extends javax.swing.JFrame {
                 .addComponent(lblManageEnrollment)
                 .addGap(5, 5, 5)
                 .addComponent(lblHistory)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 358, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 335, Short.MAX_VALUE)
                 .addComponent(btnLogout)
                 .addGap(48, 48, 48))
         );
@@ -252,6 +251,14 @@ public class AdminDashboard extends javax.swing.JFrame {
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(mainContent, "Dashboard");
                 setActiveLabel(lblDashboard);
+            }
+        });
+        
+        lblViewProfile.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(mainContent, "Profile");
+                setActiveLabel(lblViewProfile);
             }
         });
 
@@ -329,6 +336,7 @@ public class AdminDashboard extends javax.swing.JFrame {
                     JOptionPane.YES_NO_OPTION
                 );
                 if (confirm == JOptionPane.YES_OPTION) {
+                    Session.clear();
                     dispose();
                     new LoginFrame().setVisible(true);
                 }
@@ -337,6 +345,7 @@ public class AdminDashboard extends javax.swing.JFrame {
 
         // hover effect
         addHoverEffect(lblDashboard);
+        addHoverEffect(lblViewProfile);
         addHoverEffect(lblManageUsers);
         addHoverEffect(lblManageCurriculum);
         addHoverEffect(lblManageSections);
@@ -394,6 +403,7 @@ public class AdminDashboard extends javax.swing.JFrame {
     private javax.swing.JLabel lblManageSections;
     private javax.swing.JLabel lblManageStudents;
     private javax.swing.JLabel lblManageUsers;
+    private javax.swing.JLabel lblViewProfile;
     private javax.swing.JPanel mainContent;
     private javax.swing.JPanel sidebar;
     // End of variables declaration//GEN-END:variables

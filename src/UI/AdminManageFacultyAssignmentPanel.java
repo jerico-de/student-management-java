@@ -26,7 +26,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author USER
  */
-public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
+public class AdminManageFacultyAssignmentPanel extends javax.swing.JPanel {
     
     private FacultyDAO facultyDAO = new FacultyDAO();
     private SubjectDAO subjectDAO = new SubjectDAO();
@@ -41,7 +41,7 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
     /**
      * Creates new form ManageFacultyAssignmentPanel
      */
-    public ManageFacultyAssignmentPanel() throws SQLException {
+    public AdminManageFacultyAssignmentPanel() throws SQLException {
         initComponents();
         initTable();
         loadDropdowns();
@@ -583,7 +583,7 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
                 }
 
             } catch (SQLException ex) {
-                Logger.getLogger(ManageFacultyAssignmentPanel.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AdminManageFacultyAssignmentPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
 
@@ -596,7 +596,7 @@ public class ManageFacultyAssignmentPanel extends javax.swing.JPanel {
             try {
                 loadAssignments();
             } catch (SQLException ex) {
-                Logger.getLogger(ManageFacultyAssignmentPanel.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(AdminManageFacultyAssignmentPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
 
