@@ -68,14 +68,17 @@ public class FacultyViewProfilePanel extends javax.swing.JPanel {
         lblUserId.setText("User ID:");
 
         txtUserId.setEditable(false);
+        txtUserId.setBackground(new java.awt.Color(255, 255, 255));
 
         lblUsername.setText("Username:");
 
         txtUsername.setEditable(false);
+        txtUsername.setBackground(new java.awt.Color(255, 255, 255));
 
         lblRole.setText("Role:");
 
         txtRole.setEditable(false);
+        txtRole.setBackground(new java.awt.Color(255, 255, 255));
 
         lblFirstName.setText("First Name:");
 
@@ -90,20 +93,27 @@ public class FacultyViewProfilePanel extends javax.swing.JPanel {
         lblAddress.setText("Address:");
 
         txtFirstName.setEditable(false);
+        txtFirstName.setBackground(new java.awt.Color(255, 255, 255));
 
         txtLastName.setEditable(false);
+        txtLastName.setBackground(new java.awt.Color(255, 255, 255));
 
         txtMiddleName.setEditable(false);
+        txtMiddleName.setBackground(new java.awt.Color(255, 255, 255));
 
         txtGender.setEditable(false);
+        txtGender.setBackground(new java.awt.Color(255, 255, 255));
 
         txtBirthdate.setEditable(false);
+        txtBirthdate.setBackground(new java.awt.Color(255, 255, 255));
 
         txtAddress.setEditable(false);
+        txtAddress.setBackground(new java.awt.Color(255, 255, 255));
 
         lblFacultyId.setText("Faculty ID:");
 
         txtFacultyId.setEditable(false);
+        txtFacultyId.setBackground(new java.awt.Color(255, 255, 255));
 
         btnChangePassword.setText("Change Password");
 

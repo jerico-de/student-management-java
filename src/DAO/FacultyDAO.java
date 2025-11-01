@@ -183,4 +183,22 @@ public class FacultyDAO {
         }
         return null;
     }
+    
+    public int getTotalFaculty() throws SQLException {
+        String sql = """
+                     SELECT COUNT(DISTINCT f.faculty_id) AS total
+                                 FROM faculty f
+                                 JOIN users u ON f.user_id = u.user_id
+                                 WHERE u.status = 'ACTIVE'
+                     """;
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareCall(sql);
+            ResultSet rs = ps.executeQuery()) {
+            
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+        }
+        return 0;
+    }
 }

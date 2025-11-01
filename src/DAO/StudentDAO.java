@@ -226,4 +226,23 @@ public class StudentDAO {
             return false;
         }
     }
+    
+    public int getTotalEnrolledStudents() throws SQLException {
+        String sql = """
+            SELECT COUNT(DISTINCT s.student_id) AS total
+            FROM students s
+            JOIN enrollment e ON s.student_id = e.student_id
+            WHERE e.status = 'Enrolled'
+        """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+        }
+        return 0;
+    }
 }
