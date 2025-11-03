@@ -18,17 +18,50 @@ public class EnrollmentDAO {
     
     public boolean enrollStudent(int studentId, int gradeLevelId, int sectionId, int yearId) throws SQLException {
         String sql = """
-            INSERT INTO enrollment (student_id, grade_level_id, section_id, year_id, status)
-            VALUES (?, ?, ?, ?, 'Enrolled')
-        """;
+                    INSERT INTO enrollment (student_id, grade_level_id, section_id, year_id, status) "
+                        + "VALUES (?, ?, ?, ?, 'Enrolled')";
+                    """;
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, studentId);
             ps.setInt(2, gradeLevelId);
             ps.setInt(3, sectionId);
             ps.setInt(4, yearId);
-            return ps.executeUpdate() > 0;
+            
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
         }
+    }
+    
+    public int enrollMultipleStudents(List<Integer> studentIds, int gradeLevelId, int sectionId, int yearId) {
+        String query = "INSERT INTO enrollment (student_id, grade_level_id, section_id, year_id, status) "
+                     + "VALUES (?, ?, ?, ?, 'Enrolled')";
+        int successCount = 0;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            for (int studentId : studentIds) {
+                ps.setInt(1, studentId);
+                ps.setInt(2, gradeLevelId);
+                ps.setInt(3, sectionId);
+                ps.setInt(4, yearId);
+                ps.addBatch();
+            }
+
+            int[] results = ps.executeBatch();
+            for (int res : results) {
+                if (res > 0) successCount++;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return successCount;
     }
 
     public void unenrollStudent(int studentId, int yearId) throws SQLException {

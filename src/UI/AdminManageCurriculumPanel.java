@@ -262,7 +262,6 @@ public class AdminManageCurriculumPanel extends javax.swing.JPanel {
         tblSubjects.setModel(subjectModel);
         tblSubjects.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        // load all subjects
         loadSubjectsTable();
     }
     

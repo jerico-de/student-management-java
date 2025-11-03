@@ -47,11 +47,16 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
     private List<AcademicYear> years;
     private DefaultTableModel tableModel;
     
+    private boolean isUpdatingSection = false;
+    private boolean isUpdatingGrade = false;
+    
     public AdminManageEnrollmentPanel() throws SQLException {
         initComponents();
         initTable();
         loadAcademicYears();
         loadGradeLevels();
+        loadSections();
+        addGradeLevelSectionSync();
         addLogic();
         loadActiveYear();
         loadActiveYearStatus();
@@ -105,11 +110,7 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
 
         lblGradeLevel.setText("Grade Level:");
 
-        cbGradeLevel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         lblSection.setText("Section:");
-
-        cbSection.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         btnFilter.setText("Filter");
 
@@ -338,9 +339,80 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
 
     private void loadGradeLevels() throws SQLException {
         cbGradeLevel.removeAllItems();
-        for (GradeLevel level : gradeLevelDAO.getAllGradeLevels()) {
-            cbGradeLevel.addItem(level.getGradeLevelName());
+        GradeLevel placeholderGrade = new GradeLevel();
+        placeholderGrade.setGradeLevelId(-1);
+        placeholderGrade.setGradeLevelName("Select");
+        cbGradeLevel.addItem(placeholderGrade);
+        for (GradeLevel gl : gradeLevelDAO.getAllGradeLevels()) {
+            cbGradeLevel.addItem(gl);
         }
+    }
+    
+    private void loadSections() throws SQLException {
+        cbSection.removeAllItems();
+        Section placeholderSection = new Section(-1, "Select");
+        cbSection.addItem(placeholderSection);
+        for (Object[] sec : sectionDAO.getAllSections()) {
+            int sectionId = (int) sec[0];
+            String sectionName = (String) sec[2];
+            Section section = new Section(sectionId, sectionName);
+            cbSection.addItem(section);
+        }
+    }
+    
+    private void addGradeLevelSectionSync() {
+        cbGradeLevel.addActionListener(e -> {
+            if (isUpdatingGrade) return;
+            try {
+                isUpdatingSection = true;
+                
+                GradeLevel selectedGrade = (GradeLevel) cbGradeLevel.getSelectedItem();
+                cbSection.removeAllItems();
+
+                if (selectedGrade != null) {
+                    
+                    List<Object[]> sections = sectionDAO.getSectionsByGrade(selectedGrade.getGradeLevelName());
+                    for (Object[] sec : sections) {
+                        int sectionId = (int) sec[0];
+                        String sectionName = (String) sec[2];
+                        Section section = new Section(sectionId, sectionName);
+                        cbSection.addItem(section);
+                    }
+                }
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error loading sections: " + ex.getMessage());
+            } finally {
+                isUpdatingSection = false;
+            }
+        });
+        
+        cbSection.addActionListener(e -> {
+            if (isUpdatingSection) return;
+            try {
+                isUpdatingGrade = true;
+                
+                Section selectedSection = (Section) cbSection.getSelectedItem();
+                if (selectedSection != null) {
+                    String gradeName = sectionDAO.getGradeBySection(selectedSection.getSectionName());
+                    if (gradeName != null) {
+                        for (int i = 0; i < cbGradeLevel.getItemCount(); i++) {
+                            GradeLevel gl = cbGradeLevel.getItemAt(i);
+                            if (gl.getGradeLevelName().equals(gradeName)) {
+                                cbGradeLevel.setSelectedItem(gl);
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error loading grade level: " + ex.getMessage());
+            } finally {
+                isUpdatingGrade = false;
+            }
+        });
     }
 
     private void loadActiveYearStatus() {
@@ -407,12 +479,60 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
         });
 
         btnEnrollSelected.addActionListener(e -> {
-            int row = tblStudents.getSelectedRow();
-            if (row == -1) {
-                JOptionPane.showMessageDialog(this, "Please select a student.");
+            int[] selectedRows = tblStudents.getSelectedRows();
+            if (selectedRows.length == 0) {
+                JOptionPane.showMessageDialog(this, "Please select at least one student to enroll.");
                 return;
             }
-            System.out.println("Enroll logic here");
+
+            // Collect selected student IDs
+            List<Integer> selectedStudentIds = new ArrayList<>();
+            for (int row : selectedRows) {
+                int studentId = Integer.parseInt(tblStudents.getValueAt(row, 0).toString());
+                selectedStudentIds.add(studentId);
+            }
+            
+            GradeLevel selectedGradeLevel = (GradeLevel) cbGradeLevel.getSelectedItem();
+            Section selectedSection = (Section) cbSection.getSelectedItem();
+
+            if (selectedGradeLevel == null || selectedSection == null ||
+                "Select".equals(selectedGradeLevel.toString()) ||
+                "Select".equals(selectedSection.toString())) {
+                JOptionPane.showMessageDialog(this, "Please select a grade level and section.");
+                return;
+            }
+
+            int gradeLevelId = selectedGradeLevel.getGradeLevelId();
+            int sectionId = selectedSection.getSectionId();
+
+            // Get active academic year
+            AcademicYear activeYear = null;
+            try {
+                activeYear = academicYearDAO.getActiveYear();
+            } catch (SQLException ex) {
+                Logger.getLogger(AdminManageEnrollmentPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (activeYear == null) {
+                JOptionPane.showMessageDialog(this, "No active academic year found. Please open an academic year first.");
+                return;
+            }
+
+            // Confirm enrollment
+            int confirm = JOptionPane.showConfirmDialog(this,
+                "Enroll " + selectedStudentIds.size() + " selected students to " + selectedSection.toString() + "?",
+                "Confirm Enrollment",
+                JOptionPane.YES_NO_OPTION
+            );
+            if (confirm != JOptionPane.YES_OPTION) return;
+
+            int enrolledCount = enrollmentDAO.enrollMultipleStudents(
+                    selectedStudentIds, gradeLevelId, sectionId, activeYear.getYearId()
+            );
+            if (enrolledCount > 0) {
+                JOptionPane.showMessageDialog(this, enrolledCount + " students successfully enrolled!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Enrollment failed. Please try again.");
+            }
         });
 
         btnUnenrollSelected.addActionListener(e -> {
@@ -504,8 +624,8 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
     private javax.swing.JButton btnSearch;
     private javax.swing.JButton btnSetActiveYear;
     private javax.swing.JButton btnUnenrollSelected;
-    private javax.swing.JComboBox<String> cbGradeLevel;
-    private javax.swing.JComboBox<String> cbSection;
+    private javax.swing.JComboBox<GradeLevel> cbGradeLevel;
+    private javax.swing.JComboBox<Section> cbSection;
     private javax.swing.JComboBox<String> cboAcademicYear;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
