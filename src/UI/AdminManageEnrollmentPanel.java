@@ -122,19 +122,19 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
         lblStudentId.setText("Student ID:");
 
         txtStudentId.setEditable(false);
-        txtStudentId.setBackground(new java.awt.Color(204, 204, 204));
+        txtStudentId.setBackground(new java.awt.Color(255, 255, 255));
         txtStudentId.setForeground(new java.awt.Color(0, 0, 0));
 
         lblName.setText("Name:");
 
         txtName.setEditable(false);
-        txtName.setBackground(new java.awt.Color(204, 204, 204));
+        txtName.setBackground(new java.awt.Color(255, 255, 255));
         txtName.setForeground(new java.awt.Color(0, 0, 0));
 
         lblEnrollmentStatus.setText("Enrollment Status:");
 
         txtEnrollmentStatus.setEditable(false);
-        txtEnrollmentStatus.setBackground(new java.awt.Color(204, 204, 204));
+        txtEnrollmentStatus.setBackground(new java.awt.Color(255, 255, 255));
         txtEnrollmentStatus.setForeground(new java.awt.Color(0, 0, 0));
 
         cboAcademicYear.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -168,11 +168,11 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
         jLabel3.setText("Section:");
 
         txtGradeLevel.setEditable(false);
-        txtGradeLevel.setBackground(new java.awt.Color(204, 204, 204));
+        txtGradeLevel.setBackground(new java.awt.Color(255, 255, 255));
         txtGradeLevel.setForeground(new java.awt.Color(0, 0, 0));
 
         txtSection.setEditable(false);
-        txtSection.setBackground(new java.awt.Color(204, 204, 204));
+        txtSection.setBackground(new java.awt.Color(255, 255, 255));
         txtSection.setForeground(new java.awt.Color(0, 0, 0));
 
         btnEndAY.setText("End A.Y.");

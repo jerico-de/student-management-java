@@ -327,4 +327,21 @@ public class UserDAO {
             return ps.executeUpdate() > 0;
         }
     }
+    
+    public int getTotalUsers() throws SQLException {
+        String sql = """
+                     SELECT COUNT(DISTINCT u.user_id) AS total
+                                 FROM users u
+                                 WHERE u.status = 'ACTIVE'
+                     """;
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareCall(sql);
+            ResultSet rs = ps.executeQuery()) {
+            
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+        }
+        return 0;
+    }
 }

@@ -292,7 +292,7 @@ public class AdminManageCurriculumPanel extends javax.swing.JPanel {
         btnAddSubject.addActionListener(e -> {
             String grade = (String) cbGradeLevel.getSelectedItem();
             String subject = (String) cbSubject.getSelectedItem();
-            if (grade == null || subject == null) {
+            if (grade == "Select" || subject == "Select") {
                 JOptionPane.showMessageDialog(this, "Please select both grade and subject.");
                 return;
             }
@@ -455,6 +455,7 @@ public class AdminManageCurriculumPanel extends javax.swing.JPanel {
 
     private void loadGradeLevels() throws SQLException {
         cbGradeLevel.removeAllItems();
+        cbGradeLevel.addItem("Select");
         gradeLevelMap.clear();
         List<GradeLevel> levels = gradeLevelDAO.getAllGradeLevels();
         for (GradeLevel g : levels) {
@@ -465,6 +466,7 @@ public class AdminManageCurriculumPanel extends javax.swing.JPanel {
     
     private void loadAllSubjects() throws SQLException {
         cbSubject.removeAllItems();
+        cbSubject.addItem("Select");
         subjectMap.clear();
         List<Subject> subjects = subjectDAO.getAllSubjects();
         for (Subject s : subjects) {
