@@ -102,6 +102,7 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
         txtGradeLevel = new javax.swing.JTextField();
         txtSection = new javax.swing.JTextField();
         btnEndAY = new javax.swing.JButton();
+        btnDropStudent = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(900, 590));
 
@@ -179,6 +180,8 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
 
         btnEndAY.setText("End A.Y.");
 
+        btnDropStudent.setText("Drop Selected");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -193,7 +196,9 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
                         .addGap(21, 21, 21)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGap(6, 6, 6)
+                                .addComponent(btnDropStudent)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnRefresh))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -298,7 +303,9 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
                             .addComponent(btnUnenrollSelected)))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(btnRefresh)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnRefresh)
+                    .addComponent(btnDropStudent))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -553,12 +560,14 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
                 return;
             }
 
+            // Collect selected student IDs
             List<Integer> selectedStudentIds = new ArrayList<>();
             for (int row : selectedRows) {
                 int studentId = Integer.parseInt(tblStudents.getValueAt(row, 0).toString());
                 selectedStudentIds.add(studentId);
             }
 
+            // Get active academic year
             AcademicYear activeYear = null;
             try {
                 activeYear = academicYearDAO.getActiveYear();
@@ -572,35 +581,81 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
                 return;
             }
 
+            // Confirm unenrollment
             int confirm = JOptionPane.showConfirmDialog(
                 this,
-                "Unenroll " + selectedStudentIds.size() + " selected student(s) for " + activeYear.getYearLabel() + "?",
+                "Unenroll " + selectedStudentIds.size() + " selected students from the current academic year?",
                 "Confirm Unenrollment",
                 JOptionPane.YES_NO_OPTION
             );
-
             if (confirm != JOptionPane.YES_OPTION) return;
 
+            // Execute unenrollment
             try {
-                Map<String, String> results = enrollmentDAO.unenrollMultipleStudentsDetailed(
-                    selectedStudentIds, activeYear.getYearId()
-                );
+                int unenrolledCount = enrollmentDAO.unenrollMultipleStudents(selectedStudentIds, activeYear.getYearId());
 
-                StringBuilder message = new StringBuilder("<html><body>");
-                for (Map.Entry<String, String> entry : results.entrySet()) {
-                    message.append("• <b>").append(entry.getKey()).append("</b>: ")
-                           .append(entry.getValue()).append("<br>");
+                if (unenrolledCount > 0) {
+                    JOptionPane.showMessageDialog(this, unenrolledCount + " student(s) successfully unenrolled!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "No students were unenrolled. They may not be enrolled this year.");
                 }
-                message.append("</body></html>");
 
-                JOptionPane.showMessageDialog(this, new JLabel(message.toString()), 
-                                              "Unenrollment Summary", JOptionPane.INFORMATION_MESSAGE);
-
-                getAllStudents(); // refresh table
+                getAllStudents(); // refresh table to reflect changes
 
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Unenrollment failed: " + ex.getMessage());
+            }
+        });
+        
+        btnDropStudent.addActionListener(e -> {
+            int[] selectedRows = tblStudents.getSelectedRows();
+            if (selectedRows.length == 0) {
+                JOptionPane.showMessageDialog(this, "Please select at least one student to drop.");
+                return;
+            }
+            
+            List<Integer> selectedStudentIds = new ArrayList<>();
+            for (int row : selectedRows) {
+                int studentId = Integer.parseInt(tblStudents.getValueAt(row, 0).toString());
+                selectedStudentIds.add(studentId);
+            }
+            
+            AcademicYear activeYear = null;
+            try {
+                activeYear = academicYearDAO.getActiveYear();
+                if (activeYear == null) {
+                    JOptionPane.showMessageDialog(this, "No active academic year found. Please open an academic year first.");
+                    return;
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error fetching active academic year.");
+                return;
+            }
+            
+            int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Drop " + selectedStudentIds.size() + " selected students from the current academic year?",
+                "Confirm Drop",
+                JOptionPane.YES_NO_OPTION
+            );
+            if (confirm != JOptionPane.YES_OPTION) return;
+            
+            try {
+                int dropppedCount = enrollmentDAO.dropStudents(selectedStudentIds, activeYear.getYearId());
+
+                if (dropppedCount > 0) {
+                    JOptionPane.showMessageDialog(this, dropppedCount + " student(s) successfully dropped!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "No students were dropped. They may not be enrolled this year.");
+                }
+
+                getAllStudents(); // refresh table to reflect changes
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Dropping failed: " + ex.getMessage());
             }
         });
 
@@ -677,6 +732,7 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDropStudent;
     private javax.swing.JButton btnEndAY;
     private javax.swing.JButton btnEnrollSelected;
     private javax.swing.JButton btnFilter;

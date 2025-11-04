@@ -344,4 +344,24 @@ public class UserDAO {
         }
         return 0;
     }
+    
+    public boolean isUserActiveForStudent(int studentId) throws SQLException {
+        String sql = """
+            SELECT u.status
+            FROM users u
+            JOIN students s ON u.user_id = s.student_id
+            WHERE s.student_id = ? AND u.role = 'STUDENT'
+        """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, studentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return "ACTIVE".equalsIgnoreCase(rs.getString("status"));
+                }
+            }
+        }
+        return false;
+    }
 }
