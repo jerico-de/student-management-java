@@ -11,6 +11,7 @@ import DAO.SectionDAO;
 import DAO.StudentDAO;
 import Model.AcademicYear;
 import Model.Enrollment;
+import Model.EnrollmentResult;
 import Model.GradeLevel;
 import Model.Section;
 import Model.Student;
@@ -310,7 +311,7 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
                 new Object[]{"Student ID", "First Name", "Last Name", "Status"}, 0
         );
         tblStudents.setModel(tableModel);
-        tblStudents.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tblStudents.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     }
 
     private void loadAcademicYears() throws SQLException {
@@ -485,7 +486,6 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
                 return;
             }
 
-            // Collect selected student IDs
             List<Integer> selectedStudentIds = new ArrayList<>();
             for (int row : selectedRows) {
                 int studentId = Integer.parseInt(tblStudents.getValueAt(row, 0).toString());
@@ -509,39 +509,99 @@ public class AdminManageEnrollmentPanel extends javax.swing.JPanel {
             AcademicYear activeYear = null;
             try {
                 activeYear = academicYearDAO.getActiveYear();
+                if (activeYear == null) {
+                    JOptionPane.showMessageDialog(this, "No active academic year found. Please open an academic year first.");
+                    return;
+                }
             } catch (SQLException ex) {
-                Logger.getLogger(AdminManageEnrollmentPanel.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            if (activeYear == null) {
-                JOptionPane.showMessageDialog(this, "No active academic year found. Please open an academic year first.");
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error fetching active academic year.");
                 return;
             }
 
             // Confirm enrollment
             int confirm = JOptionPane.showConfirmDialog(this,
-                "Enroll " + selectedStudentIds.size() + " selected students to " + selectedSection.toString() + "?",
+                "Enroll " + selectedStudentIds.size() + " selected students to section " + selectedSection.toString() + "?",
                 "Confirm Enrollment",
                 JOptionPane.YES_NO_OPTION
             );
             if (confirm != JOptionPane.YES_OPTION) return;
 
-            int enrolledCount = enrollmentDAO.enrollMultipleStudents(
+            try {
+                EnrollmentResult result = enrollmentDAO.enrollMultipleStudents(
                     selectedStudentIds, gradeLevelId, sectionId, activeYear.getYearId()
-            );
-            if (enrolledCount > 0) {
-                JOptionPane.showMessageDialog(this, enrolledCount + " students successfully enrolled!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Enrollment failed. Please try again.");
+                );
+
+                String message = result.getEnrolledCount() + " student(s) enrolled successfully.";
+                if (!result.getSkippedStudents().isEmpty()) {
+                    message += "\n\nSkipped (already enrolled):\n" + String.join(", ", result.getSkippedStudents());
+                }
+
+                JOptionPane.showMessageDialog(this, message);
+                getAllStudents();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Enrollment failed: " + ex.getMessage());
             }
         });
 
         btnUnenrollSelected.addActionListener(e -> {
-            int row = tblStudents.getSelectedRow();
-            if (row == -1) {
-                JOptionPane.showMessageDialog(this, "Please select a student.");
+            int[] selectedRows = tblStudents.getSelectedRows();
+            if (selectedRows.length == 0) {
+                JOptionPane.showMessageDialog(this, "Please select at least one student to unenroll.");
                 return;
             }
-            System.out.println("Unenroll logic here");
+
+            List<Integer> selectedStudentIds = new ArrayList<>();
+            for (int row : selectedRows) {
+                int studentId = Integer.parseInt(tblStudents.getValueAt(row, 0).toString());
+                selectedStudentIds.add(studentId);
+            }
+
+            AcademicYear activeYear = null;
+            try {
+                activeYear = academicYearDAO.getActiveYear();
+                if (activeYear == null) {
+                    JOptionPane.showMessageDialog(this, "No active academic year found. Please open an academic year first.");
+                    return;
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error fetching active academic year.");
+                return;
+            }
+
+            int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Unenroll " + selectedStudentIds.size() + " selected student(s) for " + activeYear.getYearLabel() + "?",
+                "Confirm Unenrollment",
+                JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm != JOptionPane.YES_OPTION) return;
+
+            try {
+                Map<String, String> results = enrollmentDAO.unenrollMultipleStudentsDetailed(
+                    selectedStudentIds, activeYear.getYearId()
+                );
+
+                StringBuilder message = new StringBuilder("<html><body>");
+                for (Map.Entry<String, String> entry : results.entrySet()) {
+                    message.append("• <b>").append(entry.getKey()).append("</b>: ")
+                           .append(entry.getValue()).append("<br>");
+                }
+                message.append("</body></html>");
+
+                JOptionPane.showMessageDialog(this, new JLabel(message.toString()), 
+                                              "Unenrollment Summary", JOptionPane.INFORMATION_MESSAGE);
+
+                getAllStudents(); // refresh table
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Unenrollment failed: " + ex.getMessage());
+            }
         });
 
         btnSetActiveYear.addActionListener(e -> {

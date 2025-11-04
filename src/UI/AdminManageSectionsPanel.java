@@ -100,6 +100,7 @@ public class AdminManageSectionsPanel extends javax.swing.JPanel {
         jScrollPane1.setViewportView(tblSections);
 
         txtSectionId.setEditable(false);
+        txtSectionId.setBackground(new java.awt.Color(255, 255, 255));
 
         lblSectionId.setText("Section ID:");
 

@@ -37,6 +37,8 @@ public class AdminManageFacultyAssignmentPanel extends javax.swing.JPanel {
     private DefaultTableModel tableModel;
     
     private boolean isUpdatingFilters = false;
+    private boolean isUpdatingSection = false;
+    private boolean isUpdatingGrade = false;
 
     /**
      * Creates new form ManageFacultyAssignmentPanel
@@ -291,7 +293,10 @@ public class AdminManageFacultyAssignmentPanel extends javax.swing.JPanel {
     
     private void addGradeLevelSectionSync() {
         cbGradeLevel.addActionListener(e -> {
+            if (isUpdatingGrade) return;
             try {
+                isUpdatingSection = true;
+                
                 GradeLevel selectedGrade = (GradeLevel) cbGradeLevel.getSelectedItem();
                 cbSection.removeAllItems();
 
@@ -309,11 +314,16 @@ public class AdminManageFacultyAssignmentPanel extends javax.swing.JPanel {
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Error loading sections: " + ex.getMessage());
+            } finally {
+                isUpdatingSection = false;
             }
         });
         
         cbSection.addActionListener(e -> {
+            if (isUpdatingSection) return;
             try {
+                isUpdatingGrade = true;
+                
                 Section selectedSection = (Section) cbSection.getSelectedItem();
                 if (selectedSection != null) {
                     String gradeName = sectionDAO.getGradeBySection(selectedSection.getSectionName());
@@ -330,6 +340,8 @@ public class AdminManageFacultyAssignmentPanel extends javax.swing.JPanel {
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Error loading grade level: " + ex.getMessage());
+            } finally {
+                isUpdatingGrade = false;
             }
         });
     }

@@ -5,10 +5,13 @@
 package DAO;
 
 import Model.Enrollment;
+import Model.EnrollmentResult;
 import Util.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -17,43 +20,102 @@ import java.util.List;
 public class EnrollmentDAO {
     
     public boolean enrollStudent(int studentId, int gradeLevelId, int sectionId, int yearId) throws SQLException {
-        String sql = """
-                    INSERT INTO enrollment (student_id, grade_level_id, section_id, year_id, status) "
-                        + "VALUES (?, ?, ?, ?, 'Enrolled')";
-                    """;
+        if (isAlreadyEnrolled(studentId, yearId)) {
+            return false;
+        }
+        
+        String checkSQL = "SELECT enrollment_id, status FROM enrollment WHERE student_id = ? AND year_id = ?";
+        String updateSQL = "UPDATE enrollment SET grade_level_id = ?, section_id = ?, status = 'Enrolled', enrolled_date = NOW() WHERE enrollment_id = ?";
+        String insertSQL = "INSERT INTO enrollment (student_id, grade_level_id, section_id, year_id, status, enrolled_date) VALUES (?, ?, ?, ?, 'Enrolled', NOW())";
+
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, studentId);
-            ps.setInt(2, gradeLevelId);
-            ps.setInt(3, sectionId);
-            ps.setInt(4, yearId);
-            
-            int rows = ps.executeUpdate();
-            return rows > 0;
+             PreparedStatement checkPS = conn.prepareStatement(checkSQL);
+             PreparedStatement updatePS = conn.prepareStatement(updateSQL);
+             PreparedStatement insertPS = conn.prepareStatement(insertSQL)) {
+
+            checkPS.setInt(1, studentId);
+            checkPS.setInt(2, yearId);
+            ResultSet rs = checkPS.executeQuery();
+
+            if (rs.next()) {
+                int enrollmentId = rs.getInt("enrollment_id");
+                String status = rs.getString("status");
+
+                // If record exists but is "Not Enrolled", update it
+                if ("Not Enrolled".equalsIgnoreCase(status)) {
+                    updatePS.setInt(1, gradeLevelId);
+                    updatePS.setInt(2, sectionId);
+                    updatePS.setInt(3, enrollmentId);
+                    return updatePS.executeUpdate() > 0;
+                } else {
+                    return false; // already enrolled
+                }
+            } else {
+                // No record → insert new
+                insertPS.setInt(1, studentId);
+                insertPS.setInt(2, gradeLevelId);
+                insertPS.setInt(3, sectionId);
+                insertPS.setInt(4, yearId);
+                return insertPS.executeUpdate() > 0;
+            }
+
         } catch (SQLException ex) {
             ex.printStackTrace();
             return false;
         }
     }
     
-    public int enrollMultipleStudents(List<Integer> studentIds, int gradeLevelId, int sectionId, int yearId) {
-        String query = "INSERT INTO enrollment (student_id, grade_level_id, section_id, year_id, status) "
-                     + "VALUES (?, ?, ?, ?, 'Enrolled')";
+    public EnrollmentResult enrollMultipleStudents(List<Integer> studentIds, int gradeLevelId, int sectionId, int yearId) throws SQLException {
+        String checkSQL = "SELECT enrollment_id, status FROM enrollment WHERE student_id = ? AND year_id = ?";
+        String updateSQL = "UPDATE enrollment SET grade_level_id = ?, section_id = ?, status = 'Enrolled', enrolled_date = NOW() WHERE enrollment_id = ?";
+        String insertSQL = "INSERT INTO enrollment (student_id, grade_level_id, section_id, year_id, status, enrolled_date) VALUES (?, ?, ?, ?, 'Enrolled', NOW())";
+        String nameSQL = "SELECT CONCAT(first_name, ' ', last_name) AS full_name FROM students WHERE student_id = ?";
+
         int successCount = 0;
+        List<String> skippedStudents = new ArrayList<>();
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+             PreparedStatement checkPS = conn.prepareStatement(checkSQL);
+             PreparedStatement updatePS = conn.prepareStatement(updateSQL);
+             PreparedStatement insertPS = conn.prepareStatement(insertSQL);
+             PreparedStatement namePS = conn.prepareStatement(nameSQL)) {
 
             for (int studentId : studentIds) {
-                ps.setInt(1, studentId);
-                ps.setInt(2, gradeLevelId);
-                ps.setInt(3, sectionId);
-                ps.setInt(4, yearId);
-                ps.addBatch();
+                checkPS.setInt(1, studentId);
+                checkPS.setInt(2, yearId);
+                ResultSet rsCheck = checkPS.executeQuery();
+
+                if (rsCheck.next()) {
+                    int enrollmentId = rsCheck.getInt("enrollment_id");
+                    String status = rsCheck.getString("status");
+
+                    if ("Not Enrolled".equalsIgnoreCase(status)) {
+                        // Update existing record to enrolled
+                        updatePS.setInt(1, gradeLevelId);
+                        updatePS.setInt(2, sectionId);
+                        updatePS.setInt(3, enrollmentId);
+                        if (updatePS.executeUpdate() > 0) successCount++;
+                    } else {
+                        // Already enrolled → skip and note
+                        namePS.setInt(1, studentId);
+                        ResultSet rsName = namePS.executeQuery();
+                        if (rsName.next()) skippedStudents.add(rsName.getString("full_name"));
+                        rsName.close();
+                    }
+                } else {
+                    // No record → insert
+                    insertPS.setInt(1, studentId);
+                    insertPS.setInt(2, gradeLevelId);
+                    insertPS.setInt(3, sectionId);
+                    insertPS.setInt(4, yearId);
+                    insertPS.addBatch();
+                }
+                rsCheck.close();
             }
 
-            int[] results = ps.executeBatch();
-            for (int res : results) {
+            // Execute batch insert for new students
+            int[] batchResults = insertPS.executeBatch();
+            for (int res : batchResults) {
                 if (res > 0) successCount++;
             }
 
@@ -61,18 +123,54 @@ public class EnrollmentDAO {
             e.printStackTrace();
         }
 
-        return successCount;
+        return new EnrollmentResult(successCount, skippedStudents);
     }
 
-    public void unenrollStudent(int studentId, int yearId) throws SQLException {
-        String sql = "UPDATE enrollment SET status = 'Not Enrolled' WHERE student_id = ? AND year_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+    public Map<String, String> unenrollMultipleStudentsDetailed(List<Integer> studentIds, int yearId) {
+        Map<String, String> results = new LinkedHashMap<>();
 
-            ps.setInt(1, studentId);
-            ps.setInt(2, yearId);
-            ps.executeUpdate();
+        String checkQuery = "SELECT s.first_name, s.last_name, e.status " +
+                            "FROM enrollment e " +
+                            "JOIN students s ON e.student_id = s.student_id " +
+                            "WHERE e.student_id = ? AND e.year_id = ?";
+        String updateQuery = "UPDATE enrollment SET status = 'Not Enrolled' " +
+                             "WHERE student_id = ? AND year_id = ? AND status = 'Enrolled'";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement checkPs = conn.prepareStatement(checkQuery);
+             PreparedStatement updatePs = conn.prepareStatement(updateQuery)) {
+
+            for (int studentId : studentIds) {
+                checkPs.setInt(1, studentId);
+                checkPs.setInt(2, yearId);
+                ResultSet rs = checkPs.executeQuery();
+
+                if (rs.next()) {
+                    String fullName = rs.getString("first_name") + " " + rs.getString("last_name");
+                    String status = rs.getString("status");
+
+                    if ("Enrolled".equalsIgnoreCase(status)) {
+                        updatePs.setInt(1, studentId);
+                        updatePs.setInt(2, yearId);
+                        int updated = updatePs.executeUpdate();
+
+                        if (updated > 0)
+                            results.put(fullName, "Unenrolled successfully");
+                        else
+                            results.put(fullName, "Failed to unenroll");
+                    } else {
+                        results.put(fullName, "Already " + status);
+                    }
+                } else {
+                    results.put("Student ID " + studentId, "Not enrolled this year");
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+
+        return results;
     }
 
     public List<Enrollment> getEnrollmentsByYear(int yearId) throws SQLException {
@@ -244,19 +342,23 @@ public class EnrollmentDAO {
         return "Not Enrolled";
     }
     
-    public boolean isStudentEnrolled(int studentId, int yearId) throws SQLException {
-        String sql = "SELECT 1 FROM enrollment WHERE student_id = ? AND year_id = ?";
+    public boolean isAlreadyEnrolled(int studentId, int yearId) {
+        String query = "SELECT COUNT(*) FROM enrollment WHERE student_id = ? AND year_id = ? AND status = 'Enrolled'";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, studentId);
             ps.setInt(2, yearId);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return false;
     }
     
-    public String getStudentGradeLevel(int studentId, int yearId) throws SQLException {
+            public String getStudentGradeLevel(int studentId, int yearId) throws SQLException {
         String sql = "SELECT g.grade_name " +
                      "FROM enrollment e " +
                      "JOIN grade_levels g ON e.grade_level_id = g.grade_level_id " +
